@@ -1,0 +1,1 @@
+export const checkNik = (nik: string) => nik && nik.length > 2 && nik.length < 50;

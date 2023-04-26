@@ -1,0 +1,9 @@
+.social-link {
+  color: #7e232f;
+  width: 88px;
+  text-align: center;
+}
+
+.social-link:hover {
+  color: rgb(218, 179, 6)
+}
