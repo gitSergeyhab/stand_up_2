@@ -8,7 +8,7 @@ import {
 } from './registration-page-style';
 import { useRegisterUserMutation } from '../../store/user-api';
 import { UserErrorsBlock } from '../../components/user-errors-block/user-errors-block';
-import { DataErrorType } from '../../types/types';
+import { DataErrorType, ErrorDataFieldType } from '../../types/types';
 import { getErrorMessages, setDataError } from '../../utils/error-utils';
 
 export function RegistrationPage() {
@@ -19,7 +19,7 @@ export function RegistrationPage() {
   const passwordRef = useRef<HTMLInputElement>(null);
   const passwordRepeatRef = useRef<HTMLInputElement>(null);
 
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState<ErrorDataFieldType>({errorIndexes:[],errorMessages:[]});
   const [disable, setDisable] = useState(false);
   const setAble = () => setDisable(false);
 
@@ -38,10 +38,10 @@ export function RegistrationPage() {
 
     const errorMessages = getErrorMessages({ nik, email, password, passwordRepeat });
     if (errorMessages.length) {
-      setErrors(errorMessages);
+      setErrors({errorIndexes: [],  errorMessages});
       setAble();
     } else {
-      setErrors([]);
+      setErrors({errorIndexes:[],errorMessages:[]});
       if (email && nik && password && passwordRepeat) {
         registration({ email, nik, password, passwordRepeat })
           .unwrap()
@@ -52,7 +52,7 @@ export function RegistrationPage() {
     }
   };
 
-  const errorBlock = <UserErrorsBlock errors={errors} />;
+  const errorBlock = <UserErrorsBlock errors={errors.errorMessages} />;
 
   return (
     <>

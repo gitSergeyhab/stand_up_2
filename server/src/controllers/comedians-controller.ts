@@ -428,7 +428,7 @@ class ComedianController {
                     type: 'SELECT'
                 }
             )
-            console.log({result})
+            console.log({result}, 'result___________________________')
 
             const data = getDataFromSQLWithTitles(result)
             return res.status(200).json(data);
