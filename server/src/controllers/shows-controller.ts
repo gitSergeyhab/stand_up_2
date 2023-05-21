@@ -1,7 +1,11 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { Column, ColumnId, OrderValues, SQLFunctionName, StatusCode } from "../const";
-import { checkTitles, getDataFromSQL, getDataFromSQLWithTitles, getTitlesQuery, insertView } from "../utils/sql-utils";
+import { Column, ColumnId, ImageType, OrderValues, StatusCode } from "../const";
+import { convertFormDataToDate, getDataFromSQL, getDataInsertQueryStr, insertView } from "../utils/sql-utils";
+import { imageService } from "../service/image-service";
+import { ImageFile, SimpleDict } from "../types";
+import { or } from "sequelize";
+import { ApiError } from "../custom-errors/api-error";
 
 
 class ShowsController {
@@ -68,8 +72,9 @@ class ShowsController {
             const result = await sequelize.query(
                 `
                 SELECT
-                    show_id, show_date, show_date_added AS date_added, show_name, show_poster,
-                    comedian_id, comedian_first_name, comedian_last_name, comedian_first_name_en, comedian_last_name_en,
+                    show_id, show_date, show_date_added AS date_added, show_name, 
+                    destination || filename AS main_picture,
+                    comedian_id, comedian_nik, comedian_first_name, comedian_last_name, comedian_first_name_en, comedian_last_name_en,
                     countries.country_id, country_name, country_name_en,
                     place_id, place_name, place_name_en,
                     language_id, language_name, language_name_en,
@@ -84,6 +89,7 @@ class ShowsController {
                 LEFT JOIN languages USING (language_id)
                 LEFT JOIN places USING (place_id)
                 LEFT JOIN show_ratings USING (show_id)
+                LEFT JOIN main_pictures ON shows_main_pictures_id = main_pictures_id
 
                 ${where}
 
@@ -209,6 +215,7 @@ class ShowsController {
     // }
 
     async getShowsByColumnId(req: Request, res: Response) {
+
         try {
             const {type, id} = req.params;
             const {year = null, limit = null, offset = null} = req.query;
@@ -226,24 +233,22 @@ class ShowsController {
             const result = await sequelize.query(
                 `
                 SELECT
-                show_id, show_name, show_date_added, show_poster,
-                comedian_id, 
-                get_one_name_of_two(comedian_first_name, comedian_last_name) AS comedian_name,
-                get_one_name_of_two(comedian_first_name_en, comedian_last_name_en) AS comedian_name_en,
+                show_id, show_name, show_date_added, destination || filename AS main_picture,
+                comedian_id, comedian_nik,
                 AVG(show_rate)::real AS avg_rate, COUNT (show_id) AS number_of_rate
 
                 FROM shows
                 LEFT JOIN comedians USING (comedian_id)
                 LEFT JOIN show_ratings USING (show_id)
+                LEFT JOIN main_pictures ON show_main_picture_id = main_picture_id
 
                 ${where}
 
-                GROUP BY show_id, comedian_first_name, comedian_last_name, comedian_first_name_en, comedian_last_name_en
+                GROUP BY show_id, comedian_first_name, comedian_last_name, comedian_first_name_en, comedian_last_name_en, destination, filename, comedian_nik
                 ORDER BY number_of_rate DESC
                 LIMIT :limit
                 OFFSET :offset
                 ;
-                ${getTitlesQuery(type)}
                 ${countQuery}
                 ;`,
                 {
@@ -252,13 +257,46 @@ class ShowsController {
                 }
             )
             
-            const data = getDataFromSQLWithTitles(result);
-            return checkTitles(data, res);
+            const data = getDataFromSQL(result, 'shows');
+            return res.status(200).json({...data})
+            // return checkTitles(data, res);
 
    
         } catch(err) {
             console.log(err)
-            return res.status(500).json({message: 'error getShowsByColumnId'})
+            // return res.status(500).json({message: 'error getShowsByColumnId'})
+        }
+    }
+    async addShow(req: Request, res: Response ) {
+
+        try {
+            const {body} = req;
+            const dir = req.query.dir as string;
+            console.log({dir})
+            const file = req.file as ImageFile;
+            const show_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
+            // HARDCODE user_added_id = 1 !!!   
+            const {user_added_id = '1', event_id, comedian_id, place_id, language_id, show_date, show_name, show_description} = body as SimpleDict;
+            const fields = [{show_name}, {user_added_id}, {event_id}, {comedian_id}, {place_id}, {language_id}, {show_date}, {show_description}] as SimpleDict[];
+            const allFields = [...fields, {show_main_picture_id}]
+
+            const sqlQuery = getDataInsertQueryStr(allFields, dir)
+
+            
+            const result = await sequelize.query(sqlQuery, {
+                // HARDCODE user_added_id = 1 !!! 
+                replacements: {...body, show_main_picture_id: show_main_picture_id, user_added_id: '1'}, 
+                type: "INSERT"
+            })
+
+            console.log({file, result})
+
+            return res.status(StatusCode.Added).json(result)
+
+        
+        } catch (err) {
+            const {message} = err;
+            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
         }
     }
 

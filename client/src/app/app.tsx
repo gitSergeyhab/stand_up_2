@@ -22,6 +22,9 @@ import { storageUtils } from '../utils/storage-utils';
 import { useAppDispatch } from '../hooks/use-app-dispatch';
 import { authAction } from '../store/api-actions';
 import { TestPage } from '../pages/test-page/test-page';
+import { AdminPanel } from '../pages/admin-panel/admin-panel';
+import { ShowsOfComedian } from '../pages/comedians/sub-comedians/shows-of-comedian';
+import { EventsOfComedian } from '../pages/comedians/sub-comedians/events-of-comedian';
 
 const AppRoute = {
   Main: '/',
@@ -32,7 +35,7 @@ const AppRoute = {
   // ComedianPhotos: '/comedians/:id/photos',
   ComedianRatings: '/comedians/:id/ratings',
 
-  Pictures: '/:mainType/:id/pictures',
+  Pictures: '/:mainType/:id/images',
   Ratings: '/:mainType/:id/ratings',
 
   Comedians: '/comedians',
@@ -47,6 +50,8 @@ const AppRoute = {
 
   Registration: '/registration',
   Login: '/login',
+
+  AdminPanel: '/admin'
 };
 
 export function App() {
@@ -70,31 +75,11 @@ export function App() {
               <Routes>
                 {/* <Route path={AppRoute.Main} element={<MainPage/>}/> */}
 
+                {/* Comedians */}
                 <Route path={AppRoute.Comedians} element={<ComediansPage />} />
-                <Route
-                  path={AppRoute.Comedian}
-                  element={<ComedianPageInfo />}
-                />
-
-                <Route
-                  path={AppRoute.ComedianEvents}
-                  element={(
-                    <PageCardFilterList
-                      filters={[FilterName.EventStatus, FilterName.Year]}
-                      useGetQuery={useGetEventsQuery}
-                    />
-                  )}
-                />
-
-                <Route
-                  path={AppRoute.ComedianShows}
-                  element={(
-                    <PageCardFilterList
-                      filters={[FilterName.Year]}
-                      useGetQuery={useGetShowsQuery}
-                    />
-                  )}
-                />
+                <Route path={AppRoute.Comedian} element={<ComedianPageInfo />} />
+                <Route path={AppRoute.ComedianShows} element={<ShowsOfComedian />} />
+                <Route path={AppRoute.ComedianEvents} element={<EventsOfComedian />} />
 
                 <Route path={AppRoute.Pictures} element={<PagePictureList />} />
                 <Route path={AppRoute.Ratings} element={<PageRatingList />} />
@@ -104,11 +89,16 @@ export function App() {
 
                 <Route path={AppRoute.Users} element={<UsersPage />} />
 
+                <Route path={AppRoute.AdminPanel} element={<AdminPanel/>}/>
+
                 <Route
                   path={AppRoute.Registration}
                   element={<RegistrationPage />}
                 />
                 <Route path={AppRoute.Login} element={<LoginPage />} />
+
+
+
 
                 <Route path="/" element={<TestPage />} />
 

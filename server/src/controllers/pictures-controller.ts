@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ColumnId, StatusCode } from "../const";
 import { sequelize } from "../sequelize";
-import { checkTitles, getDataFromSQL, getDataFromSQLWithTitles, getTitlesQuery } from "../utils/sql-utils";
+import { getDataFromSQL, getDataFromSQLWithTitles, getTitlesQuery } from "../utils/sql-utils";
 
 class PicturesController {
     async getPictureById(req: Request, res: Response) {
@@ -31,8 +31,8 @@ class PicturesController {
                 }
             );
 
-            const data = getDataFromSQLWithTitles(result);
-            return checkTitles(data, res);
+            const data = getDataFromSQL(result, 'pictures');
+            return res.status(200).json({data})
 
         } catch(err) {
             console.log(err)

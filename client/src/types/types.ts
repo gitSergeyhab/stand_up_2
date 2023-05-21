@@ -7,16 +7,14 @@ export type ResourceType = {
   href: string;
 };
 
-export type PictureType = {
-  id: string;
-  src: string;
-};
+
 
 export type GridCardType = {
   type: ContentName;
   id: string;
-  name: string;
-  nameEn: string | null;
+  // name: string;
+  // nameEn: string | null;
+  nik: string;
   picture: string | null;
   extType: ContentName | null;
   extId: string | null;
@@ -30,6 +28,7 @@ export type GridCardType = {
 };
 
 export type SimpleDict = { [key: string]: string };
+export type SimpleDictEmpty = {[key:string]:string|undefined}
 
 export type SearchByIdType = { id: string; search: string };
 
@@ -95,3 +94,15 @@ export const enum TokenType {
 
 // eslint-disable-next-line
 export type TypedDispatch<T> = ThunkDispatch<T, any, AnyAction>;
+
+
+export type OptionType = {
+  id: string, name: string
+}
+
+export type FieldValueType = string | undefined;
+
+export type ErrorDataFieldType = {
+  errorMessages: string[],
+  errorIndexes: string[]
+}

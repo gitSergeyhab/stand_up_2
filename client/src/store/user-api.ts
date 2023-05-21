@@ -1,19 +1,8 @@
 import { createApi/* , fetchBaseQuery */ } from '@reduxjs/toolkit/query/react';
-import {
-  AuthUserTypeCC,
-  AuthUserTypeSC,
-  LoginUserDataCC,
-  TestUserCC,
-  TestUserSC,
-} from '../types/user-types';
-import {
-  adaptAuthUserToClient,
-  adaptLoginUserDataToClient,
-  adaptTestUserToClient,
-} from '../utils/adapters/user-adapters';
+import { AuthUserTypeCC, AuthUserTypeSC, LoginUserDataCC, TestUserCC, TestUserSC } from '../types/user-types';
+import { adaptAuthUserToClient, adaptLoginUserDataToClient, adaptTestUserToClient } from '../utils/adapters/user-adapters';
 import { baseQueryWithReauth } from './auth-api';
 
-// const BASE_URL = 'http://localhost:5000/api/users';
 
 export type LoginSendType = {
   email: string;

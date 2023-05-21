@@ -83,3 +83,13 @@ export const ExtLink = styled(Link)`
     color: goldenrod;
   }
 `;
+
+export const ExtNoLink = styled.span`
+  text-decoration: none;
+  color: gold;
+
+  &:hover,
+  &:focus {
+    color: goldenrod;
+  }
+`;

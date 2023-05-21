@@ -52,3 +52,12 @@ export type YearsFromQuery = {
 
 
 export type Query = string | ParsedQs | string[] | ParsedQs[];
+
+export type ImageFile = {
+    filename: string,
+    destination: string,
+    mimetype: string,
+    size: number
+}
+
+export type SimpleDict = {[key: string]:string}

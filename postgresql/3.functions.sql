@@ -130,7 +130,7 @@ LIMIT lim
 $$ LANGUAGE SQL;
 
 
-
+-- NEED !!!
 CREATE OR REPLACE FUNCTION get_resources(_col TEXT, idx BIGINT) 
 RETURNS SETOF JSON AS $$
 BEGIN
@@ -160,6 +160,22 @@ BEGIN
 END     
 $$ LANGUAGE plpgsql;
 
+-- NEED !!!
+CREATE OR REPLACE FUNCTION get_images(_col TEXT, idx BIGINT)
+RETURNS SETOF JSON AS $$
+BEGIN
+	RETURN QUERY EXECUTE '
+	SELECT 
+	JSON_AGG(JSON_BUILD_OBJECT(''image_id'', image_id, ''image_path'', destination || filename))
+	FROM (
+		SELECT * FROM images 
+		WHERE ' ||  quote_ident(_col) || '  = ' ||  idx ||'
+		ORDER BY image_id DESC
+	) as t
+	';
+END     
+$$ LANGUAGE plpgsql;
+
 
 
 
@@ -183,7 +199,7 @@ $$ LANGUAGE SQL;
 
 -- INSERT VIEWS
 
-
+-- NEED !!!
 CREATE OR REPLACE FUNCTION insert_view (_col text, idx BIGINT, user_watched_idx BIGINT) 
 RETURNS void AS $$
 BEGIN
@@ -194,7 +210,7 @@ $$ LANGUAGE plpgsql;
 
 -- number of views in the last x days
 
-
+-- NEED !!!
 CREATE OR REPLACE FUNCTION get_views_count(_col text, idx bigint, days int) 
 RETURNS SETOF bigint AS $$
 BEGIN

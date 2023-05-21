@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
+import path from 'path';
 import express from 'express';
 import cors from 'cors';
 import { router } from './routers';
@@ -14,6 +15,7 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 app.use(express.json());
+app.use('/images', express.static(path.join(__dirname, 'files', 'images')))
 
 
 app.use(cors({

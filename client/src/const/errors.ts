@@ -18,3 +18,4 @@ export const enum StatusCode {
   Added = 201,
   Deleted = 204,
 }
+

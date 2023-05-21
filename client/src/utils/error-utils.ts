@@ -1,9 +1,9 @@
 import { Dispatch, SetStateAction } from 'react';
 import { ServerError, UserErrorMessage } from '../const/errors';
-import { DataErrorType } from '../types/types';
+import { DataErrorType, ErrorDataFieldType } from '../types/types';
 
-export type SetAuthErrorArgs = {
-  setErrors: Dispatch<SetStateAction<string[]>>;
+export type setDataErrorArgs = {
+  setErrors: Dispatch<SetStateAction<ErrorDataFieldType>>
   data: DataErrorType;
 };
 /**
@@ -12,12 +12,12 @@ export type SetAuthErrorArgs = {
  * setErrors - fn useState;
  * data : {data: {errors: string[]}} - список ошибок с сервера;
  */
-export const setAuthError = ({ setErrors, data }: SetAuthErrorArgs) => {
+export const setDataError = ({ setErrors, data }: setDataErrorArgs) => {
   const errors = data.data?.errors;
   if (errors && errors.length) {
-    setErrors(errors);
+    setErrors({errorMessages: errors, errorIndexes:[]});
   } else {
-    setErrors([ServerError.Default]);
+    setErrors({errorMessages: [ServerError.Default], errorIndexes:[]});
   }
 };
 
@@ -55,3 +55,5 @@ export const getErrorMessages = ({
 
   return errorMessages;
 };
+
+export const getFieldErrorMessage = (field: string, pattern: string) => `${field}: ${pattern}`;

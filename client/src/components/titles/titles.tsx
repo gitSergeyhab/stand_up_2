@@ -10,7 +10,7 @@ const EnTitle = styled.h2`
   color: #222222;
 `;
 
-export function Titles({ native, en }: { native: string; en: string }) {
+export function Titles({ native, en }: { native: string; en: string | null | undefined }) {
   return (
     <>
       <NativeTitle>{native}</NativeTitle>

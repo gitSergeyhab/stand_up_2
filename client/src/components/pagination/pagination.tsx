@@ -2,21 +2,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { MouseEvent } from 'react';
 
 import { getPageOffset, getPages } from '../../utils/pagination-utils';
-import {
-  NextPrevPageLink,
-  PageContainer,
-  PageLink,
-  SpaceLink,
-} from './pagination-style';
-import {
-  createNewSearch,
-  getFieldFromSearch,
-} from '../../utils/navigation-utils';
+import { NextPrevPageLink, PageContainer, PageLink, SpaceLink } from './pagination-style';
+import { createNewSearch, getFieldFromSearch } from '../../utils/navigation-utils';
+import { DefaultPageParam } from '../../const/const';
 
-const DefaultPageParam = {
-  Limit: 6,
-  Offset: 0,
-};
 
 /**
  * из url(search) достает limit и offset
@@ -25,10 +14,8 @@ const DefaultPageParam = {
  */
 
 const getPageParams = (search: string) => {
-  const limit = +(getFieldFromSearch({ field: 'limit', search }) as string)
-    || DefaultPageParam.Limit;
-  const offset = +(getFieldFromSearch({ field: 'offset', search }) as string)
-    || DefaultPageParam.Offset;
+  const limit = +(getFieldFromSearch({ field: 'limit', search }) as string) || DefaultPageParam.Limit;
+  const offset = +(getFieldFromSearch({ field: 'offset', search }) as string) || DefaultPageParam.Offset;
   return { limit, offset };
 };
 
@@ -40,10 +27,7 @@ export function Pagination({ count }: { count: number }) {
 
   const { currentPage, pageCount, result } = getPages({ count, limit, offset });
 
-  const handlePageClick = (
-    evt: MouseEvent<HTMLAnchorElement>,
-    targetPage: number,
-  ) => {
+  const handlePageClick = ( evt: MouseEvent<HTMLAnchorElement>, targetPage: number ) => {
     evt.preventDefault();
     const newOffset = getPageOffset({ targetPage, limit }).toString();
     const fields = [

@@ -40,6 +40,8 @@ export const TabLink = styled(Link)`
   width: 100%;
   height: 100%;
   color: #ff9b05;
+  transition: 0.3s ease-in-out all;
+
   &:hover,
   &:focus {
     box-shadow: 1px 5px 8px 0px rgba(34, 60, 80, 0.7);

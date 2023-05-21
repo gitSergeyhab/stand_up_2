@@ -10,8 +10,9 @@ import { setUser } from './actions';
 import { LoginUserDataSC } from '../types/user-types';
 import { adaptLoginUserDataToClient } from '../utils/adapters/user-adapters';
 import { storageUtils } from '../utils/storage-utils';
+import { SERVER_URL } from '../const/const';
 
-export const BASE_URL = 'http://localhost:5000/api';
+export const BASE_URL = `${SERVER_URL}api`;
 
 const mutex = new Mutex();
 /* , headers: {'Content-type': 'application/json; charset=UTF-8'} */

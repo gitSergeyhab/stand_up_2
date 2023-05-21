@@ -1,9 +1,4 @@
-import {
-  Action,
-  ThunkAction,
-  combineReducers,
-  configureStore,
-} from '@reduxjs/toolkit';
+import { Action, ThunkAction, combineReducers, configureStore } from '@reduxjs/toolkit';
 import { AxiosInstance } from 'axios';
 import { api } from './axios-api';
 
@@ -14,9 +9,12 @@ import { subApi } from './sub-api';
 import { testSlice } from './test-store';
 import { userApi } from './user-api';
 import { userReducer } from './user-reducer/user-reducer';
+import { showsApi } from './shows-api';
+import { imagesApi } from './images-api';
+import { formDataApi } from './form-data-api';
+import { postFormApi } from './post-form-api';
 
 export const enum ReducerName {
-  // Main = 'Main',
   User = 'User',
 }
 
@@ -27,8 +25,10 @@ export const reducer = combineReducers({
   [userApi.reducerPath]: userApi.reducer,
   [ReducerName.User]: userReducer,
   [testSlice.name]: testSlice.reducer,
-
-  // [ReducerName.Main]: mainReducer
+  [showsApi.reducerPath]: showsApi.reducer,
+  [imagesApi.reducerPath]: imagesApi.reducer,
+  [formDataApi.reducerPath]: formDataApi.reducer,
+  [postFormApi.reducerPath]: postFormApi.reducer,
 });
 
 export const store = configureStore({
@@ -37,16 +37,13 @@ export const store = configureStore({
     .concat(comediansApi.middleware)
     .concat(userApi.middleware)
     .concat(subApi.middleware)
-    .concat(eventsApi.middleware),
-
-  // middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(comediansApi.middleware)
+    .concat(eventsApi.middleware)
+    .concat(showsApi.middleware)
+    .concat(imagesApi.middleware)
+    .concat(formDataApi.middleware)
+    .concat(postFormApi.middleware)
 });
 
 export type ReducerType = ReturnType<typeof reducer>;
 
-export type ThunkActionResult<R = Promise<void>> = ThunkAction<
-  R,
-  ReducerType,
-  AxiosInstance,
-  Action
->;
+export type ThunkActionResult<R = Promise<void>> = ThunkAction< R, ReducerType, AxiosInstance, Action >;

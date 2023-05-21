@@ -4,7 +4,8 @@ export class ApiError extends Error {
     message: string;
 
     constructor (status: number, message: string, errors: string[] = []) {
-        super(message);
+        const messageStr = typeof message === 'string' ? message : JSON.stringify(message);
+        super(messageStr);
         this.status = status;
         this.errors = errors;
     }

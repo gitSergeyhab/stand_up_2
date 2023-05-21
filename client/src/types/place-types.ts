@@ -1,4 +1,5 @@
-import { PictureType, ResourceType } from './types';
+import { ImageCC } from '../store/images-api';
+import { ResourceType } from './types';
 
 export type PlaceTypeSC = {
   country_id: number | null;
@@ -33,7 +34,7 @@ export type OnePlaceTypeSC = {
   country_name: string | null;
   country_name_en: string | null;
   date_place_added: string | null;
-  pictures: PictureType[] | null;
+  pictures: ImageCC[] | null;
   place_city: string | null;
   place_city_en: string | null;
   place_date_founded: string | null;
@@ -54,7 +55,7 @@ export type OnePlaceTypeCC = {
   countryName: string | null;
   countryNameEn: string | null;
   datePlaceAdded: string | null;
-  pictures: PictureType[] | null;
+  pictures: ImageCC[] | null;
   placeCity: string | null;
   placeCityEn: string | null;
   placeDateFounded: string | null;

@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import { SVG } from '../svg/svg';
 
 type ViewsProps = {
-  views: string | null;
-  totalViews: string | null;
+  views?: string;
+  totalViews?: string;
 };
 
 const ViewP = styled.p`

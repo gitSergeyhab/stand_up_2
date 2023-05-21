@@ -10,12 +10,12 @@ import {
   ModalContent,
   SlideItemImg,
 } from './image-modal-style';
-import { PictureType } from '../../types/types';
-import { KeyNext, KeyPrev } from '../../const/const';
+import { KeyNext, KeyPrev, SERVER_URL } from '../../const/const';
+import { ImageCC } from '../../store/images-api';
 
 // functions
 
-const getImageNumbers = (images: PictureType[]) => {
+const getImageNumbers = (images: ImageCC[]) => {
   const len = images.length < 6 ? images.length : 5;
   const current = Math.floor((len - 1) / 2);
 
@@ -24,10 +24,10 @@ const getImageNumbers = (images: PictureType[]) => {
 
 const getImg = (
   dir: 1 | -1,
-  images: PictureType[],
-  currentPic: PictureType,
+  images: ImageCC[],
+  currentPic: ImageCC,
 ) => {
-  const idx = images.findIndex((item) => item.id === currentPic.id);
+  const idx = images.findIndex((item) => item.imageId === currentPic.imageId);
   const len = images.length;
   const nextIdx = dir + idx;
 
@@ -41,11 +41,11 @@ const getImg = (
   return images[nextIdx];
 };
 
-const getCurrentList = (currentPic: PictureType, fullList: PictureType[]) => {
+const getCurrentList = (currentPic: ImageCC, fullList: ImageCC[]) => {
   const { len } = getImageNumbers(fullList);
   const fullLen = fullList.length;
-  const { id } = currentPic;
-  const idx = fullList.findIndex((item) => item.id === id);
+  const { imageId } = currentPic;
+  const idx = fullList.findIndex((item) => item.imageId === imageId);
 
   if (len < 5) {
     return fullList;
@@ -78,14 +78,14 @@ function CloseButton({ onClose }: { onClose: () => void }) {
 }
 
 type ImageItemType = {
-  item: PictureType;
-  currentImg: PictureType;
+  item: ImageCC;
+  currentImg: ImageCC;
   handleImgClick: MouseEventHandler<HTMLImageElement>;
 };
 
 function ImageItem({ item, currentImg, handleImgClick }: ImageItemType) {
-  const current = item.id === currentImg.id;
-  const src = `/assets${item.src}`;
+  const current = item.imageId === currentImg.imageId;
+  const src = `${SERVER_URL}${item.imagePath}`;
   return (
     <ItemSlideLi current={current}>
       <SlideItemImg src={src} onClick={handleImgClick} />
@@ -94,9 +94,9 @@ function ImageItem({ item, currentImg, handleImgClick }: ImageItemType) {
 }
 
 type ImageModalProps = {
-  pictures: PictureType[];
-  currentImg: PictureType;
-  setImg: (currentImg: PictureType) => void;
+  pictures: ImageCC[];
+  currentImg: ImageCC;
+  setImg: (currentImg: ImageCC) => void;
   onClose: () => void;
 };
 
@@ -117,7 +117,7 @@ export function ImageModal({
     };
   }, []);
 
-  const handleImgClick = (img: PictureType) => {
+  const handleImgClick = (img: ImageCC) => {
     setImg(img);
     setImgList(getCurrentList(img, pictures));
   };
@@ -149,14 +149,14 @@ export function ImageModal({
 
   const imageElements = currentImgList.map((item) => (
     <ImageItem
-      key={item.id}
+      key={item.imageId}
       currentImg={currentImg}
       handleImgClick={() => handleImgClick(item)}
       item={item}
     />
   ));
 
-  const src = `/assets${currentImg.src}`;
+  const src = `${SERVER_URL}${currentImg.imagePath}`;
 
   return (
     <Modal>

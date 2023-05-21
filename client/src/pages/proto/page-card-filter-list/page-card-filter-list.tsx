@@ -43,7 +43,9 @@ export function PageCardFilterList({ filters, useGetQuery }: PageCardFilterListP
     return <BigSpinner />;
   }
 
-  const { data, count, titles } = result;
+  const { data, count } = result;
+
+  const nik = data[0] ? data[0].nik : '!!!';
 
   const { listType, mainType } = getTypes(pathname);
 
@@ -61,7 +63,7 @@ export function PageCardFilterList({ filters, useGetQuery }: PageCardFilterListP
 
   return (
     <>
-      <Titles native={titles.native} en={titles.en} />
+      <Titles native={nik} en={nik} />
       <TopTabs tabProps={tabProps} />
       <Filter filters={filters} />
       {content}

@@ -10,10 +10,22 @@ CREATE TABLE countries (
     country_name_en VARCHAR(64)
     );
 
+CREATE TABLE avatars (
+    avatar_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    filename VARCHAR(256) NOT NULL,
+    destination VARCHAR(256) NOT NULL,
+    encoding VARCHAR(32),
+    mimetype VARCHAR(64),
+    size INT CHECK (size > 0 AND 2000000 > size)
+);
+
+
 
 CREATE TABLE users ( 
     user_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     country_id INTEGER REFERENCES countries(country_id),
+    user_avatar_id BIGINT REFERENCES avatars(avatar_id),
 
     user_email VARCHAR(128) UNIQUE,
     user_password VARCHAR(512) NOT NULL,
@@ -21,13 +33,22 @@ CREATE TABLE users (
     user_first_name VARCHAR(64),
     user_last_name VARCHAR(64),
     user_city VARCHAR(256),
-    user_avatar VARCHAR(128),
     user_date_birth DATE,
     user_description TEXT,
     user_date_registration DATE DEFAULT CURRENT_DATE,
     user_activated BOOLEAN DEFAULT FALSE,
     user_activation_link VARCHAR(128)
     );
+
+CREATE TABLE main_pictures (
+    main_picture_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_added_id BIGINT REFERENCES users(user_id),
+
+    filename VARCHAR(256) NOT NULL,
+    destination VARCHAR(256) NOT NULL,
+    mimetype VARCHAR(64),
+    size INT 
+);
 
 CREATE TABLE tokens (
     token_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -39,14 +60,18 @@ CREATE TABLE comedians (
     comedian_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     country_id INTEGER REFERENCES countries(country_id),
     user_added_id BIGINT REFERENCES users(user_id),
-
-    comedian_first_name VARCHAR(64) NOT NULL,
+    comedian_main_picture_id BIGINT REFERENCES main_pictures(main_picture_id),
+    
+    comedian_nik VARCHAR(64) NOT NULL,
+    comedian_nik_en VARCHAR(64),
+    comedian_first_name VARCHAR(64),
+    comedian_second_name VARCHAR(64),
     comedian_last_name VARCHAR(64),
     comedian_first_name_en VARCHAR(64),
+    comedian_second_name_en VARCHAR(64),
     comedian_last_name_en VARCHAR(64),
     comedian_city VARCHAR(256),
     comedian_city_en VARCHAR(256),
-    comedian_avatar VARCHAR(128),
     comedian_date_birth DATE,
     comedian_date_death DATE,
     comedian_description TEXT,
@@ -57,23 +82,25 @@ CREATE TABLE places (
     place_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     country_id INTEGER REFERENCES countries(country_id),
     user_added_id BIGINT REFERENCES users(user_id),
+    place_main_picture_id BIGINT REFERENCES main_pictures(main_picture_id),
 
-    place_name VARCHAR(256),
+    place_name VARCHAR(256) NOT NULL,
     place_name_en VARCHAR(256),
     place_city VARCHAR(256),
     place_city_en VARCHAR(256),
     place_date_founded DATE,
+    place_date_closed DATE,
     place_description TEXT,
-    place_promo_picture VARCHAR(256),
-    place_date_added DATE DEFAULT CURRENT_DATE,
-    place_active BOOLEAN DEFAULT TRUE
+    place_date_added DATE DEFAULT CURRENT_DATE
+    -- place_active BOOLEAN DEFAULT TRUE
     );
 
 
 CREATE TABLE events (
     event_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     place_id BIGINT REFERENCES places(place_id),
-    user_id BIGINT REFERENCES users(user_id),
+    user_added_id BIGINT REFERENCES users(user_id),
+    event_main_picture_id BIGINT REFERENCES main_pictures(main_picture_id),
 
     event_name VARCHAR(512) NOT NULL,
     event_name_en VARCHAR(512),
@@ -81,7 +108,6 @@ CREATE TABLE events (
     event_date DATE,
     event_date_added DATE DEFAULT CURRENT_DATE,
     event_status VARCHAR(32) DEFAULT 'COMPLETED',
-    event_promo_picture VARCHAR(256)
 );
 
 
@@ -98,14 +124,16 @@ CREATE TABLE shows (
     event_id BIGINT REFERENCES events(event_id),
     user_added_id BIGINT REFERENCES users(user_id),
     comedian_id BIGINT NOT NULL REFERENCES comedians(comedian_id),
-    country_id INTEGER REFERENCES countries(country_id),
-    language_id INTEGER NOT NULL REFERENCES languages(language_id),
+    -- country_id INTEGER REFERENCES countries(country_id),
+    language_id INTEGER REFERENCES languages(language_id),
     place_id BIGINT REFERENCES places(place_id),
+    show_main_picture_id BIGINT REFERENCES main_pictures(main_picture_id),
+
 
     show_date DATE,
-    show_name VARCHAR(256),
+    show_name NOT NULL VARCHAR(256),
+    show_name_en VARCHAR(256),
     show_description TEXT,
-    show_poster VARCHAR(256),
     show_date_added DATE DEFAULT CURRENT_DATE
     );
 
@@ -176,18 +204,6 @@ CREATE TABLE resource_types (
     resource_type_name VARCHAR(32) DEFAULT 'WEB_SITE'
 );
 
-CREATE TABLE pictures (
-    picture_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-
-    user_id BIGINT REFERENCES users(user_id),
-    comedian_id BIGINT REFERENCES comedians(comedian_id),
-    place_id BIGINT REFERENCES places(place_id),
-    show_id BIGINT REFERENCES shows(show_id),
-    event_id BIGINT REFERENCES events(event_id),
-
-    picture_path VARCHAR(256) NOT NULL,
-    user_added_id BIGINT
-);
 
 CREATE TABLE resources (
     resource_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -225,4 +241,20 @@ CREATE TABLE users_roles (
     CONSTRAINT users_roles_pkey PRIMARY KEY (user_id, role_id)
 );
 
+
+CREATE TABLE images (
+    image_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    filename VARCHAR(256) NOT NULL,
+    destination VARCHAR(256) NOT NULL,
+    encoding VARCHAR(32),
+    mimetype VARCHAR(64),
+    size INT CHECK (size > 0 AND 5000000 > size),
+    user_added_id BIGINT REFERENCES users(user_id),
+
+    user_id BIGINT REFERENCES users(user_id),
+    comedian_id BIGINT REFERENCES comedians(comedian_id),
+    place_id BIGINT REFERENCES places(place_id),
+    show_id BIGINT REFERENCES shows(show_id),
+    event_id BIGINT REFERENCES events(event_id)
+);
 

@@ -1,8 +1,10 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { Column, ColumnId, DefaultQueryParams, OrderValues, SQLFunctionName, StatusCode } from "../const";
-import { checkTitles, getDataFromSQL, getDataFromSQLWithTitles, getTitlesQuery, insertView } from "../utils/sql-utils";
-import { TitlesDataType } from "../types";
+import { Column, ColumnId, DefaultQueryParams, StatusCode, EventStatus, ImageType } from "../const";
+import {  getDataFromSQL,  getDataInsertQueryStr, getTitlesQuery, insertView } from "../utils/sql-utils";
+import { ImageFile, SimpleDict, TitlesDataType } from "../types";
+import { imageService } from "../service/image-service";
+import { ApiError } from "../custom-errors/api-error";
 
 const EventOrder = {
     totalViews: 'total_views',
@@ -11,7 +13,7 @@ const EventOrder = {
     upcoming : 'upcoming '
 }
 
-const {Limit, Offset, EventStatus} = DefaultQueryParams;
+const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
 
 
 class EventsController {
@@ -123,7 +125,7 @@ class EventsController {
     async getEventsByColumnId(req: Request, res: Response) {
         try {
             const {type, id} = req.params;
-            const {year = null, limit = Limit , offset = Offset, status = EventStatus, test} = req.query;
+            const {year = null, limit = Limit , offset = Offset, status = EventStatusAll, test} = req.query;
             const columnId: string = ColumnId[type as string] || ColumnId.comedians;
 
             const where = `
@@ -162,8 +164,8 @@ class EventsController {
                 }
             )
 
-            const data = getDataFromSQLWithTitles(result);
-            return checkTitles(data, res);
+            const data = getDataFromSQL(result, 'events');
+            return res.status(200).json({data});
    
         } catch(err) {
             console.log(err)
@@ -171,8 +173,38 @@ class EventsController {
         }
     }
 
+    async addEvent (req: Request, res: Response ) {
 
+        try {
+            const {body} = req;
+            const dir = req.query.dir as string;
+            console.log({dir})
+            const file = req.file as ImageFile;
+            const event_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
+            // HARDCODE user_added_id = 1 !!!   + RENAME user_id -> user_added_id
+            const {user_id = '1', event_status, place_id, event_date, event_name, event_name_en, event_description} = body as SimpleDict;
+            const fields = [{event_status}, {user_id}, {event_name}, {event_name_en}, {place_id}, {event_date}, {event_description}] as SimpleDict[];
+            const allFields = [...fields, {event_main_picture_id}]
 
+            const sqlQuery = getDataInsertQueryStr(allFields, dir)
+
+            
+            const result = await sequelize.query(sqlQuery, {
+                // HARDCODE user_added_id = 1 !!! + RENAME user_id -> user_added_id
+                replacements: {...body, event_main_picture_id, user_id: '1'}, 
+                type: "INSERT"
+            })
+
+            console.log({file, result})
+
+            return res.status(StatusCode.Added).json(result)
+
+        
+        } catch (err) {
+            const {message} = err;
+            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
+        } 
+    }
 }
 
 

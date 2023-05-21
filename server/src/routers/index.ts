@@ -7,6 +7,8 @@ import { placesRouter } from './places-router';
 import { showsRouter } from './shows-router';
 import { subRouter } from './sub-routers';
 import { userRouter } from './users-router';
+import { imagesRouter } from './images-router';
+import { formDataRouter } from './form-data-router';
 
 const router =  Router();
 
@@ -18,6 +20,9 @@ router.use('/shows', showsRouter);
 router.use('/places', placesRouter);
 router.use('/events', eventsRouter);
 router.use('/pictures', pictureRouter);
+router.use('/images', imagesRouter);
+router.use('/form-data', formDataRouter);
+
 router.use('/sub', subRouter)
 
 

@@ -189,7 +189,7 @@ class UserService {
         const user = await sequelize.query(
             `
             SELECT 
-            user_id, user_email, user_nik, user_password, user_avatar, user_activated,
+            user_id, user_email, user_nik, user_password, user_avatar_id, user_activated,
             JSON_AGG(role_name) as roles
             FROM users
             LEFT JOIN users_roles USING(user_id)
@@ -270,7 +270,7 @@ class UserService {
         const users = await sequelize.query(
             `
             SELECT 
-            user_id, user_email, user_nik, user_password, user_avatar, user_activated,
+            user_id, user_email, user_nik, user_password, user_avatar_id, user_activated,
             JSON_AGG(role_name) as roles
             FROM users
             LEFT JOIN users_roles USING(user_id)
@@ -345,7 +345,7 @@ class UserService {
         const result = await sequelize.query(
             `
             SELECT
-            user_id, user_nik, user_email, user_avatar, user_activated, user_date_birth,
+            user_id, user_nik, user_email, user_avatar_id, user_activated, user_date_birth,
             country_id, country_name,
             JSON_AGG ( role_name ) AS roles
             FROM users
@@ -404,7 +404,7 @@ class UserService {
         const result = await sequelize.query(
             `
             SELECT 
-            user_id, user_nik, user_email, user_avatar, user_activated, user_date_birth,
+            user_id, user_nik, user_email, user_avatar_id, user_activated, user_date_birth,
             country_id, country_name,
             JSON_AGG ( role_name ) AS roles
             FROM users

@@ -1,6 +1,7 @@
+import {ReactNode} from 'react'
 import styled from 'styled-components';
 import { GridCardType } from '../../types/types';
-import { GridCard } from '../grid-card/grid-card';
+import { GridCard } from '../grid-card/grid-card1';
 
 export const CardContainerUl = styled.ul`
   width: 100%;
@@ -21,12 +22,16 @@ export const CardContainerUl = styled.ul`
   }
 `;
 
-export function CardContainer({ cards }: { cards: GridCardType[] }) {
-  const cardElements = cards
-  // без этого при переключении с page-card-filter-list  на  page-card-filter-list
-  // не выдает ошибку, потому что в  cards  становится {id: undefined, name: undefined ...}
-    .filter((item) => item.id)
-    .map((item) => <GridCard key={item.id} card={item} />);
+// export function CardContainer({ cards }: { cards: GridCardType[] }) {
+//   const cardElements = cards
+//     .filter((item) => item.id)
+//     .map((item) => <GridCard key={item.id} card={item} />);
 
-  return <CardContainerUl>{cardElements}</CardContainerUl>;
+//   return <CardContainerUl>{cardElements}</CardContainerUl>;
+// }
+
+
+
+export function CardContainer({children}: {children: ReactNode[]}) {
+  return <CardContainerUl>{children}</CardContainerUl>;
 }

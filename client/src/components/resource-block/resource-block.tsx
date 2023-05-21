@@ -16,19 +16,13 @@ export function ResourceItem({ item }: { item: ResourceType }) {
   );
 }
 
-export function ResourceBlock({
-  resources,
-}: {
-  resources: ResourceType[] | null;
-}) {
+export function ResourceBlock({resources}: {resources?: ResourceType[]}) {
   const resourceElements = resources
     ? resources
       .filter((item) => item.type !== ResourceName.Site)
       .map((item) => <ResourceItem key={item.id} item={item} />)
     : null;
-  const site = resources
-    ? resources.find((item) => item.type === ResourceName.Site)
-    : null;
+  const site = resources ? resources.find((item) => item.type === ResourceName.Site) : null;
 
   return (
     <Box>

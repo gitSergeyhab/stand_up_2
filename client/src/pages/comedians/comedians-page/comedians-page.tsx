@@ -1,26 +1,57 @@
-import { useLocation } from 'react-router-dom';
-import { CardContainer } from '../../../components/card-container/card-container';
-import { useGetAllComediansQuery } from '../../../store/comedians-api';
-import { adaptComediansToCard } from '../../../utils/adapters/card-adapters';
+import { useLocation } from "react-router-dom";
+import { CardContainer } from "../../../components/card-container/card-container";
+import { Filter } from "../../../components/filters/filter";
+import { GridCard, GridCardType } from "../../../components/grid-card/grid-card";
+import { Pagination } from "../../../components/pagination/pagination";
+import { Titles } from "../../../components/titles/titles";
+import { ContentName, DefaultPageParam, FilterName } from "../../../const/const";
+import { useGetComediansQuery } from "../../../store/comedians-api";
+import { ComedianCardCC } from "../../../types/comedian-types";
+
+
+const getComedianCard = (data: ComedianCardCC): GridCardType=> ({
+  extId: '',
+  extName: data.countryName ? `${data.countryName} ${data.comedianCity ? `(${  data.comedianCity  })` : ''}` : '',
+  id: data.comedianId,
+  name: data.comedianNik,
+  picture: data.mainPicture,
+  type: ContentName.Comedians,
+  extType: ContentName.Countries,
+  viewsCount: data.viewsCount,
+})
+
+
 
 export function ComediansPage() {
+
   const { search } = useLocation();
 
-  const { data, isError, isLoading } = useGetAllComediansQuery(search);
+  const { isError, isLoading, data } = useGetComediansQuery(search)
 
-  if (isError || isLoading || !data) {
-    return <h2>Error</h2>;
+  if (isLoading) {
+    return <h2>Loading</h2>
   }
 
-  const cards = data.comedians.map(adaptComediansToCard);
-  const comedianElements = data.comedians.length ? (
-    <CardContainer cards={cards} />
-  ) : null;
+  if (isError || !data) {
+    return <h2>Error</h2>
+  }
+
+  const {count, data: comedians } = data;
+
+  const cards = comedians.map((item) => {
+    const card = getComedianCard(item)
+    return <GridCard key={item.comedianId} card={card} />
+  })
+
+
+  const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
   return (
     <>
-      <h1>Комики</h1>
-      {comedianElements}
+      <Titles native="Комики" en="Comedians" />
+      <Filter filters={[FilterName.Year]}/>
+      <CardContainer> {cards} </CardContainer>
+      {pagination}
     </>
-  );
+  )
 }

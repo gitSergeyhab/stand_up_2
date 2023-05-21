@@ -20,7 +20,7 @@ class UserController {
     }
 
     async login(req: Request, res: Response, next: NextFunction) {
-        const {email, password} = req.body;;
+        const {email, password} = req.body;
         const user = await userService.login({email, password});
         tokenService.setRefreshTokenToCookie({res, refreshToken: user.refreshToken});
         return res.status(StatusCode.Ok).json(user);

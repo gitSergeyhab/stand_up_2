@@ -6,10 +6,10 @@
 
 #### admin
 
-- comedian
-- show
-- event
-- place
+- comedian +
+- show +
+- event +
+- place +
 - pictures
 
 #### user
@@ -20,6 +20,20 @@
 
 - show
 - event
+
+### putRequest
+
+#### admin
+
+- comedian
+- show
+- event
+- place
+- pictures
+
+#### user
+
+- pictures
 
 ## CLIENT
 
@@ -72,11 +86,20 @@
 
 #### admin
 
+##### post
+
+- comedian +
+- show +
+- event +
+- place +
+- pictures
+
+##### put
+
 - comedian
 - show
 - event
 - place
-- pictures
 
 #### user
 

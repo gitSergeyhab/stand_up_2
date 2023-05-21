@@ -1,12 +1,7 @@
 import { FormEventHandler, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import {
-  Header,
-  RegButton,
-  RegForm,
-  RegInput,
-} from '../registration-page/registration-page-style';
+import { Header,RegButton,RegForm,RegInput } from '../registration-page/registration-page-style';
 import { UserErrorMessage } from '../../const/errors';
 import { UserErrorsBlock } from '../../components/user-errors-block/user-errors-block';
 
@@ -14,8 +9,8 @@ import { LogRegMessage } from '../../components/common/common';
 import { useLoginUserMutation } from '../../store/user-api';
 import { storageUtils } from '../../utils/storage-utils';
 import { setUser } from '../../store/actions';
-import { setAuthError } from '../../utils/error-utils';
 import { DataErrorType } from '../../types/types';
+import { setDataError } from '../../utils/error-utils';
 
 export function LoginPage() {
   const emailRef = useRef<HTMLInputElement>(null);
@@ -49,7 +44,7 @@ export function LoginPage() {
           storageUtils.setData(res);
           navigate('/');
         })
-        .catch((data: DataErrorType) => setAuthError({ setErrors, data }))
+        .catch((data: DataErrorType) => setDataError({ setErrors, data }))
         .finally(setAble);
     }
   };

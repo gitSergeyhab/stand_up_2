@@ -2,7 +2,7 @@ import { AboutTable, TR, TDR, TDL } from './about-block-style';
 
 type AboutRow = {
   point: string;
-  value: string;
+  value?: string;
 };
 
 export function AboutBlock({ about }: { about: AboutRow[] }) {

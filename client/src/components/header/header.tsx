@@ -96,9 +96,9 @@ export function Header() {
       </Icon>
 
       <UserContainer small>{user ? avatar : login}</UserContainer>
-      <p style={{ color: 'white', textAlign: 'center' }}>
+      {/* <p style={{ color: 'white', textAlign: 'center' }}>
         {user ? user.nik : 'No User'}
-      </p>
+      </p> */}
 
       <MenuMobile shown={shownMenu}>{navItems}</MenuMobile>
     </Nav>

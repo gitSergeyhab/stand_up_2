@@ -48,16 +48,19 @@ export const adaptShowsToCard: AdapterCardType<SubShowCC> = (data) => ({
 export const adaptComediansToCard: AdapterCardType<SubComedianCC> = (data) => ({
   type: ContentName.Comedians,
   id: data.comedianId,
-  name: data.comedianName,
-  nameEn: data.comedianNameEn,
-  picture: data.comedianAvatar,
+  nik: data.nik,
+  // name: data.comedianName,
+  // nameEn: data.comedianNameEn,
+  picture: data.picture,
 
   extType: ContentName.Countries,
   extId: data.countryId,
   extName: `${data.countryName || ''} ${
     data.comedianCity ? `(${data.comedianCity})` : ''
   }`,
-  extNameEn: data.comedianNameEn,
+  extNameEn: `${data.countryName || ''} ${
+    data.comedianCity ? `(${data.comedianCity})` : ''
+  }`,
 
   date: null,
   numberOfRate: data.numberOfRate ? +data.numberOfRate : null,

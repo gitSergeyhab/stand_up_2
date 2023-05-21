@@ -6,4 +6,6 @@ export const ErrorBlockUl = styled.ul`
   font-size: 15px;
   border: 2px solid #000000;
   padding-right: 15px;
+  width: 320px;
+
 `;

@@ -1,26 +1,27 @@
 import { MouseEventHandler } from 'react';
-// import { ImageList, ImageListItem } from '@mui/material';
-
-import { PictureType } from '../../types/types';
 import { Image, ImageList, ItemLi } from './img-list-style';
+import { SERVER_URL } from '../../const/const';
+import { ImageCC } from '../../store/images-api';
 
 type ImageItemType = {
-  item: PictureType;
+  item: ImageCC;
   handleImgClick: MouseEventHandler<HTMLImageElement>;
 };
 
 function ImgItem({ item, handleImgClick }: ImageItemType) {
-  return <Image onClick={handleImgClick} src={`/assets${item.src}`} />;
+  return <Image onClick={handleImgClick} src={`${SERVER_URL}${item.imagePath}`} />;
 }
 
 type ImgListProps = {
-  pictures: PictureType[];
-  handleImgClick: (pic: PictureType) => void;
+  pictures: ImageCC[];
+  handleImgClick: (pic: ImageCC) => void;
   info?: boolean;
 };
 export function ImgList({ pictures, info, handleImgClick }: ImgListProps) {
+
+  console.log({pictures})
   const imageElements = pictures.map((item) => (
-    <ItemLi info={info} key={item.id}>
+    <ItemLi info={info} key={item.imageId}>
       <ImgItem item={item} handleImgClick={() => handleImgClick(item)} />
     </ItemLi>
   ));

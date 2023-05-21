@@ -3,11 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { EventStatus, FilterName } from '../../const/const';
 import { QueryField } from '../../types/types';
-import {
-  createNewSearch,
-  deleteFieldFromSearch,
-  getFieldFromSearch,
-} from '../../utils/navigation-utils';
+import { createNewSearch, deleteFieldFromSearch, getFieldFromSearch } from '../../utils/navigation-utils';
 import { EventStatusFilter } from './event-status-filter/event-status-filter';
 import { FilterForm, SubmitButton } from './filter-style';
 import { YearFilter } from './year-filter/year-filter';
@@ -23,8 +19,7 @@ const DefaultFilterParam = {
  */
 
 const getFilterParams = (search: string) => {
-  const status = (getFieldFromSearch({ field: 'status', search }) as string)
-    || DefaultFilterParam.Status;
+  const status = (getFieldFromSearch({ field: 'status', search }) as string) || DefaultFilterParam.Status;
   const year = (getFieldFromSearch({ field: 'year', search }) as string) || null;
   return { status, year };
 };
@@ -50,9 +45,7 @@ export function Filter({ filters }: { filters: string[] }) {
       { name: 'year', value: valueYear },
     ].filter((item) => item.name && item.value) as unknown as QueryField[];
 
-    const yearSearch = isAnyYear
-      ? deleteFieldFromSearch({ field: 'year', search })
-      : search;
+    const yearSearch = isAnyYear ? deleteFieldFromSearch({ field: 'year', search }) : search;
 
     const newSearch = createNewSearch({
       search: yearSearch,
@@ -62,9 +55,7 @@ export function Filter({ filters }: { filters: string[] }) {
     navigate(`?${newSearch}`);
   };
 
-  const eventStatusFilter = filters.some(
-    (item) => item === FilterName.EventStatus,
-  ) ? (
+  const eventStatusFilter = filters.some((item) => item === FilterName.EventStatus) ? (
     <EventStatusFilter
       currentEventType={currentStatus}
       setEventType={setStatus}
@@ -84,7 +75,6 @@ export function Filter({ filters }: { filters: string[] }) {
     <FilterForm onSubmit={handleSubmit}>
       {eventStatusFilter}
       {yearFilter}
-
       <SubmitButton>искать</SubmitButton>
     </FilterForm>
   );

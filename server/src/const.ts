@@ -73,7 +73,7 @@ export const JoiMessageKey = {
   export const DefaultQueryParams = {
     Limit: 6,
     Offset: 0, 
-    EventStatus: EventStatus.All,
+    EventStatusAll: EventStatus.All,
   }
 
   export const TokenExpire = {
@@ -101,3 +101,9 @@ export const enum Role {
   User = 'USER',
   ProUser = 'PRO-USER'
 }
+
+export const  ImageType = {
+  images: 'images',
+  avatars: 'avatars',
+  main_pictures: 'main_pictures',
+} as const;

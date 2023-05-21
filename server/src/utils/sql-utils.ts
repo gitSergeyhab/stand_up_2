@@ -1,10 +1,11 @@
 import { Response } from "express";
 import { StatusCode, TableName } from "../const";
 import { sequelize } from "../sequelize";
-import { DataTypeRate, TitlesDataType } from "../types";
+import { DataTypeRate, SimpleDict, TitlesDataType } from "../types";
 
 
-export const getDataFromSQL = (result: [unknown[], unknown], field: string) => ({[field]: result.slice(0, result.length - 1), ...result[result.length - 1] as {count: string }});
+export const getDataFromSQL = (result: [unknown[], unknown], field: string) => 
+    ({[field]: result.slice(0, result.length - 1), ...result[result.length - 1] as {count: string }});
 
 type DataType = {
     data: unknown[];
@@ -24,15 +25,16 @@ export const getDataFromSQLWithTitles = (result: [unknown[], unknown]):{data: un
  * @returns респонсит ошибку 404 - когда нет заголовка; либо данные
  *  */    
 
-export const checkTitles = async (data: DataType | DataTypeRate, res: Response) => {
-    const native = data.titles?.native;
-    if (!native) {
+// export const checkTitles = async (data: DataType | DataTypeRate, res: Response) => {
+//     const native = data.titles?.native;
+//     if (!native) {
         
-        return res.status(StatusCode.NotFoundError).json({message: `not found this content with such id`})
-    }
-    return res.status(StatusCode.Ok).json(data);
-}
+//         return res.status(StatusCode.NotFoundError).json({message: `not found this content with such id`})
+//     }
+//     return res.status(StatusCode.Ok).json(data);
+// }
 
+export const getIdFromTable = (table: string) => table.slice(0, -1) + '_id';
 
 
 export const insertView = async(id: string, user_id: string, column: string) => {
@@ -57,13 +59,7 @@ export const getTitlesQuery = (type: string) => {
     const tableName = TableName[type] || TableName.comedians;
 
     switch (tableName) {
-        case TableName.comedians: return `
-            SELECT 
-            get_one_name_of_two(comedian_first_name, comedian_last_name) AS native,
-            get_one_name_of_two(comedian_first_name_en, comedian_last_name_en) AS en
-            FROM comedians
-            WHERE comedian_id = :id;
-        `;
+        case TableName.comedians: return getProtoTitleQuery('comedian_nik', 'comedian_nik_en', 'comedians', 'comedian_id');
         case TableName.events: return getProtoTitleQuery('event_name', 'event_name_en', 'events', 'event_id');
         case TableName.places: return getProtoTitleQuery('place_name', 'place_name_en', 'places', 'place_id');
         case TableName.shows: return getProtoTitleQuery('show_name', '', 'shows', 'show_id');
@@ -83,3 +79,43 @@ export const getNeedYears = (from: any, to: any) => {
 
     return {yearFrom, yearTo};
 }
+
+export const convertToDate = (date: string, pattern: string) => `to_date(:${date}, ${pattern})`;
+export const convertFormDataToDate = (date: string) => convertToDate(date, `'dd.MM.yyyy'`);
+
+const getFieldNames = (fields: SimpleDict[]) => {
+    const fieldNames = fields.filter((item) => {
+        const value = Object.entries(item)[0][1];
+        return value && typeof value === 'string';
+    }).map((item) => Object.entries(item)[0][0]);
+    return fieldNames;
+}
+
+const prepareFields = (fields: string[]) => {
+    return fields.map((item) => {
+        if (/_date/.test(item)) {
+            return convertFormDataToDate(item);
+        }
+        return `:${item}`;
+    })
+}
+
+/**
+ * sql строка для вставки нового show/place/...
+ * @param fields данные в формате [{show_name, date, ...}] кроме ..._main_picture_id
+ * @param dir папка для картинки, она же таблица
+ * @returns id
+ */
+export const getDataInsertQueryStr = (fields: SimpleDict[], dir: string) => {
+    const fieldNames = getFieldNames(fields);
+    const fieldsStr = fieldNames.join(', ');
+    const valuesStr = prepareFields(fieldNames).join(', ')
+    const idName = getIdFromTable(dir)
+    const sqlQuery = `
+    INSERT INTO ${dir} (${fieldsStr})
+    VALUES (${valuesStr})
+    RETURNING ${idName}
+    `
+    return sqlQuery
+}
+

@@ -43,8 +43,8 @@ function AVGLine({ avgRate/* , votes */ }: AVGLineProps) {
 }
 
 type RatingProps = {
-  avgRate: number | null;
-  votes: string | null;
+  avgRate?: number;
+  votes?: string;
   checkedValue?: number;
 };
 

@@ -7,7 +7,6 @@ import { ImgList } from '../../../components/img-list/img-list';
 import { MainPic } from '../../../components/main-pic/main-pic';
 import { Rating } from '../../../components/rating/rating';
 import { ResourceBlock } from '../../../components/resource-block/resource-block';
-import { PictureType } from '../../../types/types';
 import { Titles } from '../../../components/titles/titles';
 import { TopTabs } from '../../../components/top-tabs/top-tabs';
 import { ContentName } from '../../../const/const';
@@ -16,6 +15,7 @@ import { TabData } from '../../../const/data';
 import { useGetComedianByIdQuery } from '../../../store/comedians-api';
 import { ErrorPage } from '../../error-page/error-page';
 import { BigSpinner } from '../../../components/spinner/big-spinner';
+import { ImageCC } from '../../../store/images-api';
 
 export function ComedianPageInfo() {
   const { id } = useParams();
@@ -23,13 +23,13 @@ export function ComedianPageInfo() {
 
   const { isError, isLoading, data: comedian, error } = useGetComedianByIdQuery(id as string);
 
-  const [currentPic, setPic] = useState<PictureType | null>(null);
+  const [currentPic, setPic] = useState<ImageCC | null>(null);
 
   const [shownModal, setShownModal] = useState(false);
 
   const onCloseModal = () => setShownModal(false);
 
-  const handleClickImg = (pic: PictureType) => {
+  const handleClickImg = (pic: ImageCC) => {
     setShownModal(true);
     setPic(pic);
   };
@@ -58,7 +58,8 @@ export function ComedianPageInfo() {
     comedianFirstNameEn,
     pictures,
     resources,
-    comedianAvatar,
+    mainPicture,
+    comedianNik
   } = comedian;
 
   const about = [
@@ -102,14 +103,14 @@ export function ComedianPageInfo() {
   return (
     <>
       <Titles
-        native={`${comedianFirstName} ${comedianLastName || ''}`}
+        native={comedianNik}
         en={`${comedianFirstNameEn || ''} ${comedianLastNameEn || ''}`}
       />
 
       <TopTabs tabProps={tabProps} />
 
       <MainPic
-        src={comedianAvatar}
+        src={mainPicture}
         alt={`${comedianFirstName} ${comedianLastName || ''}`}
       />
 

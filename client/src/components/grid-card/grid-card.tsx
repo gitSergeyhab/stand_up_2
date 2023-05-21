@@ -1,18 +1,8 @@
-import { DefaultPath } from '../../const/const';
-import { GridCardType } from '../../types/types';
+import { ContentName, DefaultPath, SERVER_URL } from '../../const/const';
+// import { GridCardType } from '../../types/types';
 import { getFormatDate } from '../../utils/date-utils';
 import { roundToPoints } from '../../utils/utils';
-import {
-  Card,
-  CardContent,
-  CardLink,
-  DateCard,
-  ExtLink,
-  Img,
-  RateCard,
-  StatusCard,
-  TitleCard,
-} from './grid-card-style';
+import { Card, CardContent, CardLink, DateCard, ExtLink, ExtNoLink, Img, RateCard, StatusCard, TitleCard } from './grid-card-style';
 
 function Stars() {
   return (
@@ -29,37 +19,49 @@ function Stars() {
   );
 }
 
+export type GridCardType = {
+  picture?: string,
+  id: string,
+  extId?: string,
+  name: string,
+  extName: string,
+  type: ContentName,
+  extType?: ContentName,
+  avgRate?: number,
+  userRate?: number,
+  rateCount?: string,
+  viewsCount: string,
+  date?: string,
+  status?: string
+}
+
 export function GridCard({ card }: { card: GridCardType }) {
   const {
-    type,
-    id,
-    name,
-    date,
-    status,
+    id, name,
     picture,
-    extName,
-    extId,
-    extType,
-    numberOfRate,
-    rate,
+    extId, extName,
+    avgRate, userRate, viewsCount, rateCount,
+    type, extType,
+    date,  status
   } = card;
-  const image = picture ? `/assets${picture}` : DefaultPath.Any;
+  console.log({rateCount})
+  const image = picture ? `${SERVER_URL}${picture}` : DefaultPath.Any;
   const to = `/${type}/${id}/info`;
-  const toExt = extType ? `/${extType}/${extId || ''}/info` : '';
+  const toExt = extId ? `/${extType}/${extId || ''}/info` : '';
 
-  const titleElement = name ? <TitleCard> {name} </TitleCard> : null;
+  const titleElement = <TitleCard> {name} </TitleCard>
   const dateElement = date ? (
     <DateCard> {getFormatDate(date, 'DD.MM.YYYY')} </DateCard>
   ) : null;
   const statusElement = status ? <StatusCard> {status} </StatusCard> : null;
-  const rateElement = rate ? (
+  const rateElement = rateCount ? (
     <RateCard>
       {' '}
-      <Stars /> {roundToPoints(rate)} ({numberOfRate}){' '}
+      <Stars /> {roundToPoints(avgRate || 0)} ({rateCount}){' '}
     </RateCard>
   ) : null;
 
-  const extLink = extId ? <ExtLink to={toExt}>{extName}</ExtLink> : null;
+  const extLink = toExt ? <ExtLink to={toExt}>{extName}</ExtLink> : <ExtNoLink>{extName}</ExtNoLink>;
 
   return (
     <Card>

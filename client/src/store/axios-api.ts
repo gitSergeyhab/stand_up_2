@@ -5,8 +5,9 @@ import { adaptLoginUserDataToClient } from '../utils/adapters/user-adapters';
 import { storageUtils } from '../utils/storage-utils';
 import { setUser } from './actions';
 import { store } from './store';
+import { SERVER_URL } from '../const/const';
 
-export const BASE_URL = 'http://localhost:5000/api/users';
+export const BASE_URL = `${SERVER_URL}api/users`;
 const TIMEOUT = 5000;
 
 export const getRefresh = async () => {

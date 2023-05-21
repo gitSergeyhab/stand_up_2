@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { ColumnId, StatusCode } from "../const";
 import { sequelize } from "../sequelize";
 import { RateResult } from "../types";
-import { checkTitles, getTitlesQuery } from "../utils/sql-utils";
 
 
 
@@ -67,7 +66,6 @@ class RatingController {
                 FROM ${rateTable}
                 ${where};
 
-                ${getTitlesQuery(type)}
                 `,
                 {
                     replacements: {id, rate}, 
@@ -76,7 +74,7 @@ class RatingController {
             );
 
             const data = getData(result);
-            return checkTitles(data, res);
+            return res.status(StatusCode.Ok).json({data})
 
         } catch (err) {
             return res.status(StatusCode.Ok).json({message: 'Error getRatings'})

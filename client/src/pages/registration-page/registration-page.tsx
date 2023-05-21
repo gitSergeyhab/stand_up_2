@@ -9,7 +9,7 @@ import {
 import { useRegisterUserMutation } from '../../store/user-api';
 import { UserErrorsBlock } from '../../components/user-errors-block/user-errors-block';
 import { DataErrorType } from '../../types/types';
-import { getErrorMessages, setAuthError } from '../../utils/error-utils';
+import { getErrorMessages, setDataError } from '../../utils/error-utils';
 
 export function RegistrationPage() {
   const [registration] = useRegisterUserMutation();
@@ -36,12 +36,7 @@ export function RegistrationPage() {
     const password = passwordRef.current?.value;
     const passwordRepeat = passwordRepeatRef.current?.value;
 
-    const errorMessages = getErrorMessages({
-      nik,
-      email,
-      password,
-      passwordRepeat,
-    });
+    const errorMessages = getErrorMessages({ nik, email, password, passwordRepeat });
     if (errorMessages.length) {
       setErrors(errorMessages);
       setAble();
@@ -51,7 +46,7 @@ export function RegistrationPage() {
         registration({ email, nik, password, passwordRepeat })
           .unwrap()
           .then(onSuccessReg)
-          .catch((data: DataErrorType) => setAuthError({ setErrors, data }))
+          .catch((data: DataErrorType) => setDataError({ setErrors, data }))
           .finally(setAble);
       }
     }

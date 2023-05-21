@@ -41,7 +41,13 @@ export function DropUserMenu({ user }: DropUserMenuProps) {
     </UserMenuLi>
   );
 
+  const adminPanel = (
+    <UserMenuLi key="admin">
+      <UserMenuLink to="/admin">админ панель</UserMenuLink>
+    </UserMenuLi>
+  );
+
   return (
-    <UserMenuUl>{user ? [userMenuElement, settings, exit] : null}</UserMenuUl>
+    <UserMenuUl>{user ? [userMenuElement, settings, adminPanel, exit] : null}</UserMenuUl>
   );
 }

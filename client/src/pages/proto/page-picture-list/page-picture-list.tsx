@@ -5,33 +5,31 @@ import { ImgList } from '../../../components/img-list/img-list';
 import { BigSpinner } from '../../../components/spinner/big-spinner';
 import { Titles } from '../../../components/titles/titles';
 import { TopTabs } from '../../../components/top-tabs/top-tabs';
-import { useGetPicturesQuery } from '../../../store/sub-api';
-import { PictureType } from '../../../types/types';
 import { getTypes } from '../../../utils/utils';
 import { ErrorPage } from '../../error-page/error-page';
+import { ImageCC, useGetImagesQuery } from '../../../store/images-api';
 
 export function PagePictureList() {
   const { id } = useParams();
 
-  const { pathname, search } = useLocation();
+  const { pathname  } = useLocation();
+  const { isError, isLoading, data: res, error } = useGetImagesQuery(pathname);
 
-  const [currentPic, setPic] = useState<PictureType | null>(null);
+  console.log({res})
+
+
+  const [currentPic, setPic] = useState<ImageCC | null>(null);
 
   const [shownModal, setShownModal] = useState(false);
 
   const onCloseModal = () => setShownModal(false);
 
-  const handleClickImg = (pic: PictureType) => {
+  const handleClickImg = (pic: ImageCC) => {
     setShownModal(true);
     setPic(pic);
   };
 
-  const {
-    isError,
-    isLoading,
-    data: res,
-    error,
-  } = useGetPicturesQuery(pathname + search);
+
 
   if (isError) {
     return <ErrorPage error={error} />;
@@ -40,8 +38,9 @@ export function PagePictureList() {
   if (isLoading || !res) {
     return <BigSpinner />;
   }
-  // console.log(res);
+
   const { count, data, titles } = res;
+  console.log({res})
 
   const { mainType } = getTypes(pathname);
 

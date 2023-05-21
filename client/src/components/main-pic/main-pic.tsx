@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { DefaultPath } from '../../const/const';
+import { DefaultPath, SERVER_URL } from '../../const/const';
 
 export const MainPicSection = styled.section`
   display: flex;
@@ -12,11 +12,11 @@ export const MainPicImg = styled.img`
   box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.8);
 `;
 
-export function MainPic({ src, alt }: { src: string | null; alt: string }) {
+export function MainPic({ src, alt }: { src?: string; alt: string }) {
   return (
     <MainPicSection>
       <MainPicImg
-        src={src ? `/assets${src}` : DefaultPath.ComedianAvatar}
+        src={src ? `${SERVER_URL}${src}` : DefaultPath.ComedianAvatar}
         alt={alt}
       />
     </MainPicSection>

@@ -5,7 +5,7 @@ export const TabData = {
     { name: 'Информация', path: 'info' }, // b +one/
     { name: 'Выступления', path: 'shows' }, // b +all/
     { name: 'События', path: 'events' }, // b +all/
-    { name: 'Фото', path: 'pictures' }, //
+    { name: 'Фото', path: 'images' }, //
     { name: 'Оценки', path: 'ratings' }, //
   ],
   [ContentName.Events]: [
@@ -17,19 +17,19 @@ export const TabData = {
     { name: 'Информация', path: 'info' },
     { name: 'Выступления', path: 'shows' }, // b +all
     { name: 'События', path: 'events' }, // b +all
-    { name: 'Фото', path: 'pictures' },
+    { name: 'Фото', path: 'images' },
   ],
   [ContentName.Shows]: [
     { name: 'Информация', path: 'info' },
     { name: 'Видео', path: 'movies' },
-    { name: 'Фото', path: 'pictures' },
+    { name: 'Фото', path: 'images' },
     { name: 'Оценки', path: 'ratings' },
     { name: 'Отзывы', path: 'reviews' },
   ],
 
   [ContentName.Users]: [
     { name: 'Информация', path: 'info' },
-    { name: 'Фото', path: 'pictures' },
+    { name: 'Фото', path: 'images' },
     { name: 'Оценки', path: 'ratings' },
     { name: 'Отзывы', path: 'reviews' },
   ],
@@ -42,7 +42,7 @@ export const TabData = {
 //     {name: 'Информация', path: 'info' }, // b +one/
 //     {name: 'Выступления', path: 'shows' }, // b +all/
 //     {name: 'События', path: 'events' }, // b +all/
-//     {name: 'Фото', path: 'pictures' }, //
+//     {name: 'Фото', path: 'images' }, //
 //     {name: 'Оценки', path: 'ratings' }, //
 //   ],
 //   [ContentName.events]: [
@@ -54,25 +54,25 @@ export const TabData = {
 //     {name: 'Информация', path: 'info' },
 //     {name: 'Выступления', path: 'shows' }, // b +all
 //     {name: 'События', path: 'events' }, // b +all
-//     {name: 'Фото', path: 'pictures' },
+//     {name: 'Фото', path: 'images' },
 
 //   ],
 //   [ContentName.shows]: [
 //     {name: 'Информация', path: 'info' },
 //     {name: 'Видео', path: 'movies' },
-//     {name: 'Фото', path: 'pictures' },
+//     {name: 'Фото', path: 'images' },
 //     {name: 'Оценки', path: 'ratings' },
 //     {name: 'Отзывы', path: 'reviews' },
 //   ],
 
 //   [ContentName.users]: [
 //     {name: 'Информация', path: 'info' },
-//     {name: 'Фото', path: 'pictures' },
+//     {name: 'Фото', path: 'images' },
 //     {name: 'Оценки', path: 'ratings' },
 //     {name: 'Отзывы', path: 'reviews' },
 //   ],
 //   [ContentName.countries]: [{name: 'Информация', path: 'info' }],
-//   [ContentName.pictures]: [{name: 'Информация', path: 'info' }]
+//   [ContentName.images]: [{name: 'Информация', path: 'info' }]
 // };
 
 export type TabDataType = typeof TabData;

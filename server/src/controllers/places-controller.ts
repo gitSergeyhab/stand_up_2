@@ -1,7 +1,10 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId } from "../const";
-import { getDataFromSQL, insertView } from "../utils/sql-utils";
+import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId, ImageType } from "../const";
+import { getDataFromSQL, getDataInsertQueryStr, insertView } from "../utils/sql-utils";
+import { ImageFile, SimpleDict } from "../types";
+import { imageService } from "../service/image-service";
+import { ApiError } from "../custom-errors/api-error";
 
 
 const PlaceOrder = {
@@ -141,8 +144,52 @@ class PlacesController {
         }
     }
 
+    async addPlace (req: Request, res: Response ) {
+        try {
+            const {body} = req;
+            const dir = req.query.dir as string;
+            console.log({dir})
+            const file = req.file as ImageFile;
+            const place_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
+            // HARDCODE user_added_id = 1 !!!   
+            const {
+                user_added_id = '1', country_id, 
+                place_name, place_name_en, 
+                place_city, place_city_en,
+                place_date_founded, place_date_closed,
+                place_description
 
 
+            } = body as SimpleDict;
+            const fields = [
+                {user_added_id}, {country_id}, 
+                {place_name}, {place_name_en}, 
+                {place_city}, {place_city_en},
+                {place_date_founded}, {place_date_closed}, 
+                {place_description}
+
+            ] as SimpleDict[];
+            const allFields = [...fields, {place_main_picture_id}]
+
+            const sqlQuery = getDataInsertQueryStr(allFields, dir)
+
+            
+            const result = await sequelize.query(sqlQuery, {
+                // HARDCODE user_added_id = 1 !!! 
+                replacements: {...body, place_main_picture_id, user_added_id: '1'}, 
+                type: "INSERT"
+            })
+
+            console.log({file, result})
+
+            return res.status(StatusCode.Added).json(result)
+
+        
+        } catch (err) {
+            const {message} = err;
+            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
+        } 
+    }
 }
 
 
