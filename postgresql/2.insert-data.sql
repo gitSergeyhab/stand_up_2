@@ -167,7 +167,7 @@ INSERT INTO resources(resource_type_id, comedian_id, resource_href) VALUES
 (3, 3, 'https://YouTube.com/yt-3');
 
 
-INSERT INTO events (place_id, user_id, event_name, event_description, event_date, event_status, event_main_picture_id ) VALUES
+INSERT INTO events (place_id, user_added_id, event_name, event_description, event_date, event_status, event_main_picture_id ) VALUES
 (1,1, 'First Event', 'First Event event_discription', '01.01.2023', 'planned', 9),
 (2,1, 'Second Event', 'Second Second Event event_discription', '01.02.2023', 'planned', 10),
 (2,1, 'Third Event', 'Third Third Third Event event_discription', '01.01.2022', 'ended', 11),
@@ -175,7 +175,7 @@ INSERT INTO events (place_id, user_id, event_name, event_description, event_date
 (3,3, 'Event 55', '55 55 55 55 event_discription', '01.03.2022', 'canceled', 13),
 (3,3, 'Event 666', '666 666 666', '04.01.2023', 'planned', 14);
 
-INSERT INTO events (place_id, user_id, event_name, event_description, event_date, event_status, event_main_picture_id ) VALUES
+INSERT INTO events (place_id, user_added_id, event_name, event_description, event_date, event_status, event_main_picture_id ) VALUES
 (1,1, 'First Event1', 'First Event event_discription', '01.01.2021', 'ended', 15),
 (2,1, 'Second Event1', 'Second Second Event event_discription', '01.02.2021', 'ended', 16),
 (2,1, 'Third Event1', 'Third Third Third Event event_discription', '01.01.2020', 'ended', 17),
@@ -184,7 +184,7 @@ INSERT INTO events (place_id, user_id, event_name, event_description, event_date
 (3,3, 'Event 6661', '666 666 666', '04.01.2018', 'ended', 20);
 
 
-INSERT INTO events (place_id, user_id, event_name, event_description, event_date, event_status, event_main_picture_id ) VALUES
+INSERT INTO events (place_id, user_added_id, event_name, event_description, event_date, event_status, event_main_picture_id ) VALUES
 (4,1, 'First Event --11', 'First Event event_discription--11', '03.01.2023', 'planned', 21),
 (3,1, 'Second Event --12', 'Second Second Event event_discription', '06.06.2023', 'planned', 22),
 (2,1, 'Third Event --13', 'Third Third Third Event event_discription', '01.09.2024', 'planned', 23),
@@ -192,7 +192,7 @@ INSERT INTO events (place_id, user_id, event_name, event_description, event_date
 (3,2, 'Event --155', '55 55 55 55 event_discription', '01.03.2024', 'planned', 25),
 (3,2, 'Event --1666', '666 666 666', '04.01.2025', 'planned', 26);
 
-INSERT INTO events (place_id, user_id, event_name, event_description, event_date, event_status, event_main_picture_id ) VALUES
+INSERT INTO events (place_id, user_added_id, event_name, event_description, event_date, event_status, event_main_picture_id ) VALUES
 (1,1, 'First Event1', 'First Event event_discription', '01.05.2021', 'ended', 27),
 (2,1, 'Second Event1', 'Second Second Event event_discription', '01.04.2020', 'ended', 28),
 (2,1, 'Third Event1', 'Third Third Third Event event_discription', '01.11.2019', 'ended', 29),
@@ -202,20 +202,20 @@ INSERT INTO events (place_id, user_id, event_name, event_description, event_date
 
 
 INSERT INTO shows(
-	comedian_id, country_id, language_id, place_id, show_date, user_added_id, 
+	comedian_id, language_id, place_id, show_date, user_added_id, 
 	show_name, show_description, show_main_picture_id, event_id
 ) VALUES 
-(1, 1, 8, 1, '2022-01-01', 1, 
+(1, 8, 1, '2022-01-01', 1, 
  'Спасибо, у меня всё #10', 
  'Десятый выпуск шоу «Спасибо, у меня всё» из Варшавы', 
  33, 1),
 
-(1, 3, 8, 1, '2022-01-21', 2, 
+(1, 8, 1, '2022-01-21', 2, 
  'Меня ищет КГБ', 
  'А у вас как дела, ребята ?) ', 
  34, 2),
  
-(4, 3, 8, 1, '2021-06-06', 2, 
+(4, 8, 1, '2021-06-06', 2, 
  'Дальше сам (Stand Up 2021)', 
  'Съёмка и монтаж: Ваня, Кристина и Женя (http://podcastodindoma.ru)
 
@@ -244,7 +244,7 @@ INSERT INTO shows(
 С другой стороны — а на что ты жалуешься, Денис? Ты год занимался любимым делом, увидел очень красивую Россию в весенне-летний период, выступил в Украине, США и Австрии. На тебя приходили потрясающие умные, красивые и добрые люди. Да, их может быть меньше, чем у комиков с ТНТ, но они же классные. Хватит их обесценивать своими жалобами. Всё классно. И начни уже сочинять описания видео после приёма психотерапевта, а не до', 
  35, NULL),
  
- (2, 2, 8, 1, '2022-01-23', 2, 
+ (2, 8, 1, '2022-01-23', 2, 
  'Скоро будет', 
  'или не будет', 
  36, NULL);

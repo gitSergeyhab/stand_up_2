@@ -92,7 +92,6 @@ CREATE TABLE places (
     place_date_closed DATE,
     place_description TEXT,
     place_date_added DATE DEFAULT CURRENT_DATE
-    -- place_active BOOLEAN DEFAULT TRUE
     );
 
 
@@ -107,7 +106,7 @@ CREATE TABLE events (
     event_description TEXT,
     event_date DATE,
     event_date_added DATE DEFAULT CURRENT_DATE,
-    event_status VARCHAR(32) DEFAULT 'COMPLETED',
+    event_status VARCHAR(32) DEFAULT 'completed'
 );
 
 
@@ -124,14 +123,13 @@ CREATE TABLE shows (
     event_id BIGINT REFERENCES events(event_id),
     user_added_id BIGINT REFERENCES users(user_id),
     comedian_id BIGINT NOT NULL REFERENCES comedians(comedian_id),
-    -- country_id INTEGER REFERENCES countries(country_id),
     language_id INTEGER REFERENCES languages(language_id),
     place_id BIGINT REFERENCES places(place_id),
     show_main_picture_id BIGINT REFERENCES main_pictures(main_picture_id),
 
 
     show_date DATE,
-    show_name NOT NULL VARCHAR(256),
+    show_name VARCHAR(256) NOT NULL,
     show_name_en VARCHAR(256),
     show_description TEXT,
     show_date_added DATE DEFAULT CURRENT_DATE
