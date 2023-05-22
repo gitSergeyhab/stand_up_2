@@ -1,6 +1,6 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId, ImageType } from "../const";
+import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId, ImageType } from "../const/const";
 import { getDataFromSQL, getDataInsertQueryStr, insertView } from "../utils/sql-utils";
 import { ImageFile, SimpleDict } from "../types";
 import { imageService } from "../service/image-service";

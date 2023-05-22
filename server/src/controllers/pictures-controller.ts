@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ColumnId, StatusCode } from "../const";
+import { ColumnId, StatusCode } from "../const/const";
 import { sequelize } from "../sequelize";
 import { getDataFromSQL, getDataFromSQLWithTitles, getTitlesQuery } from "../utils/sql-utils";
 

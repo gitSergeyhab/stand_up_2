@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { TokenExpire, TokenType } from '../const';
+import { TokenExpire, TokenType } from '../const/const';
 import { ApiError } from '../custom-errors/api-error';
 import { sequelize } from '../sequelize';
 import { UserDTO_SC, UserPseudoType } from '../types';

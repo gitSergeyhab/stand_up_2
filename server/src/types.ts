@@ -1,5 +1,5 @@
 import { ParsedQs } from 'qs';
-import { Role } from './const';
+import { Role } from './const/const';
 
 export type TitlesDataType = {native: string, en: string | null}
 

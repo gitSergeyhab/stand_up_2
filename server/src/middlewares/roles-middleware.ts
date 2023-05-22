@@ -1,4 +1,4 @@
-import { Role, TokenType } from "../const";
+import { Role, TokenType } from "../const/const";
 import { Request, Response, NextFunction } from "express";
 import { tokenService } from "../service/token-service";
 import { ApiError } from "../custom-errors/api-error";

@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { StatusCode, TableName } from "../const";
+import { StatusCode, TableName } from "../const/const";
 import { sequelize } from "../sequelize";
 import { DataTypeRate, SimpleDict, TitlesDataType } from "../types";
 
@@ -118,4 +118,7 @@ export const getDataInsertQueryStr = (fields: SimpleDict[], dir: string) => {
     `
     return sqlQuery
 }
+
+
+
 

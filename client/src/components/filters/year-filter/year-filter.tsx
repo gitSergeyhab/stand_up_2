@@ -1,41 +1,60 @@
 import { RefObject } from 'react';
+import { YearAnyInput, YearFieldSet, YearInput, YearLabel } from './year-filter-style';
+import { getDefaultYears } from '../../../utils/date-utils';
+import { FilterName } from '../../../const/const';
+import { FilterPropsType } from '../../../types/firler-type';
 
-import { getCurrentYear } from '../../../utils/date-utils';
-import {
-  YearAnyInput,
-  YearFieldSet,
-  YearInput,
-  YearLabel,
-} from './year-filter-style';
+
+
 
 type YearFilterProps = {
-  yearRef: RefObject<HTMLInputElement>;
+  yearFromRef: RefObject<HTMLInputElement>;
+  yearToRef: RefObject<HTMLInputElement>;
   isAnyDate: boolean;
   setAnyDate: (isAnyDate: boolean) => void;
   year: string | null;
+  filters: FilterPropsType[]
+
 };
 
-export function YearFilter({
-  yearRef,
-  isAnyDate,
-  setAnyDate,
-  year,
-}: YearFilterProps) {
-  const currentYear = year ? +year : getCurrentYear();
-  const maxYear = currentYear + 3;
+export function YearFilter({ yearFromRef, yearToRef, isAnyDate, setAnyDate, year, filters }: YearFilterProps) {
+
+  const filterIndex = filters.findIndex((item) => item.name === FilterName.Year)
+  console.log({filters, filterIndex})
+
+  if (filterIndex === -1) {
+    return null;
+  }
+
+  const title = filters[filterIndex].title || 'Годы';
+
+  const {currentYear, maxYear, minYear} = getDefaultYears(year)
 
   const handleChange = () => setAnyDate(!isAnyDate);
 
   return (
     <YearFieldSet>
-      <legend> Год</legend>
+      <legend> {title} </legend>
       <YearLabel>
         <YearInput
-          ref={yearRef}
-          min={1900}
+          ref={yearFromRef}
+          min={minYear}
+          max={maxYear}
+          defaultValue={minYear}
+          disabled={isAnyDate}
+          placeholder='c'
+          title='c'
+          name='year_from'
+        />
+        <YearInput
+          ref={yearToRef}
+          min={minYear}
           max={maxYear}
           defaultValue={currentYear}
           disabled={isAnyDate}
+          placeholder='по'
+          title='по'
+          name='year_to'
         />
       </YearLabel>
       <YearLabel>

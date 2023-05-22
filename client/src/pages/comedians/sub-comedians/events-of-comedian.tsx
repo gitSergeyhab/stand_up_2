@@ -6,8 +6,9 @@ import { GridCard, GridCardType } from "../../../components/grid-card/grid-card"
 import { CardContainer } from "../../../components/card-container/card-container";
 import { TopTabs } from "../../../components/top-tabs/top-tabs";
 import { Titles } from "../../../components/titles/titles";
-import { EventsOfComedianCardCC, useGetEventsOfComedianQuery } from "../../../store/events-api";
+import { useGetEventsOfComedianQuery } from "../../../store/events-api";
 import { Pagination } from "../../../components/pagination/pagination";
+import { EventsOfComedianCardCC } from "../../../types/event-types";
 
 
 
@@ -51,11 +52,13 @@ export function EventsOfComedian() {
 
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
+  const filters = [{name: FilterName.Year, title: 'Год события'}, {name: FilterName.EventStatus, title: 'статус события'}]
+
   return (
     <>
       <Titles native={comedianNik} en={comedianNikEn} />
       <TopTabs tabProps={tabProps} />
-      <Filter filters={[FilterName.Year, FilterName.EventStatus]}/>
+      <Filter filters={filters}/>
       <CardContainer> {cards} </CardContainer>
       {pagination}
     </>

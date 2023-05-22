@@ -1,12 +1,13 @@
 import { Filter } from "../../../components/filters/filter"
 import { ContentName, DefaultPageParam, FilterName } from "../../../const/const"
 import { useGetIdSearch } from "../../../hooks/use-get-id-search";
-import { ShowsOfComedianCardCC, useGetShowsOfComedianQuery } from "../../../store/shows-api"
+import {  useGetShowsOfComedianQuery } from "../../../store/shows-api"
 import { GridCard, GridCardType } from "../../../components/grid-card/grid-card";
 import { CardContainer } from "../../../components/card-container/card-container";
 import { TopTabs } from "../../../components/top-tabs/top-tabs";
 import { Titles } from "../../../components/titles/titles";
 import { Pagination } from "../../../components/pagination/pagination";
+import { ShowsOfComedianCardCC } from "../../../types/show-types";
 
 
 const getShowCard = (data: ShowsOfComedianCardCC): GridCardType => ({
@@ -47,7 +48,8 @@ export function ShowsOfComedian() {
 
   const tabProps = { id, type, pathname };
 
-  const { comedianNik, comedianNikEn } = titles
+  const { comedianNik, comedianNikEn } = titles;
+  const filters = [{name: FilterName.Year, title: 'Год выступления'}]
 
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
@@ -56,7 +58,7 @@ export function ShowsOfComedian() {
     <>
       <Titles native={comedianNik} en={comedianNikEn} />
       <TopTabs tabProps={tabProps} />
-      <Filter filters={[FilterName.Year]}/>
+      <Filter filters={filters}/>
       <CardContainer> {cards} </CardContainer>
       {pagination}
     </>

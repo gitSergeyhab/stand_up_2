@@ -28,9 +28,10 @@ export const getFieldFromSearch = ({ field, search, isArray }: GetFromUrlArgs) =
   return searchParams.get(field);
 };
 
-export const deleteFieldFromSearch = ({ field, search }: GetFromUrlArgs) => {
+type DeleteFromUrlArgs = { fields: string[]; search: string };
+export const deleteFieldFromSearch = ({ fields, search }: DeleteFromUrlArgs) => {
   const searchParams = new URLSearchParams(search);
-  searchParams.delete(field);
+  fields.forEach((field) => searchParams.delete(field));
   return searchParams.toString();
 };
 

@@ -1,4 +1,5 @@
 import { Query, YearsFromQuery } from "../types";
+import { convertFormDataToDate } from "./sql-utils";
 
 
 
@@ -20,3 +21,14 @@ export const collectWhere = (wheres: string[]) => {
     }
     return '';
 }
+
+/**
+ * возвращает query строку WHERE с переменными ":year_from" и ":year_to". в replacements обязательно указать ":year_from" и ":year_to"
+ * @param column колонка/поле года
+ * @returns 
+ */
+export const getBetweenYearsWhereStr = (column: string) =>   `
+    EXTRACT (YEAR FROM ${column}) >= :year_from
+    AND
+    EXTRACT (YEAR FROM ${column}) <= :year_to
+`

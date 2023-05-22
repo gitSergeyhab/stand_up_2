@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { StatusCode } from "../const";
+import { StatusCode } from "../const/const";
 import { ApiError } from "../custom-errors/api-error";
 
 export const errorMiddleware = (err: Error, req: Request, res: Response, next: NextFunction) => {

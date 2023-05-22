@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { TokenType } from "../const";
+import { TokenType } from "../const/const";
 import { ApiError } from "../custom-errors/api-error";
 import { tokenService } from "../service/token-service";
 import { UserPseudoType } from "../types";

@@ -1,7 +1,7 @@
-CREATE OR REPLACE FUNCTION insert_view (_col text, idx BIGINT, user_wached_idx BIGINT) 
+CREATE OR REPLACE FUNCTION insert_view (_col text, idx BIGINT, user_watched_idx BIGINT) 
 RETURNS void AS $$
 BEGIN
-	EXECUTE 'INSERT INTO views (' || quote_ident(_col) || ', user_wached_id) VALUES (' || idx || ', '|| user_wached_idx ||');';
+	EXECUTE 'INSERT INTO views (' || quote_ident(_col) || ', user_watched_id) VALUES (' || idx || ', '|| user_watched_idx ||');';
 END
 $$ LANGUAGE plpgsql;
 
@@ -18,7 +18,7 @@ CREATE TABLE views (
     place_id BIGINT REFERENCES places(place_id),
     comedian_id BIGINT REFERENCES comedians(comedian_id),
     event_id BIGINT REFERENCES events(event_id),
-    user_wached_id BIGINT REFERENCES users(user_id),
+    user_watched_id BIGINT REFERENCES users(user_id),
 
     view_date TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP
 )
@@ -36,7 +36,7 @@ RETURNS TABLE(
 ) AS $$
 	SELECT *
 	FROM views
-	WHERE user_wached_id = user_idx AND user_id IS NULL
+	WHERE user_watched_id = user_idx AND user_id IS NULL
 	ORDER BY view_date DESC
 	LIMIT lim
 $$ LANGUAGE SQL;

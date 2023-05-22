@@ -1,7 +1,7 @@
 import { useState, useRef, FormEventHandler } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { EventStatus, FilterName } from '../../const/const';
+import { EventStatus } from '../../const/const';
 import { QueryField } from '../../types/types';
 import { createNewSearch, deleteFieldFromSearch, getFieldFromSearch } from '../../utils/navigation-utils';
 import { EventStatusFilter } from './event-status-filter/event-status-filter';
@@ -24,28 +24,33 @@ const getFilterParams = (search: string) => {
   return { status, year };
 };
 
-export function Filter({ filters }: { filters: string[] }) {
+export function Filter({ filters }: { filters: { name: string, title?: string }[] }) {
   const navigate = useNavigate();
   const { search } = useLocation();
 
   const { status, year } = getFilterParams(search);
 
-  const yearRef = useRef<HTMLInputElement>(null);
+  const yearFromRef = useRef<HTMLInputElement>(null);
+  const yearToRef = useRef<HTMLInputElement>(null);
   const [currentStatus, setStatus] = useState(status);
   const [isAnyYear, setAnyYear] = useState(!year);
 
   const handleSubmit: FormEventHandler = (evt) => {
     evt.preventDefault();
 
-    const valueYearRef = yearRef.current?.value;
-    const valueYear = !isAnyYear && valueYearRef ? valueYearRef : null;
+    const valueYearFromRef = yearFromRef.current?.value;
+    const valueYearFrom = !isAnyYear && valueYearFromRef ? valueYearFromRef : null;
+    const valueYearToRef = yearToRef.current?.value;
+    const valueYearTo = !isAnyYear && valueYearToRef ? valueYearToRef : null;
+
 
     const fields = [
       { name: 'status', value: currentStatus },
-      { name: 'year', value: valueYear },
+      { name: 'year_from', value: valueYearFrom },
+      { name: 'year_to', value: valueYearTo },
     ].filter((item) => item.name && item.value) as unknown as QueryField[];
 
-    const yearSearch = isAnyYear ? deleteFieldFromSearch({ field: 'year', search }) : search;
+    const yearSearch = isAnyYear ? deleteFieldFromSearch({ fields: ['year_from', 'year_to'], search }) : search;
 
     const newSearch = createNewSearch({
       search: yearSearch,
@@ -55,21 +60,31 @@ export function Filter({ filters }: { filters: string[] }) {
     navigate(`?${newSearch}`);
   };
 
-  const eventStatusFilter = filters.some((item) => item === FilterName.EventStatus) ? (
-    <EventStatusFilter
+  const eventStatusFilter = <EventStatusFilter
       currentEventType={currentStatus}
       setEventType={setStatus}
+      filters={filters}
     />
-    ) : null;
 
-  const yearFilter = filters.some((item) => item === FilterName.Year) ? (
-    <YearFilter
+
+  const yearFilter = <YearFilter
+      filters={filters}
       isAnyDate={isAnyYear}
-      yearRef={yearRef}
+      yearFromRef={yearFromRef}
+      yearToRef={yearToRef}
       year={year}
       setAnyDate={setAnyYear}
-    />
-  ) : null;
+    />;
+
+  // const yearFilter = filters.some((item) => item === FilterName.Year) ? (
+  //   <YearFilter
+  //     isAnyDate={isAnyYear}
+  //     yearFromRef={yearFromRef}
+  //     yearToRef={yearToRef}
+  //     year={year}
+  //     setAnyDate={setAnyYear}
+  //   />
+  // ) : null;
 
   return (
     <FilterForm onSubmit={handleSubmit}>

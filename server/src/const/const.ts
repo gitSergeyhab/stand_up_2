@@ -107,3 +107,8 @@ export const  ImageType = {
   avatars: 'avatars',
   main_pictures: 'main_pictures',
 } as const;
+
+
+export const FilterYear = {
+  From: 1800,
+}

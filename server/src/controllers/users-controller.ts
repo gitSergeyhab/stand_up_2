@@ -1,6 +1,6 @@
 import { sequelize } from "../sequelize";
 import { Request, Response, NextFunction } from "express";
-import { OrderValues, StatusCode, SQLFunctionName } from "../const";
+import { OrderValues, StatusCode, SQLFunctionName } from "../const/const";
 import { crypt } from "../utils/bcrypt-utils";
 import { userSchema } from "../schemas/user-schema";
 import { userService } from "../service/user-service";

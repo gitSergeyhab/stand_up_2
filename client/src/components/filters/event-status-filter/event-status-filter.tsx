@@ -1,6 +1,7 @@
 import { ChangeEventHandler } from 'react';
-import { EventStatus } from '../../../const/const';
+import { EventStatus, FilterName } from '../../../const/const';
 import { EventStatusFieldSet } from './event-status-filter-style';
+import { FilterPropsType } from '../../../types/firler-type';
 
 const EventName: { [key: string]: string } = {
   [EventStatus.All]: 'Любые',
@@ -37,12 +38,18 @@ function OneEventType(props: OneEventTypeProps) {
 type EventStatusFilterProps = {
   currentEventType: string;
   setEventType: (type: string) => void;
+  filters: FilterPropsType[]
+
 };
 
-export function EventStatusFilter({
-  currentEventType,
-  setEventType,
-}: EventStatusFilterProps) {
+export function EventStatusFilter({ currentEventType, setEventType, filters }: EventStatusFilterProps) {
+
+  const filterIndex = filters.findIndex((item) => item.name === FilterName.EventStatus)
+  console.log({filters, filterIndex})
+
+  if (filterIndex === -1) {
+    return null;
+  }
   const handleChangeEventType: OnChange = (evt) => setEventType(evt.currentTarget.value);
 
   const eventTypeElements = Object.values(EventStatus).map((item) => (

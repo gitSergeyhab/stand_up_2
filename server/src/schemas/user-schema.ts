@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { JoiMessageKey } from "../const";
+import { JoiMessageKey } from "../const/const";
 
 const Message = {
     NikMin: `you need at least 3 characters in your Nik`,

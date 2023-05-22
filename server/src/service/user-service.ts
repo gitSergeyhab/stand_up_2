@@ -1,5 +1,5 @@
 import { ParsedQs } from 'qs';
-import { Role, TokenType } from "../const";
+import { Role, TokenType } from "../const/const";
 import { ApiError } from "../custom-errors/api-error";
 import { sequelize } from "../sequelize";
 import { UserPseudoType } from "../types";

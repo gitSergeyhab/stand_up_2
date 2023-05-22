@@ -44,12 +44,13 @@ export function ComediansPage() {
   })
 
 
+  const filters = [{name: FilterName.Year, title: 'Год рождения'}]
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
   return (
     <>
       <Titles native="Комики" en="Comedians" />
-      <Filter filters={[FilterName.Year]}/>
+      <Filter filters={filters}/>
       <CardContainer> {cards} </CardContainer>
       {pagination}
     </>

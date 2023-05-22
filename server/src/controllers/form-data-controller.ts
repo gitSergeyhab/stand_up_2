@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { sequelize } from "../sequelize";
-import { StatusCode } from "../const";
+import { StatusCode } from "../const/const";
 
 
 class FormDataController {

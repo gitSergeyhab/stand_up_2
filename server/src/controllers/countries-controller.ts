@@ -1,6 +1,6 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { StatusCode } from "../const";
+import { StatusCode } from "../const/const";
 
 const DEFAULT_COUNTRY_LIMIT = null;
 

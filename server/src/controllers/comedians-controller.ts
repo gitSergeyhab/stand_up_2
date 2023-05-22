@@ -1,11 +1,13 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import {  Column, ColumnId, DefaultQueryParams, ImageType, SQLFunctionName, StatusCode } from "../const";
+import {  Column, ColumnId, DefaultQueryParams, ImageType, SQLFunctionName, StatusCode } from "../const/const";
 import { getDataFromSQL, getDataInsertQueryStr, insertView } from "../utils/sql-utils";
 import { getDataFromSQLWithTitles } from "../utils/sql-utils";
 import { ImageFile, SimpleDict } from "../types";
 import { imageService } from "../service/image-service";
 import { ApiError } from "../custom-errors/api-error";
+import { getDefaultFromToYears } from "../utils/date-utils";
+import { getBetweenYearsWhereStr } from "../utils/sql-where-utuls";
 
 const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
 
@@ -24,12 +26,25 @@ class ComedianController {
     async getComedians(req: Request, res: Response) {
         console.log('_________===================__________________________')
         try {
+            const {yearFrom, yearTo} = getDefaultFromToYears()
 
-            const {country_id, city, limit = null, offset = null, order='pop', direction=null} = req.query;
+            const {
+                country_id, city, year_from=yearFrom, year_to=yearTo,
+                limit = null, offset = null, order='pop', direction=null
+            } = req.query;
+
+            console.log({year_from, year_to})
 //!!goodwhere
+            // const where = `
+            //     WHERE (country_id ${country_id ? ' = :country_id' : ' = country_id OR 1 = 1'})
+            //     AND ${ city ?  '(LOWER(comedian_city) = LOWER(:city)) OR (LOWER(comedian_city_en) = LOWER(:city))' : '1 = 1'}
+            //     AND ${getBetweenYearsWhereStr('comedian_date_birth')}
+            // `;
+
             const where = `
                 WHERE (country_id ${country_id ? ' = :country_id' : ' = country_id OR 1 = 1'})
-                AND ${ city ?  '(LOWER(comedian_city) = LOWER(:city)) OR (LOWER(comedian_city_en) = LOWER(:city))' : '1 = 1'}
+                ${ city ?  'AND (LOWER(comedian_city) = LOWER(:city)) OR (LOWER(comedian_city_en) = LOWER(:city))' : ''}
+                ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
             `;
 
     
@@ -63,12 +78,13 @@ class ComedianController {
                     ;
                     `,
                     { 
-                        replacements: {offset, limit, country_id, city},
+                        replacements: {offset, limit, country_id, city, year_from, year_to},
                         type: 'SELECT'
                     }
                 );
 
                 const data = getDataFromSQL(result, 'data')
+                console.log({data})
         
                 return res.status(200).json({...data})
                 
@@ -324,13 +340,18 @@ class ComedianController {
 
     async getShowsByComedianId(req: Request, res: Response) {
         try {
-            const {id} = req.params;
-            const { year = null, limit = Limit, offset = Offset } = req.query;
 
+            const {yearFrom, yearTo} = getDefaultFromToYears()
+
+            const { id } = req.params;
+            const { year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset } = req.query;
+console.log(req.query.year_from, req.query.year_to, 'req.query.year_from || req.query.year_to')
             const where = `
                 WHERE comedians.comedian_id = :id
-                ${year ? 'AND EXTRACT( YEAR FROM show_date_added) = :year' : '' }  
+                ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('show_date')}` : '' }
             `;
+
+            
 
             const result = await sequelize.query(
                 `
@@ -365,7 +386,7 @@ class ComedianController {
                 ;
                 `,
                 {
-                    replacements: { id, year, limit, offset },
+                    replacements: { id, year_from, year_to, limit, offset },
                     type: 'SELECT'
                 }
             )
@@ -381,14 +402,22 @@ class ComedianController {
 
     async getEventsByComedianId(req: Request, res: Response) {
         try {
+            const {yearFrom, yearTo} = getDefaultFromToYears()
             const { id } = req.params;
-            const { year = null, status = EventStatusAll, limit = Limit, offset = Offset } = req.query;
+            const { year_from=yearFrom, year_to=yearTo, status = EventStatusAll, limit = Limit, offset = Offset } = req.query;
             console.log(req.query, '________')
+
+            
+            // const where = `
+            //     WHERE (country_id ${country_id ? ' = :country_id' : ' = country_id OR 1 = 1'})
+            //     ${ city ?  'AND (LOWER(comedian_city) = LOWER(:city)) OR (LOWER(comedian_city_en) = LOWER(:city))' : ''}
+            //     ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
+            // `;
 
             const where = `
                 WHERE comedians.comedian_id = :id
                 ${status && status !== EventStatusAll ? 'AND event_status = :status' : '' }  
-                ${year ? 'AND EXTRACT( YEAR FROM event_date ) = :year' : '' }  
+                ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
             `;
 
             const result = await sequelize.query(
@@ -424,7 +453,7 @@ class ComedianController {
                 ;
                 `,
                 {
-                    replacements: { id, year, limit, offset, status },
+                    replacements: { id, limit, offset, status, year_from, year_to },
                     type: 'SELECT'
                 }
             )
@@ -435,7 +464,7 @@ class ComedianController {
     
         } catch(err) {
             console.log(err)
-            return res.status(500).json({message: 'error getShowsByComedianId'})
+            return res.status(StatusCode.ServerError).json({message: 'error getShowsByComedianId'})
         }
     }
 

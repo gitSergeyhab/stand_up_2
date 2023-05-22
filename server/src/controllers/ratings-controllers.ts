@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ColumnId, StatusCode } from "../const";
+import { ColumnId, StatusCode } from "../const/const";
 import { sequelize } from "../sequelize";
 import { RateResult } from "../types";
 

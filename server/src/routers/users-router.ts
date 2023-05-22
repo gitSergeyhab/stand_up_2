@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { Role } from '../const';
+import { Role } from '../const/const';
 import { userController } from '../controllers/users-controller';
 import { asyncHandler } from '../middlewares/async-handler';
 import { authMiddleware } from '../middlewares/auth-middleware';
