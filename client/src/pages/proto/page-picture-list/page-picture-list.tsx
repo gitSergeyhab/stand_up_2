@@ -8,15 +8,12 @@ import { TopTabs } from '../../../components/top-tabs/top-tabs';
 import { getTypes } from '../../../utils/utils';
 import { ErrorPage } from '../../error-page/error-page';
 import { ImageCC, useGetImagesQuery } from '../../../store/images-api';
+import { ImageFieldMultiUpload } from '../../../components/image-form-multi-upload/image-field-multi-upload';
 
 export function PagePictureList() {
   const { id } = useParams();
-
-  const { pathname  } = useLocation();
+  const { pathname } = useLocation();
   const { isError, isLoading, data: res, error } = useGetImagesQuery(pathname);
-
-  console.log({res})
-
 
   const [currentPic, setPic] = useState<ImageCC | null>(null);
 
@@ -58,12 +55,10 @@ export function PagePictureList() {
   return (
     <>
       <Titles native={titles.native} en={titles.en} />
-
       <TopTabs tabProps={tabProps} />
-
+      <ImageFieldMultiUpload/>
       <ImgList pictures={data} handleImgClick={handleClickImg} />
       {imageModal}
-
       {count}
     </>
   );

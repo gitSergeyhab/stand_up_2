@@ -70,6 +70,61 @@ class ImagesController {
             return res.status(StatusCode.Added).json('ERROR postImage');
         }
     }
+
+    async postImagesByTypeAndId(req: Request, res: Response) {
+        try {
+            console.log('postImagesByTypeAndId TRY')
+            const {id, type} = req.params as {type: string, id: string};
+            const {files} = req;
+
+            type FileDataType = {filename: string, mimetype:string, size: number}
+            const geReplacementsFromFile = ({filename, mimetype, size}: FileDataType, i: number) => 
+                ({['filename' + i]: filename, ['mimetype' + i]: mimetype, ['size' + i]: size })
+
+            const geReplacementsFromFiles = (files: Express.Multer.File[]) =>
+                files
+                .reduce((acc, {filename, mimetype, size}, i) =>  {
+                    const newItems = geReplacementsFromFile({filename, mimetype, size}, i);
+                    return {...acc, ...newItems}
+                } , {});
+
+
+            const replacementsData = geReplacementsFromFiles(files as  Express.Multer.File[])
+            
+
+            const columnId = getIdFromTable(type);
+
+            const getValueQueryStrFromFile = (i: number) =>
+                `(:user_added_id, :filename${i}, :destination, :mimetype${i}, :id, :size${i})`;
+
+            const getValuesQueryStrFromFiles = (files: Express.Multer.File[]) =>
+                files
+                .map((_, i) => getValueQueryStrFromFile(i))
+                .join(',\n')
+
+            const dataQueryStr = getValuesQueryStrFromFiles(files as Express.Multer.File[]);
+
+            // console.log({data, dataQueryStr})
+
+            await sequelize.query(
+                `
+                INSERT INTO images (user_added_id, filename, destination, mimetype, ${columnId}, size)
+                VALUES ${dataQueryStr};
+            `, {
+                    replacements: {...replacementsData, user_added_id: 1, destination: `images/${type}/`, id},
+                    type: 'INSERT'
+                }
+            )
+
+            console.log({id, type})
+            return res.status(StatusCode.Added).json(`Ok. Added ${files.length} images for ${type} id=${id}`)
+
+        } catch (err) {
+            console.log({err});
+
+            return res.status(StatusCode.ServerError).json('postImagesByTypeAndId Error')
+        }
+    }
 }
 
 

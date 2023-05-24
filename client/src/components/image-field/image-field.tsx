@@ -1,6 +1,7 @@
 import { useState, ChangeEventHandler, Dispatch, SetStateAction, useRef} from "react";
-import { ImageDiv, InvisibleImageInput } from "./image-field-sryle";
+import { ImageDiv } from "./image-field-sryle";
 import { SERVER_URL } from "../../const/const";
+import { InvisibleImageInput } from "../common/hidden-file-input";
 
 
 

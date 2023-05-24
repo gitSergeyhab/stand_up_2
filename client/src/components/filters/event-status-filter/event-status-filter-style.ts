@@ -1,6 +1,7 @@
 import styled from 'styled-components';
+import { CommonFieldSet } from '../../common/common-style';
 
-export const EventStatusFieldSet = styled.fieldset`
+export const EventStatusFieldSet = styled(CommonFieldSet)`
   display: grid;
   grid-template-columns: 1fr 1fr;
   text-align: start;

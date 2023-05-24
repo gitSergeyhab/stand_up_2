@@ -8,7 +8,6 @@ export type ResourceType = {
 };
 
 
-
 export type GridCardType = {
   type: ContentName;
   id: string;

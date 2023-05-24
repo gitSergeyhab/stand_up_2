@@ -23,3 +23,34 @@ export const LogRegLink = styled(Link)`
     background-color: #000000;
   }
 `;
+
+export const LongButton = styled.button`
+  width: 100%;
+  background-color: #300606;
+  color: goldenrod;
+  padding: 0.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:disabled {
+    background-color: #130101;
+    color: #000000;
+    &:hover,
+    &:focus {
+      color: #000000;
+    }
+  }
+
+  &:hover,
+  &:focus {
+    color: #FFF;
+
+    background-color: #130101;
+    transition: all 0.3s ease;
+  }
+`;
+
+export const CommonFieldSet = styled.fieldset`
+  border-color: #644102;
+  border-style: solid;
+`;
