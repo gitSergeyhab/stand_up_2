@@ -31,7 +31,7 @@ class PicturesController {
                 }
             );
 
-            const data = getDataFromSQL(result, 'pictures');
+            const data = getDataFromSQL(result);
             return res.status(200).json({data})
 
         } catch(err) {

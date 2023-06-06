@@ -5,10 +5,10 @@ import { asyncHandler } from '../middlewares/async-handler';
 
 const showsRouter =  Router();
 
-showsRouter.get('/', showsController.getShowsByQuery);
+showsRouter.get('/', asyncHandler(showsController.getShows));
 // showsRouter.get('/search', showsController.searchShowsByNames);
 
-showsRouter.get('/:id', showsController.getShowById);
+showsRouter.get('/:id', asyncHandler(showsController.getShowById) );
 showsRouter.get('/:id/votes', showsController.getVotesByShowId);
 showsRouter.post('/',  imageUploader.single('image'), asyncHandler(showsController.addShow));
 

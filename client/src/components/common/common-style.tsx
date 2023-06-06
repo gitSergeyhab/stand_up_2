@@ -53,4 +53,56 @@ export const LongButton = styled.button`
 export const CommonFieldSet = styled.fieldset`
   border-color: #644102;
   border-style: solid;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem
+`;
+
+export const CommonRightFormContainer = styled.section`
+  width: 100%;
+  background-color: #300606;
+  font-size: 12px;
+  color: gold;
+
+  @media (min-width: 600px) {
+    font-size: 14px;
+  }
+
+  @media (min-width: 1200px) {
+    width: 18%;
+    position: absolute;
+    right: 1rem;
+    top: 5rem;
+  }
+
+`
+
+
+// export const CommonRightForm = styled.form`
+//   width: 100%;
+//   background-color: #300606;
+//   color: gold;
+//   display: flex;
+//   flex-direction: column;
+//   border: solid 2px #000000;
+//   font-size: 12px;
+
+//   @media (min-width: 600px) {
+//     font-size: 14px;
+//   }
+
+//   @media (min-width: 1200px) {
+//     width: 18%;
+//     position: absolute;
+//     right: 1rem;
+//     top: 5rem;
+//   }
+// `;
+
+export const CommonSideForm = styled.form`
+  width: 100%;
+  background-color: #300606;
+  display: flex;
+  flex-direction: column;
+  border: solid 2px #000000;
 `;

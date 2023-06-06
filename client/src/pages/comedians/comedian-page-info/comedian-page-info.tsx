@@ -15,7 +15,7 @@ import { TabData } from '../../../const/data';
 import { useGetComedianByIdQuery } from '../../../store/comedians-api';
 import { ErrorPage } from '../../error-page/error-page';
 import { BigSpinner } from '../../../components/spinner/big-spinner';
-import { ImageCC } from '../../../store/images-api';
+import { ImageCC } from '../../../types/pic-types';
 
 export function ComedianPageInfo() {
   const { id } = useParams();
@@ -63,6 +63,7 @@ export function ComedianPageInfo() {
   } = comedian;
 
   const about = [
+    { point: 'Псевдоним', value: comedianNik },
     { point: 'Имя', value: comedianFirstName },
     { point: 'Фамилия', value: comedianLastName || comedianLastName || '' },
     { point: 'Страна рождения', value: countryName || '' },
@@ -73,6 +74,8 @@ export function ComedianPageInfo() {
       value: comedianDateBirth || '',
     },
   ];
+
+
 
   const goodAbout = about.filter((item) => item.point);
 
@@ -92,13 +95,13 @@ export function ComedianPageInfo() {
     />
   ) : null;
 
-  const imageListElement = pictures && pictures.length ? (
-    <ImgList
-      info
-      handleImgClick={handleClickImg}
-      pictures={pictures.slice(0, 3)}
-    />
-  ) : null;
+  // const imageListElement = pictures && pictures.length ? (
+  //   <ImgList
+  //     handleImgClick={handleClickImg}
+  //     pictures={pictures.slice(0, 3)}
+  //     isInfo
+  //   />
+  // ) : null;
 
   return (
     <>
@@ -123,7 +126,7 @@ export function ComedianPageInfo() {
 
       <ResourceBlock resources={resources} />
 
-      {imageListElement}
+      {/* {imageListElement} */}
       {imageModal}
     </>
   );

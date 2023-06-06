@@ -1,11 +1,14 @@
 import { Response } from "express";
-import { StatusCode, TableName } from "../const/const";
+import { Column, StatusCode, TableName } from "../const/const";
 import { sequelize } from "../sequelize";
 import { DataTypeRate, SimpleDict, TitlesDataType } from "../types";
 
 
-export const getDataFromSQL = (result: [unknown[], unknown], field: string) => 
-    ({[field]: result.slice(0, result.length - 1), ...result[result.length - 1] as {count: string }});
+export const getDataFromSQL = (result: [unknown[], unknown]) => 
+    ({
+        list: result.slice(0, result.length - 1),
+        ...result[result.length - 1] as {count: string }
+    });
 
 type DataType = {
     data: unknown[];
@@ -14,8 +17,12 @@ type DataType = {
 
 
 
-export const getDataFromSQLWithTitles = (result: [unknown[], unknown]):{data: unknown[], titles: TitlesDataType}  => 
-    ({data: result.slice(0, result.length - 2), titles: result[result.length - 2] as TitlesDataType, ...result[result.length - 1] as {}});
+export const getDataFromSQLWithTitles = (result: [unknown[], unknown])  => 
+    ({
+        list: result.slice(0, result.length - 2), 
+        titles: result[result.length - 2] as TitlesDataType, 
+        ...result[result.length - 1] as {count: string }
+    });
 
 
 /**
@@ -119,6 +126,35 @@ export const getDataInsertQueryStr = (fields: SimpleDict[], dir: string) => {
     return sqlQuery
 }
 
+/**
+ * возвращает sql запрос на получение заголовков, 
+ * если запрос из суброутера
+ * ! в replacements обязателен id
+ * @param table 
+ * @returns 
+ */
+export const getTitles = (table: string) => {
+    if (!table) {
+        return ''
+    }
 
+    let name = ''
+    if (table === TableName.comedians) {
+        name = 'comedian_nik'
+    } else {
+        name = table.slice(0, table.length - 1) + '_name'
+    }
+
+    const nameEn = name + '_en';
+
+    const columnId = getIdFromTable(table)
+
+    return `
+    SELECT ${name} AS native, ${nameEn} AS en  
+    FROM ${table}
+    WHERE ${columnId} = :id
+    ;`
+
+}
 
 

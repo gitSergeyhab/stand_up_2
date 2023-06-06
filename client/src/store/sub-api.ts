@@ -1,13 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // import { SubComedianCC, SubComedianSC } from '../types/comedian-types';
-import { SubEventCC, SubEventSC } from '../types/event-types';
+import { EventCardServerDataWithTitlesCC } from '../types/event-types';
 import { PictureCC, PictureSC } from '../types/pic-types';
-import { SubShowCC, SubShowSC } from '../types/show-types';
 import { DataRateCC, DataRateSC, StatRateCC, StatRateSC } from '../types/types';
 // import { adaptComediansToClient } from '../utils/adapters/comedian-adapters';
-import { adaptEventsToClient } from '../utils/adapters/event-adapters';
+import { adaptServerEventDataWithTitlesToCard } from '../utils/adapters/event-adapters';
 import { adaptPictureToClient } from '../utils/adapters/pic-adapter';
-import { adaptShowsToClient } from '../utils/adapters/show-adapters';
 import { adaptRateToClient, adaptStatToClient } from '../utils/adapters/small-adapters';
 import { SERVER_URL } from '../const/const';
 
@@ -32,30 +30,11 @@ export const subApi = createApi({
   }),
 
   endpoints: (build) => ({
-    getEvents: build.query<SupApiType<SubEventCC>, string>({
+    getEvents: build.query<EventCardServerDataWithTitlesCC, string>({
       query: (queryParams) => queryParams,
-      transformResponse: ({ data, count }: SupApiType<SubEventSC>) => ({
-        data: data.map(adaptEventsToClient),
-        count
-      }),
+      transformResponse: adaptServerEventDataWithTitlesToCard
     }),
-    getShows: build.query<SupApiType<SubShowCC>, string>({
-      query: (queryParams) => queryParams,
-      transformResponse: ({ data, count }: SupApiType<SubShowSC>) => ({
-        data: data.map(adaptShowsToClient),
-        count
-      }),
-    }),
-    // getComedians: build.query<SupApiType<SubComedianCC>, string>({
-    //   query: (queryParams) => queryParams,
-    //   transformResponse: ({
-    //     data,
-    //     count,
-    //   }: SupApiType<SubComedianSC>) => ({
-    //     data: data.map(adaptComediansToClient),
-    //     count,
-    //   }),
-    // }),
+
     getPictures: build.query<SupApiType<PictureCC>, string>({
       query: (queryParams) => queryParams,
       transformResponse: ({ data, count }: SupApiType<PictureSC>) => ({
@@ -65,12 +44,7 @@ export const subApi = createApi({
     }),
     getRatings: build.query<SupRateType<StatRateCC, DataRateCC>, string>({
       query: (queryParams) => queryParams,
-      transformResponse: ({
-        rates,
-        count,
-        stats,
-        titles,
-      }: SupRateType<StatRateSC, DataRateSC>) => ({
+      transformResponse: ({ rates, count, stats, titles }: SupRateType<StatRateSC, DataRateSC>) => ({
         count,
         titles,
         rates: rates.map(adaptRateToClient),
@@ -80,15 +54,5 @@ export const subApi = createApi({
   }),
 });
 
-export const {
-  useGetEventsQuery,
-  useGetShowsQuery,
-  // useGetComediansQuery,
-  useGetPicturesQuery,
-  useGetRatingsQuery,
-} = subApi;
+export const { useGetEventsQuery, useGetPicturesQuery, useGetRatingsQuery } = subApi;
 
-export type UseGetQueryType =
-  // | typeof useGetComediansQuery
-  | typeof useGetEventsQuery
-  | typeof useGetShowsQuery;

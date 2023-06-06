@@ -2,7 +2,7 @@
 import { Filter } from "../../../components/filters/filter"
 import { ContentName, DefaultPageParam, FilterName } from "../../../const/const"
 import { useGetIdSearch } from "../../../hooks/use-get-id-search";
-import { GridCard, GridCardType } from "../../../components/grid-card/grid-card";
+import { GridCard, } from "../../../components/grid-card/grid-card";
 import { CardContainer } from "../../../components/card-container/card-container";
 import { TopTabs } from "../../../components/top-tabs/top-tabs";
 import { Titles } from "../../../components/titles/titles";
@@ -12,17 +12,17 @@ import { EventsOfComedianCardCC } from "../../../types/event-types";
 
 
 
-const getEventCard = (data: EventsOfComedianCardCC): GridCardType => ({
-  extId: data.placeId,
-  extName: data.placeName,
-  id: data.eventId,
-  name: data.eventName,
-  picture: data.mainPicture,
-  type: ContentName.Events,
-  extType: ContentName.Places,
-  viewsCount: data.viewsCount,
-  date: data.eventDate,
-})
+// const getEventCard = (data: EventsOfComedianCardCC): GridCardType => ({
+//   extId: data.placeId,
+//   extName: data.placeName,
+//   id: data.eventId,
+//   name: data.eventName,
+//   picture: data.mainPicture,
+//   type: ContentName.Events,
+//   extType: ContentName.Places,
+//   viewsCount: data.viewsCount,
+//   date: data.eventDate,
+// })
 
 
 export function EventsOfComedian() {
@@ -39,16 +39,14 @@ export function EventsOfComedian() {
     return <h2>Error</h2>
   }
 
-  const {count, data: events, titles} = data;
+  const {count, list, titles} = data;
 
-  const cards = events.map((item) => {
-    const card = getEventCard(item)
-    return <GridCard key={item.eventId} card={card} />
-  })
+  const cards = list.map((item) => <GridCard key={item.id} card={item} />
+  )
 
   const tabProps = { id, type, pathname };
 
-  const { comedianNik, comedianNikEn } = titles
+  const { native, en } = titles
 
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
@@ -56,7 +54,7 @@ export function EventsOfComedian() {
 
   return (
     <>
-      <Titles native={comedianNik} en={comedianNikEn} />
+      <Titles native={native} en={en} />
       <TopTabs tabProps={tabProps} />
       <Filter filters={filters}/>
       <CardContainer> {cards} </CardContainer>

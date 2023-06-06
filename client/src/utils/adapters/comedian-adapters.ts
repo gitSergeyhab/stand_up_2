@@ -9,16 +9,7 @@ import {
 
 } from '../../types/comedian-types';
 
-// export const adaptComediansToClient = (data: SubComedianSC): SubComedianCC => ({
-//   comedianId: data.comedian_id,
-//   nik: data.comedian_nik,
-//   picture: data.picture,
-//   comedianCity: data.comedian_city,
-//   countryId: data.country_id,
-//   countryName: data.country_name,
-//   avgRate: data.avg_rate,
-//   numberOfRate: data.number_of_rate,
-// });
+
 
 const adaptImageToClient = (data: ImageSC): ImageCC  => ({
   imageId: data.image_id,
@@ -65,6 +56,6 @@ const adaptComedianToClient = (data:ComedianCardSC):ComedianCardCC => ({
 
 
 export const adaptComedianDataToClient = (result: ComedianCardDataSC): ComedianCardDataCC => ({
-  data: result.data.map(adaptComedianToClient),
+  list: result.list.map(adaptComedianToClient),
   count: +result.count,
 });

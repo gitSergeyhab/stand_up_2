@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { EventPageInfo } from '../pages/event-page-info/event-page-info';
+import { EventPageInfo } from '../pages/events/event-page-info/event-page-info';
 // import { MainPage } from '../pages/main-page/main-page';
 import { Header } from '../components/header/header';
 import Footer from '../components/footer/footer';
@@ -25,6 +25,11 @@ import { TestPage } from '../pages/test-page/test-page';
 import { AdminPanel } from '../pages/admin-panel/admin-panel';
 import { ShowsOfComedian } from '../pages/comedians/sub-comedians/shows-of-comedian';
 import { EventsOfComedian } from '../pages/comedians/sub-comedians/events-of-comedian';
+import { EventsPage } from '../pages/events/events-page/events-page';
+import { ShowsPage } from '../pages/shows/shows-page/shows-page';
+import { ShowPageInfo } from '../pages/shows/show-page-info/show-page-info';
+import { PlacesPage } from '../pages/places/places-page/places-page';
+import { PlacePageInfo } from '../pages/places/place-page-info/place-page-info';
 
 const AppRoute = {
   Main: '/',
@@ -39,11 +44,11 @@ const AppRoute = {
   Ratings: '/:mainType/:id/ratings',
 
   Comedians: '/comedians',
-  Show: '/shows/:id',
+  Show: '/shows/:id/info',
   Shows: '/shows',
   Event: '/events/:id/info',
   Events: '/events',
-  Place: '/places/:id',
+  Place: '/places/:id/info',
   Places: '/places',
   User: '/users/:id',
   Users: '/users',
@@ -84,8 +89,16 @@ export function App() {
                 <Route path={AppRoute.Pictures} element={<PagePictureList />} />
                 <Route path={AppRoute.Ratings} element={<PageRatingList />} />
 
-                {/* <Route path={AppRoute.Events} element={<EventsPage/>}/> */}
+                <Route path={AppRoute.Events} element={<EventsPage/>}/>
                 <Route path={AppRoute.Event} element={<EventPageInfo />} />
+
+
+                <Route path={AppRoute.Shows} element={<ShowsPage/>}/>
+                <Route path={AppRoute.Show} element={<ShowPageInfo />} />
+
+                <Route path={AppRoute.Places} element={<PlacesPage/>}/>
+                <Route path={AppRoute.Place} element={<PlacePageInfo />} />
+
 
                 <Route path={AppRoute.Users} element={<UsersPage />} />
 

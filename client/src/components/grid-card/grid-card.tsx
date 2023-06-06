@@ -19,21 +19,7 @@ function Stars() {
   );
 }
 
-export type GridCardType = {
-  picture?: string,
-  id: string,
-  extId?: string,
-  name: string,
-  extName: string,
-  type: ContentName,
-  extType?: ContentName,
-  avgRate?: number,
-  userRate?: number,
-  rateCount?: string,
-  viewsCount: string,
-  date?: string,
-  status?: string
-}
+
 
 export function GridCard({ card }: { card: GridCardType }) {
   const {

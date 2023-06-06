@@ -1,9 +1,6 @@
 import styled from "styled-components";
 
 export const ImageUploadForm = styled.form`
-  /* display: flex;
-  flex-direction: column;
-  justify-content: space-between; */
   width: 100%;
   background-color: #300606;
   color: gold;
@@ -22,7 +19,6 @@ export const ImageUploadForm = styled.form`
     right: 1rem;
     top: 5rem;
   }
-
 `;
 
 
@@ -45,6 +41,7 @@ export const ItemList = styled.ol`
   right: 0;
   background-color: #000;
   color: #FFF;
+  z-index: 2;
 `;
 
 export const NoFilesTextDiv = styled.div`

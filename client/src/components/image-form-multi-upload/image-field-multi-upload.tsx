@@ -1,11 +1,12 @@
 import { useState, ChangeEventHandler, useRef, FormEventHandler } from "react";
 // import { SERVER_URL } from "../../const/const";
 import { useParams } from "react-router-dom";
-import {  FilesBlock, ImageUploadForm, ItemList, NoFilesTextDiv } from "./image-form-multi-upload-style";
+import { toast } from "react-toastify";
+import { FilesBlock, ItemList, NoFilesTextDiv } from "./image-form-multi-upload-style";
 import { InvisibleImageInput } from "../common/hidden-file-input";
-import { LongButton } from "../common/common-style";
+import { CommonFieldSet, CommonSideForm, LongButton } from "../common/common-style";
 import { SubmitButton } from "../common/submit-button";
-import { useAddImagesMutation } from "../../store/post-form-api";
+import { useAddImagesMutation } from "../../store/images-api";
 
 
 function DropList({items}: {items: string[]}) {
@@ -25,7 +26,6 @@ function DropList({items}: {items: string[]}) {
     <FilesBlock>
       { items.length ? showBtn : noFilesText }
       { shown ? fileNameList : null }
-
     </FilesBlock>
   )
 }
@@ -34,10 +34,10 @@ function DropList({items}: {items: string[]}) {
 
 export function ImageFieldMultiUpload() {
 
-  const [fileNames, setFileNames] = useState<string[]>([])
-  const inputRef = useRef<HTMLInputElement|null>(null)
+  const [fileNames, setFileNames] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement|null>(null);
   const formRef = useRef<HTMLFormElement|null>(null);
-
+  const [isSubmitDisable, setSubmitDisable] = useState(true)
 
   const {mainType, id} = useParams() as {mainType: string, id: string}
 
@@ -47,12 +47,17 @@ export function ImageFieldMultiUpload() {
     const {files} = evt.target
     if (files) {
       const names = Array.from(files).map((item) => item.name);
-      setFileNames(names)
+      setFileNames(names);
+      setSubmitDisable(false)
+    } else {
+      setSubmitDisable(true)
     }
   }
 
   const handleBtnCleanPictureClick = () => {
-    setFileNames([])
+    setFileNames([]);
+    setSubmitDisable(true);
+    formRef?.current?.reset()
   }
 
   const handleBtnClick = () => {
@@ -61,26 +66,44 @@ export function ImageFieldMultiUpload() {
     }
   }
 
-  const handleSubmit: FormEventHandler<HTMLFormElement>= async(evt) => {
+
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async (evt) => {
     evt.preventDefault();
     if (formRef.current) {
-      try {
-        const formData = new FormData(formRef.current);
-        await postImages({body: formData, id, mainType })
-      } catch (err) {
-        console.log({err})
+      const onSuccess = () => {
+        formRef.current?.reset();
+        setFileNames([]);
+        setSubmitDisable(true);
+      }
+      const onError = () => {
+        toast.error('Невозможно добавить файлы. Пробуйте позже');
+        setSubmitDisable(false);
       }
 
+      setSubmitDisable(true);
+      const formData = new FormData(formRef.current)
+      postImages({body: formData, id, mainType }).unwrap()
+        .then(onSuccess)
+        .catch(onError)
 
     }
 
 
   }
 
-  const clearPictureBtn = <LongButton type="button" onClick={handleBtnCleanPictureClick}> ✘ </LongButton>
+  const clearPictureBtn = <LongButton
+    type="button"
+    disabled={!fileNames.length}
+    onClick={handleBtnCleanPictureClick}
+    title="Сбросить выбранные файлы"
+  > ✘ </LongButton>
+
 
   return (
-    <ImageUploadForm ref={formRef} onSubmit={handleSubmit}>
+    // <ImageUploadForm ref={formRef} onSubmit={handleSubmit}>
+    <CommonSideForm ref={formRef} onSubmit={handleSubmit}>
+      <CommonFieldSet>
+      <legend> Добавление картинок</legend>
       <InvisibleImageInput
         ref={inputRef}
         id="images"
@@ -88,10 +111,11 @@ export function ImageFieldMultiUpload() {
         onChange={handleInputChange}
         multiple
       />
-      <LongButton type="button" onClick={handleBtnClick}> Выбери файлы png \ jpeg \ jpg</LongButton>
+      <LongButton type="button"  onClick={handleBtnClick}> Выбери файлы png \ jpeg \ jpg</LongButton>
       {clearPictureBtn}
       <DropList items={fileNames}/>
-      <SubmitButton>Загрузить</SubmitButton>
-    </ImageUploadForm>
+      <SubmitButton disabled={isSubmitDisable}>Загрузить</SubmitButton>
+      </CommonFieldSet>
+    </CommonSideForm>
   )
 }

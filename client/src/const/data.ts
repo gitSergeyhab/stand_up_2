@@ -12,6 +12,7 @@ export const TabData = {
     { name: 'Информация', path: 'info' }, //
     { name: 'Выступления', path: 'shows' }, // b +all
     { name: 'Комики', path: 'comedians' }, // b +all
+    { name: 'Фото', path: 'images' },
   ],
   [ContentName.Places]: [
     { name: 'Информация', path: 'info' },

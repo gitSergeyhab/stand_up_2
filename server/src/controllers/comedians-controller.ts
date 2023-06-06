@@ -1,13 +1,13 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import {  Column, ColumnId, DefaultQueryParams, ImageType, SQLFunctionName, StatusCode } from "../const/const";
+import {  Column, ColumnId, DefaultQueryParams, ImageType, SQLFunctionName, StatusCode, TableName } from "../const/const";
 import { getDataFromSQL, getDataInsertQueryStr, insertView } from "../utils/sql-utils";
 import { getDataFromSQLWithTitles } from "../utils/sql-utils";
 import { ImageFile, SimpleDict } from "../types";
 import { imageService } from "../service/image-service";
 import { ApiError } from "../custom-errors/api-error";
 import { getDefaultFromToYears } from "../utils/date-utils";
-import { getBetweenYearsWhereStr } from "../utils/sql-where-utuls";
+import { getBetweenYearsWhereStr } from "../utils/sql-where-utils";
 
 const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
 
@@ -47,7 +47,7 @@ class ComedianController {
                 ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
             `;
 
-    
+    // NO RATE !!!
                 const result = await sequelize.query(
                     `
                     SELECT 
@@ -83,7 +83,7 @@ class ComedianController {
                     }
                 );
 
-                const data = getDataFromSQL(result, 'data')
+                const data = getDataFromSQL(result)
                 console.log({data})
         
                 return res.status(200).json({...data})
@@ -280,7 +280,7 @@ class ComedianController {
             }
             );
 
-            const data = getDataFromSQL(result, 'comedians')
+            const data = getDataFromSQL(result)
             return res.status(StatusCode.Ok).json(data);
 
         } catch {
@@ -400,73 +400,69 @@ console.log(req.query.year_from, req.query.year_to, 'req.query.year_from || req.
         }
     }
 
-    async getEventsByComedianId(req: Request, res: Response) {
-        try {
-            const {yearFrom, yearTo} = getDefaultFromToYears()
-            const { id } = req.params;
-            const { year_from=yearFrom, year_to=yearTo, status = EventStatusAll, limit = Limit, offset = Offset } = req.query;
-            console.log(req.query, '________')
+    // async getEventsByComedianId(req: Request, res: Response) {
+    //     try {
+    //         const {yearFrom, yearTo} = getDefaultFromToYears()
+    //         const { id } = req.params;
+    //         const { year_from=yearFrom, year_to=yearTo, status = EventStatusAll, limit = Limit, offset = Offset } = req.query;
+    //         console.log(req.query, '________')
 
             
-            // const where = `
-            //     WHERE (country_id ${country_id ? ' = :country_id' : ' = country_id OR 1 = 1'})
-            //     ${ city ?  'AND (LOWER(comedian_city) = LOWER(:city)) OR (LOWER(comedian_city_en) = LOWER(:city))' : ''}
-            //     ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
-            // `;
 
-            const where = `
-                WHERE comedians.comedian_id = :id
-                ${status && status !== EventStatusAll ? 'AND event_status = :status' : '' }  
-                ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
-            `;
 
-            const result = await sequelize.query(
-                `
-				SELECT 
-				event_id, event_name, event_name_en, event_date, event_status,
-                places.place_id, place_name,
-                destination || filename AS main_picture,
-				count (DISTINCT view_id) AS views_count
+    //         const where = `
+    //             WHERE comedians.comedian_id = :id
+    //             ${status && status !== EventStatusAll ? 'AND event_status = :status' : '' }  
+    //             ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
+    //         `;
+
+    //         const result = await sequelize.query(
+    //             `
+	// 			SELECT 
+	// 			event_id, event_name, event_name_en, event_date, event_status,
+    //             places.place_id, place_name,
+    //             destination || filename AS main_picture,
+	// 			count (DISTINCT view_id) AS views_count
 	
-				FROM events
-                LEFT JOIN main_pictures ON event_main_picture_id = main_picture_id
-				LEFT JOIN views USING (event_id)
-                LEFT JOIN comedians_events USING(event_id)
-				LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id
-                LEFT JOIN places ON events.place_id = places.place_id
-                ${where}
-                GROUP BY event_id, destination, filename, places.place_id
-                LIMIT :limit
-                OFFSET :offset
-                ;
+	// 			FROM events
+    //             LEFT JOIN main_pictures ON event_main_picture_id = main_picture_id
+	// 			LEFT JOIN views USING (event_id)
+    //             LEFT JOIN comedians_events USING(event_id)
+	// 			LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id
+    //             LEFT JOIN places ON events.place_id = places.place_id
+    //             ${where}
+    //             GROUP BY event_id, destination, filename, places.place_id
+    //             LIMIT :limit
+    //             OFFSET :offset
+    //             ;
 
-                SELECT comedian_nik, comedian_nik_en
-                FROM comedians
-                WHERE comedian_id = :id
-                ;
+    //             SELECT comedian_nik, comedian_nik_en
+    //             FROM comedians
+    //             WHERE comedian_id = :id
+    //             ;
 
-                SELECT COUNT (event_id) 
-                FROM events
-                LEFT JOIN comedians_events USING(event_id)
-				LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id
-                ${where}
-                ;
-                `,
-                {
-                    replacements: { id, limit, offset, status, year_from, year_to },
-                    type: 'SELECT'
-                }
-            )
-            console.log({result}, 'result___________________________')
+    //             SELECT COUNT (event_id) 
+    //             FROM events
+    //             LEFT JOIN comedians_events USING(event_id)
+	// 			LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id
+    //             ${where}
+    //             ;
+    //             `,
+    //             {
+    //                 replacements: { id, limit, offset, status, year_from, year_to },
+    //                 type: 'SELECT'
+    //             }
+    //         )
+    //         console.log({result}, 'result___________________________')
 
-            const data = getDataFromSQLWithTitles(result)
-            return res.status(200).json(data);
+    //         const data = getDataFromSQLWithTitles(result)
+    //         return res.status(200).json(data);
     
-        } catch(err) {
-            console.log(err)
-            return res.status(StatusCode.ServerError).json({message: 'error getShowsByComedianId'})
-        }
-    }
+    //     } catch(err) {
+    //         console.log(err)
+    //         return res.status(StatusCode.ServerError).json({message: 'error getShowsByComedianId'})
+    //     }
+    // }
 
     async getComediansByColumnId(req: Request, res: Response) {
         try {
@@ -513,7 +509,7 @@ console.log(req.query.year_from, req.query.year_to, 'req.query.year_from || req.
                 }
             )
             
-            const data = getDataFromSQL(result, 'comedians')
+            const data = getDataFromSQL(result)
 
 
             return res.status(200).json(data);

@@ -36,9 +36,9 @@ export function ComediansPage() {
     return <h2>Error</h2>
   }
 
-  const {count, data: comedians } = data;
+  const {count, list } = data;
 
-  const cards = comedians.map((item) => {
+  const cards = list.map((item) => {
     const card = getComedianCard(item)
     return <GridCard key={item.comedianId} card={card} />
   })

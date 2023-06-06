@@ -42,3 +42,23 @@ BEGIN
 	';
 END
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_videos_by_show(idx BIGINT) RETURNS JSON AS $$
+	SELECT
+	JSON_AGG(JSON_BUILD_OBJECT('id', show_video_id, 'pro', show_video_professional, 'minutes', show_minutes, 'userId', user_id, 'userNik', user_nik, 'path', show_video_path))
+	FROM (
+		SELECT * 
+		FROM show_videos 
+		WHERE show_id = 2
+		ORDER BY show_video_id DESC
+	) AS sv
+	LEFT JOIN users USING(user_id);
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION get_main_pictures(idx bigint) 
+RETURNS TEXT AS $$
+	SELECT
+	destination || filename 
+	FROM main_pictures
+	WHERE main_picture_id = idx
+$$ LANGUAGE SQL;s

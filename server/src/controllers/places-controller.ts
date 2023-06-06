@@ -1,12 +1,15 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId, ImageType } from "../const/const";
-import { getDataFromSQL, getDataInsertQueryStr, insertView } from "../utils/sql-utils";
+import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId, ImageType, DefaultQueryParams } from "../const/const";
+import { getDataFromSQL, getDataInsertQueryStr, getTitles, insertView } from "../utils/sql-utils";
 import { ImageFile, SimpleDict } from "../types";
 import { imageService } from "../service/image-service";
 import { ApiError } from "../custom-errors/api-error";
+import { getDefaultFromToYears } from "../utils/date-utils";
+import { getBetweenYearsWhereStr } from '../utils/sql-where-utils'
 
 
+const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
 const PlaceOrder = {
     views: 'views',
     totalViews: 'total_views',
@@ -18,16 +21,28 @@ const PlaceOrder = {
 class PlacesController {
 
     async getPlaceById(req: Request, res: Response) {
+        
         try {
             const {id, user_id = '1'} = req.params
+            console.log('getPlaceById', {id, user_id})
                 const places = await sequelize.query(
                     `
                     SELECT
-                        place_id, place_name, place_name_en, place_city, place_city_en, place_date_founded, date_place_added, place_description, place_promo_picture,   
+                        place_id, 
+                        place_name, 
+                        place_name_en, 
+                        place_city, 
+                        place_city_en, 
+                        place_date_founded, 
+                        place_date_closed,
+                        place_date_added, 
+                        place_description, 
+                        get_main_pictures(place_main_picture_id) as main_picture,  
+                        get_main_pictures(user_avatar_id) as user_picture, 
                         countries.country_id, country_name, country_name_en,
                         users.user_id, user_nik,
                         get_resources('place_id', :id) AS resources,
-                        get_pictures('place_id', :id) AS pictures,
+                        get_images('place_id', :id) AS pictures,
 
                         get_views_count('place_id', :id, 7) AS views,
                         get_views_count('place_id', :id, 1000000) AS total_views
@@ -35,15 +50,15 @@ class PlacesController {
                     LEFT JOIN countries USING(country_id)
                     LEFT JOIN users ON user_id = user_added_id
                     WHERE place_id = :id
-                    GROUP BY  place_id, countries.country_id, users.user_id
-                ;
+                    GROUP BY  place_id, countries.country_id, users.user_id;
+                    ;
                     `,
                     { 
                         replacements: {id},
                         type: 'SELECT'
                     }
                 );
-
+console.log(places)
                 if (!places.length) {
                     return res.status(StatusCode.NotFoundError).json({message: `not found place with ID: ${id}`})
                 }
@@ -51,65 +66,14 @@ class PlacesController {
                 await insertView(id, user_id, Column.Place)
 
         
-                return res.status(StatusCode.Ok).json({place: places[0]})
+                return res.status(StatusCode.Ok).json(places[0])
         } catch {
             return res.status(StatusCode.ServerError).json({message: 'error get place by id'})
         }
     }
 
 
-    async getPlacesByQuery(req: Request, res: Response) {
-        try {
-            const {country_id = null, city = null, order = 'views', limit = null, offset = null, direction = 'DESC'} = req.query;
 
-            const where = `
-                WHERE country_id = ${country_id ? ':country_id' : 'country_id'}
-                AND ( LOWER(place_city)  = LOWER(${city ? ':city' : 'LOWER(place_city)'})  OR LOWER(place_city_en) = LOWER(${city ? ':city' : 'LOWER(place_city_en)'}) )
-            `
-
-            const result = await sequelize.query(
-                `
-                SELECT
-                    place_id, place_name, place_name_en, place_city, place_city_en, place_promo_picture,
-                    country_id, country_name, country_name_en,
-
-                    get_views_count('place_id', place_id, 7) AS views,
-                    get_views_count('place_id', place_id, 1000000) AS total_views
-
-                FROM places
-                LEFT JOIN countries USING (country_id)
-
-                ${where}
-
-                ORDER BY ${PlaceOrder[order as string] || PlaceOrder.views} 
-                ${direction}
-
-                LIMIT :limit
-                OFFSET :offset
-                ;
-
-                SELECT COUNT (place_id)::int 
-                FROM places
-
-                ${where}
-                ;
-                `,
-                {
-                    replacements: {country_id, city, order, limit, offset},
-                    type: 'SELECT'
-                }
-            )
-
-            const data = getDataFromSQL(result, 'places')
-
-            return res.status(StatusCode.Ok).json({data});
-    
-   
-        } catch(err) {
-            console.log(err)
-            return res.status(StatusCode.ServerError).json({message: 'error get shows by query'})
-        }
-    }
     async searchPlacesByName(req: Request, res: Response) {
         try {
             const {search='', limit = null, offset = null, order='view'} = req.query;
@@ -189,6 +153,65 @@ class PlacesController {
             const {message} = err;
             throw new ApiError(StatusCode.ServerError, message || 'unknown error')
         } 
+    }
+
+    async getPlaces(req: Request, res: Response) {
+        try {
+            const { yearFrom, yearTo } = getDefaultFromToYears()
+            const { id } = req.params;
+            const { year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset } = req.query;
+
+
+            const where = `
+                WHERE 1=1
+                ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('place_date_founded')}` : '' }
+            `;
+
+
+
+        const countQuery = `SELECT COUNT(place_id) FROM places ${where};`;
+
+            const result = await sequelize.query(
+                `
+                SELECT
+                    place_id,
+                    place_name,
+                    place_city, 
+                    place_city_en,
+                    place_date_founded, 
+                    place_date_closed,
+                    place_date_added,
+                    place_description,
+                    countries.country_id, country_name, 
+                    destination || filename AS main_picture,
+                    get_views_count('place_id', place_id, 7) AS views,
+                    get_views_count('place_id', place_id, 1000000) AS total_views
+                FROM places
+                LEFT JOIN countries ON countries.country_id = places.country_id
+                LEFT JOIN main_pictures ON place_main_picture_id = main_pictures.main_picture_id
+
+                ${where}
+                LIMIT :limit
+                OFFSET :offset;
+                ;
+
+                ${countQuery}
+                ;`,
+                {
+                    replacements: { id, limit, offset, year_from, year_to },
+                    type: 'SELECT'
+                }
+
+            )
+            console.log({result}, 'result___________________________', 'getShows +++')
+
+            const data = getDataFromSQL(result)
+            return res.status(200).json(data);
+    
+        } catch(err) {
+            console.log(err)
+            return res.status(StatusCode.ServerError).json({message: 'error getShows'})
+        }
     }
 }
 

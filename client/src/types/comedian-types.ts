@@ -1,4 +1,5 @@
 import { ImageCC, ImageSC } from '../store/images-api';
+import { CommonListDataType } from './common-types';
 import { ResourceType } from './types';
 
 export type OneComedianTypeSC = {
@@ -78,13 +79,8 @@ export type ComedianCardCC = {
 
 };
 
-export type ComedianCardDataSC = {
-  data: ComedianCardSC[],
-  count: string,
-}
 
-export type ComedianCardDataCC = {
-  data: ComedianCardCC[],
-  count: number,
-}
 
+export type ComedianCardDataSC = CommonListDataType<ComedianCardSC>
+
+export type ComedianCardDataCC = CommonListDataType<ComedianCardCC>

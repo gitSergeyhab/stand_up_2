@@ -39,7 +39,8 @@ export const TableName = {
     shows: 'shows',
     places: 'places',
     events: 'events',
-    users: 'users'
+    users: 'users',
+    images: 'images'
 }
 
 

@@ -1,38 +1,45 @@
-import { OneShowTypeCC,OneShowTypeSC,ShowsOfComedianCardCC,ShowsOfComedianCardSC,ShowsOfComedianDataCC,ShowsOfComedianDataSC,SubShowCC,SubShowSC } from '../../types/show-types';
+import { ContentName } from '../../const/const';
+import {  OneShowCC, OneShowSC, ShowCardDataCC, ShowCardDataSC, ShowCardDataWithTitlesCC, ShowCardDataWithTitlesSC, ShowCardSC } from '../../types/show-types';
+import { GridCardType } from '../../types/types';
 
-const adaptShowsOfComedianToClient = (data:ShowsOfComedianCardSC): ShowsOfComedianCardCC => ({
-  avgShowRate: data.avg_show_rate,
-  comedianId: data.comedian_id,
-  comedianNik: data.comedian_nik,
-  mainPicture: data.main_picture,
-  rateCount: data.rate_count,
-  showId: data.show_id,
-  showName: data.show_name,
+
+const adaptServerShowToClientCard = (data: ShowCardSC): GridCardType => ({
+  avgRate: data.avg_show_rate,
+  extId: data.comedian_id,
+  extName: data.comedian_nik,
+  id: data.show_id,
+  name: data.show_name,
+  picture: data.main_picture,
+  type: ContentName.Shows,
+  extType: ContentName.Comedians,
   viewsCount: data.views_count,
-  showDate: data.show_date
+  date: data.show_date,
+  rateCount: data.rate_count
 });
 
-export const adaptShowsOfComedianDataToClient = (result: ShowsOfComedianDataSC): ShowsOfComedianDataCC => ({
-  data: result.data.map(adaptShowsOfComedianToClient),
+export const adaptServerShowDataToCard = (result: ShowCardDataSC): ShowCardDataCC => ({
+  list: result.list.map(adaptServerShowToClientCard),
+  count: +result.count,
+});
+
+
+export const adaptServerShowDataToWithTitlesToCard = (result: ShowCardDataWithTitlesSC): ShowCardDataWithTitlesCC => ({
+  list: result.list.map(adaptServerShowToClientCard),
   count: +result.count,
   titles: {
-    comedianNik: result.titles.comedian_nik,
-    comedianNikEn: result.titles.comedian_nik_en
+    native: result.titles.native,
+    en: result.titles.en
   }
 });
 
-export const adaptOneShowToClient = (data: OneShowTypeSC): OneShowTypeCC => ({
+export const adaptOneShowToClient = (data: OneShowSC): OneShowCC => ({
   avgRate: data.avg_rate,
-  comedianAvatar: data.comedian_avatar,
-  comedianFirstName: data.comedian_first_name,
-  comedianFirstNameEn: data.comedian_first_name_en,
+  comedianNik: data.comedian_nik,
+  comedianNikEn: data.comedian_nik_en,
   comedianId: data.comedian_id,
-  comedianLastName: data.comedian_last_name,
-  comedianLastNameEn: data.comedian_last_name_en,
   countryId: data.country_id,
   countryName: data.country_name,
   countryNameEn: data.country_name_en,
-  pictures: data.pictures,
   languageId: data.language_id,
   languageName: data.language_name,
   languageNameEn: data.language_name_en,
@@ -42,24 +49,19 @@ export const adaptOneShowToClient = (data: OneShowTypeSC): OneShowTypeCC => ({
   placeNameEn: data.place_name_en,
   showDate: data.show_date,
   showDateAdded: data.show_date_added,
-  showDescription: data.show_description,
   showId: data.show_id,
   showName: data.show_name,
-  showPoster: data.show_poster,
+  showNameEn: data.show_name,
   totalViews: data.total_views,
-  userShowAddedId: data.user_show_added_id,
-  userDhowAddedNik: data.user_show_added_nik,
   videos: data.videos,
   views: data.views,
-});
-
-export const adaptShowsToClient = (data: SubShowSC): SubShowCC => ({
-  showId: data.show_id,
-  showName: data.show_name,
-  showDateAdded: data.show_date_added,
-  comedianNik: data.comedian_nik,
-  mainPicture: data.main_picture,
-  comedianId: data.comedian_id,
-  avgRate: data.avg_rate,
-  numberOfRate: data.number_of_rate,
+  eventId: data.event_id,
+  eventName: data.event_name,
+  eventNameEn: data.event_name_en,
+  eventPicture: data.event_picture,
+  placePicture: data.place_picture,
+  showPicture: data.show_picture,
+  comedianPicture: data.comedian_picture,
+  userId: data.user_id,
+  userNik: data.user_nik
 });

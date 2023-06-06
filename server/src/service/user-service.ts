@@ -6,7 +6,7 @@ import { UserPseudoType } from "../types";
 import { crypt } from "../utils/bcrypt-utils";
 import { mailService } from "./mail-service";
 import { tokenService } from "./token-service";
-import { collectWhere, getWhereActivated, getWhereCountry, getWhereStatus, getWhereYearsBetween } from "../utils/sql-where-utuls";
+import { collectWhere, getWhereActivated, getWhereCountry, getWhereStatus, getWhereYearsBetween } from "../utils/sql-where-utils";
 import { getDataFromSQL, getNeedYears } from "../utils/sql-utils";
 
 
@@ -370,7 +370,7 @@ class UserService {
             }
         );
 
-        const data = getDataFromSQL(result, 'users');
+        const data = getDataFromSQL(result);
 
         if (!+data.count) { // data.count -> type -> string -> !+"0"
             throw ApiError.NotFound('there are not users with these params ')
@@ -432,7 +432,7 @@ class UserService {
         );
 
 
-        const data = getDataFromSQL(result, 'users');
+        const data = getDataFromSQL(result);
 
         if (!+data.count) { // data.count -> type -> string -> !+"0"
             throw ApiError.NotFound('there are not users with these params ')

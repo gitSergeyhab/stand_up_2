@@ -1,4 +1,4 @@
-import { ImageType, TableName } from "../const/const";
+import { ImageType } from "../const/const";
 import { sequelize } from "../sequelize";
 import { ImageFile } from "../types";
 import { getIdFromTable } from "../utils/sql-utils";

@@ -13,6 +13,7 @@ import { showsApi } from './shows-api';
 import { imagesApi } from './images-api';
 import { formDataApi } from './form-data-api';
 import { postFormApi } from './post-form-api';
+import { placesApi } from './places-api';
 
 export const enum ReducerName {
   User = 'User',
@@ -26,6 +27,7 @@ export const reducer = combineReducers({
   [ReducerName.User]: userReducer,
   [testSlice.name]: testSlice.reducer,
   [showsApi.reducerPath]: showsApi.reducer,
+  [placesApi.reducerPath]: placesApi.reducer,
   [imagesApi.reducerPath]: imagesApi.reducer,
   [formDataApi.reducerPath]: formDataApi.reducer,
   [postFormApi.reducerPath]: postFormApi.reducer,
@@ -39,6 +41,7 @@ export const store = configureStore({
     .concat(subApi.middleware)
     .concat(eventsApi.middleware)
     .concat(showsApi.middleware)
+    .concat(placesApi.middleware)
     .concat(imagesApi.middleware)
     .concat(formDataApi.middleware)
     .concat(postFormApi.middleware)

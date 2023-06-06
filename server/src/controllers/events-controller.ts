@@ -1,16 +1,28 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { Column, ColumnId, DefaultQueryParams, StatusCode, EventStatus, ImageType } from "../const/const";
-import {  getDataFromSQL,  getDataInsertQueryStr, getTitlesQuery, insertView } from "../utils/sql-utils";
+import {  DefaultQueryParams, StatusCode, EventStatus, ImageType, TableName, Column } from "../const/const";
+import {  getDataFromSQL,  getDataFromSQLWithTitles,  getDataInsertQueryStr, getTitles, getTitlesQuery, insertView } from "../utils/sql-utils";
 import { ImageFile, SimpleDict, TitlesDataType } from "../types";
 import { imageService } from "../service/image-service";
 import { ApiError } from "../custom-errors/api-error";
+import { getDefaultFromToYears } from "../utils/date-utils";
+import {getBetweenYearsWhereStr} from '../utils/sql-where-utils'
 
 const EventOrder = {
     totalViews: 'total_views',
     views: 'views',
     time: 'event_date',
     upcoming : 'upcoming '
+}
+
+
+const ColumnId = {
+    comedians: 'comedians.comedian_id',
+    events: 'events.event_id',
+    shows: 'shows.show_id',
+    places: 'places.place_id',
+
+
 }
 
 const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
@@ -24,21 +36,33 @@ class EventsController {
                 const events = await sequelize.query(
                     `
                     SELECT 
-                        event_id, event_name, event_name_en, event_description, event_date, event_date_added, event_status, event_promo_picture AS event_picture,
-                        places.place_id, place_name, place_name_en, places.place_promo_picture AS place_picture,
-                        user_id, user_nik, user_avatar,
-                        countries.country_id, country_name, country_name_en, 
-                        get_event_comedians(:id) as event_comedians,
-                        get_event_shows(:id) AS event_shows,
+                        event_id,
+                        event_name,
+                        event_name_en,
+                        event_description,
+                        event_date,
+                        event_date_added,
+                        event_status,
+                        places.place_id,
+                        places.place_name,
+                        place_city,
+                        countries.country_id AS place_country_id, 
+                        countries.country_name AS place_country_name,
+                        users.user_nik,
+                        users.user_id,
+                        avatars.destination || avatars.filename AS user_picture,
+                        get_main_pictures(event_main_picture_id) AS main_picture,
+                        get_main_pictures(place_main_picture_id) AS place_picture,
                         get_resources('event_id', :id)  AS event_resources,
-
                         get_views_count('event_id', :id, 7) AS views,
                         get_views_count('event_id', :id, 1000000) AS total_views
-                    
+
                     FROM events
-                    LEFT JOIN places USING (place_id)
-                    LEFT JOIN countries USING (country_id)
-                    LEFT JOIN users USING (user_id)
+                    LEFT JOIN users ON users.user_id = events.user_added_id
+					LEFT JOIN places ON places.place_id = events.place_id 
+					LEFT JOIN countries ON countries.country_id = places.country_id
+					LEFT JOIN avatars on user_avatar_id = avatars.avatar_id
+                    LEFT JOIN main_pictures on event_main_picture_id = main_pictures.main_picture_id
                     WHERE event_id = :id
                     ;
                     `,
@@ -57,121 +81,10 @@ class EventsController {
                 return res.status(StatusCode.Ok).json(events[0])
             
         } catch {
-            return res.status(StatusCode.ServerError).json({message: 'error get show by id'})
-        }
+            return res.status(StatusCode.ServerError).json({message: 'error getEventById'})
+        }    
     }
 
-// !!! PLANNED -> planned
-    async getEventsByQuery(req: Request, res: Response) {
-        try {
-            const {days = '365', country_id = null, city = null, status = null, order = null, direction = null, limit = Limit, offset = Offset } = req.query;
-
-            const where = `
-                WHERE  country_id = ${country_id ? ':country_id' : 'country_id'}
-                AND ( LOWER(place_city)  = LOWER(${city ? ':city' : 'LOWER(place_city)'})  OR LOWER(place_city_en) = LOWER(${city ? ':city' : 'LOWER(place_city_en)'}) )
-                AND event_status = ${status ? ':status' : 'event_status'}
-                AND EXTRACT (DAY FROM ( NOW() - event_date )) < :days
-            `;
-
-            const result = await sequelize.query(
-                `
-                SELECT 
-                    event_id, event_name, event_name_en, event_date, event_date_added, event_status, event_promo_picture AS event_picture,
-                    countries.country_id, country_name, country_name_en, 
-                    place_city, place_city_en,
-
-                    get_views_count('event_id', event_id, 7) AS views,
-                    get_views_count('event_id', event_id, 1000000) AS total_views,
-
-                    ABS(EXTRACT (DAY FROM ( NOW() - event_date )))  AS upcoming
-
-                FROM events
-                LEFT JOIN places USING (place_id)
-                LEFT JOIN countries USING (country_id)
-
-                ${where}
-
-                ORDER BY ${EventOrder[order as string] || EventOrder.views} ${direction === 'asc' ? 'ASC' : 'DESC'}
-                
-                LIMIT :limit
-                OFFSET :offset
-                ;
-
-                SELECT
-                COUNT (event_id)::int
-                FROM events
-                LEFT JOIN places USING (place_id)
-                LEFT JOIN countries USING (country_id)
-
-                ${where}
-                ;
-                `,
-                {
-                    replacements: { days, country_id, city, status, order, direction, limit, offset},
-                    type: 'SELECT'
-                }
-            )
-
-            const data = getDataFromSQL(result, 'events')
-
-            return res.status(200).json({data});
-    
-        } catch(err) {
-            console.log(err)
-            return res.status(500).json({message: 'error get shows by query'})
-        }
-    }
-
-    async getEventsByColumnId(req: Request, res: Response) {
-        try {
-            const {type, id} = req.params;
-            const {year = null, limit = Limit , offset = Offset, status = EventStatusAll, test} = req.query;
-            const columnId: string = ColumnId[type as string] || ColumnId.comedians;
-
-            const where = `
-                WHERE ${columnId} = :id
-                ${year ? 'AND EXTRACT( YEAR FROM event_date) = :year' : '' } 
-                AND ${status && status !== EventStatus ? 'event_status = :status' : '1 = 1'}
-            `;
-
-            const result = await sequelize.query(
-                `
-                SELECT
-                event_id, event_name, event_name_en, event_date, event_promo_picture, event_status,
-                comedian_id, place_id, place_name, place_name_en
-
-                FROM events
-                LEFT JOIN comedians_events USING (event_id)
-                LEFT JOIN comedians USING (comedian_id)
-                LEFT JOIN places USING (place_id)
-
-                ${where}
-
-                ORDER BY ABS(EXTRACT( DAY FROM (NOW() - event_date))) ASC
-                LIMIT :limit
-                OFFSET :offset
-                ;
-                ${getTitlesQuery(type)}
-                SELECT COUNT(event_id) 
-                FROM events
-                LEFT JOIN comedians_events USING (event_id)
-                LEFT JOIN comedians USING (comedian_id)
-                ${where}
-                ;`,
-                {
-                    replacements: { id, year, status, limit, offset },
-                    type: 'SELECT'
-                }
-            )
-
-            const data = getDataFromSQL(result, 'events');
-            return res.status(200).json({data});
-   
-        } catch(err) {
-            console.log(err)
-            return res.status(500).json({message: 'error getShowsByColumnId'})
-        }
-    }
 
     async addEvent (req: Request, res: Response ) {
 
@@ -181,17 +94,17 @@ class EventsController {
             console.log({dir})
             const file = req.file as ImageFile;
             const event_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
-            // HARDCODE user_added_id = 1 !!!   + RENAME user_id -> user_added_id
-            const {user_id = '1', event_status, place_id, event_date, event_name, event_name_en, event_description} = body as SimpleDict;
-            const fields = [{event_status}, {user_id}, {event_name}, {event_name_en}, {place_id}, {event_date}, {event_description}] as SimpleDict[];
+            // HARDCODE user_added_id = 1 !!!   + user_added_id
+            const {user_added_id = '1', event_status, place_id, event_date, event_name, event_name_en, event_description} = body as SimpleDict;
+            const fields = [{event_status}, {user_added_id}, {event_name}, {event_name_en}, {place_id}, {event_date}, {event_description}] as SimpleDict[];
             const allFields = [...fields, {event_main_picture_id}]
 
             const sqlQuery = getDataInsertQueryStr(allFields, dir)
 
             
             const result = await sequelize.query(sqlQuery, {
-                // HARDCODE user_added_id = 1 !!! + RENAME user_id -> user_added_id
-                replacements: {...body, event_main_picture_id, user_id: '1'}, 
+                // HARDCODE user_added_id = 1 !!! +  user_added_id
+                replacements: {...body, event_main_picture_id, user_added_id: '1'}, 
                 type: "INSERT"
             })
 
@@ -204,6 +117,75 @@ class EventsController {
             const {message} = err;
             throw new ApiError(StatusCode.ServerError, message || 'unknown error')
         } 
+    }
+
+    async getEvents(req: Request, res: Response) {
+        try {
+            const { yearFrom, yearTo } = getDefaultFromToYears()
+            const { type, id } = req.params;
+            const { year_from=yearFrom, year_to=yearTo, status = EventStatusAll, limit = Limit, offset = Offset } = req.query;
+
+            const columnId = ColumnId[type];
+            const titlesSqlQuery = getTitles(type);
+            console.log({titlesSqlQuery}, '+=================+')
+
+            const where = `
+                WHERE 1=1
+                ${columnId ? `AND ${columnId} = :id`: '' } 
+                ${status && status !== EventStatusAll ? 'AND event_status = :status' : '' }  
+                ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
+            `;
+
+            const result = await sequelize.query(
+                `
+				SELECT 
+                    event_id, 
+                    event_name,
+                    event_name_en, 
+                    event_date, 
+                    event_date_added,
+                    event_status,
+                    places.place_id, 
+                    place_name,
+                    destination || filename AS main_picture,
+                    count (DISTINCT view_id) AS views_count
+	
+				FROM events
+                LEFT JOIN main_pictures ON event_main_picture_id = main_picture_id
+				LEFT JOIN views USING (event_id)
+                LEFT JOIN comedians_events USING(event_id)
+				LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id
+                LEFT JOIN places ON events.place_id = places.place_id
+                ${where}
+                GROUP BY event_id, destination, filename, places.place_id
+                LIMIT :limit
+                OFFSET :offset
+                ;
+
+                ${titlesSqlQuery}
+
+                SELECT COUNT (event_id) 
+                FROM events
+                LEFT JOIN comedians_events USING(event_id)
+				LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id
+                LEFT JOIN places ON events.place_id = places.place_id
+                ${where}
+                ;
+                `,
+                {
+                    replacements: { id, limit, offset, status, year_from, year_to },
+                    type: 'SELECT'
+                }
+            )
+            console.log({result}, 'result___________________________', 'getEvents+++')
+
+            const data = type ? getDataFromSQLWithTitles(result) : getDataFromSQL(result)
+            return res.status(200).json(data);
+    
+        } catch(err) {
+            console.log(err)
+            return res.status(StatusCode.ServerError).json({message: 'error getShowsByComedianId'})
+        }
     }
 }
 

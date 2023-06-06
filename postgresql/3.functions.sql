@@ -288,3 +288,12 @@ $$ LANGUAGE SQL;
 CREATE OR REPLACE FUNCTION get_one_name_of_two(first TEXT, second TEXT) RETURNS TEXT AS $$
 	SELECT TRIM(COALESCE(first, '') || ' ' || COALESCE(second, ''))
 $$ LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION get_main_pictures(idx bigint) 
+RETURNS TEXT AS $$
+	SELECT
+	destination || filename 
+	FROM main_pictures
+	WHERE main_picture_id = idx
+$$ LANGUAGE SQL;

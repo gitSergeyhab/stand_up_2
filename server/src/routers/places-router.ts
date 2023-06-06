@@ -5,9 +5,9 @@ import { imageUploader } from '../utils/image-uploader';
 
 const placesRouter =  Router();
 
-placesRouter.get('/', placesController.getPlacesByQuery);
+placesRouter.get('/', asyncHandler(placesController.getPlaces));
 placesRouter.get('/search', placesController.searchPlacesByName);
-placesRouter.get('/:id', placesController.getPlaceById);
+placesRouter.get('/:id', asyncHandler(placesController.getPlaceById));
 placesRouter.post('/', imageUploader.single('image'), asyncHandler(placesController.addPlace));
 
 

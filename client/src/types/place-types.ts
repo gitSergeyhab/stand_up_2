@@ -1,72 +1,78 @@
-import { ImageCC } from '../store/images-api';
-import { ResourceType } from './types';
+import { CommonListDataType } from "./common-types";
+import { ImageCC, ImageSC } from "./pic-types";
+import { GridCardType, ResourceType } from "./types";
 
-export type PlaceTypeSC = {
-  country_id: number | null;
-  country_name: string | null;
-  country_name_en: string | null;
-  place_city: string | null;
-  place_city_en: string | null;
-  place_id: string | null;
-  place_name: string;
-  place_name_en: string | null;
-  place_promo_picture: string | null;
-  total_views: string | null;
-  views: string | null;
-};
 
-export type PlaceTypeCC = {
-  countryId: number | null;
-  countryName: string | null;
-  countryNameEn: string | null;
-  placeCity: string | null;
-  placeCityEn: string | null;
-  placeId: string | null;
-  placeName: string;
-  placeNameEn: string | null;
-  placePromoPicture: string | null;
-  totalViews: string | null;
-  views: string | null;
-};
 
-export type OnePlaceTypeSC = {
-  country_id: number | null;
-  country_name: string | null;
-  country_name_en: string | null;
-  date_place_added: string | null;
-  pictures: ImageCC[] | null;
-  place_city: string | null;
-  place_city_en: string | null;
-  place_date_founded: string | null;
-  place_description: string | null;
-  place_id: string;
-  place_name: string;
-  place_name_en: string | null;
-  place_promo_picture: string | null;
-  resources: ResourceType | null;
-  total_views: string | null;
-  user_id: string | null;
-  user_nik: string | null;
-  views: string | null;
-};
+export type OnePlaceSC = {
+  place_id:            string;
+  place_name:          string;
+  place_name_en?:      string;
+  place_city?:         string;
+  place_city_en?:      string;
+  place_date_founded?: string;
+  place_date_closed?:  string;
+  place_date_added:    string;
+  place_description?:  string;
+  main_picture?:       string;
+  user_picture?:       string;
+  country_id?:         number;
+  country_name?:       string;
+  country_name_en?:    string;
+  user_id?:            string;
+  user_nik?:           string;
+  resources?:          ResourceType[];
+  pictures?:           ImageSC[];
+  views:               string;
+  total_views:         string;
+}
 
-export type OnePlaceTypeCC = {
-  countryId: number | null;
-  countryName: string | null;
-  countryNameEn: string | null;
-  datePlaceAdded: string | null;
-  pictures: ImageCC[] | null;
-  placeCity: string | null;
-  placeCityEn: string | null;
-  placeDateFounded: string | null;
-  placeDescription: string | null;
-  placeId: string;
-  placeName: string;
-  placeNameEn: string | null;
-  placePromoPicture: string | null;
-  resources: ResourceType | null;
-  totalViews: string | null;
-  userId: string | null;
-  userNik: string | null;
-  views: string | null;
-};
+
+export type OnePlaceCC = {
+  placeId:            string;
+  placeName:          string;
+  placeNameEn?:       string;
+  placeCity?:         string;
+  placeCityEn?:       string;
+  placeDateFounded?:  string;
+  placeDateClosed?:   string;
+  placeDateAdded:     string;
+  placeDescription?:  string;
+  mainPicture?:       string;
+  userPicture?:       string;
+  countryId?:         number;
+  countryName?:       string;
+  countryNameEn?:     string;
+  userId?:            string;
+  userNik?:           string;
+  resources?:         ResourceType[];
+  pictures?:          ImageCC[];
+  views:              string;
+  totalViews:         string;
+}
+
+
+export type PlaceCardSC = {
+  place_id:            string;
+  place_name:          string;
+  place_city?:         string;
+  place_city_en?:      string;
+  place_date_founded?: string;
+  place_date_closed?:  string;
+  place_date_added:    string;
+  place_description?:  string;
+  country_id?:         number;
+  country_name?:       string;
+  main_picture?:       string;
+  views_count:         string
+}
+
+
+
+export type PlaceCardDataSC = CommonListDataType<PlaceCardSC>
+
+export type PlaceCardDataCC = CommonListDataType<GridCardType>
+
+// export type ShowCardDataWithTitlesSC = CommonListDataWithTitlesType<ShowCardSC>
+
+// export type ShowCardDataWithTitlesCC = CommonListDataWithTitlesType<GridCardType>

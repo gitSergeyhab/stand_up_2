@@ -1,5 +1,7 @@
 export const SERVER_URL = 'http://localhost:5000/';
 
+export const IMAGES_PORTION = 10;
+
 export const enum ResourceName {
   Site = 'Site',
   Facebook = 'Facebook',
@@ -26,7 +28,7 @@ export const DefaultPath = {
   ShowPoster: './../assets/img/default/show.png',
   EventPicture: './../assets/img/default/default.png',
   PlacePromoPicture: './../assets/img/default/place.png',
-  Any: './../assets/img/default/default.png',
+  Any: '/assets/img/default/default.png',
 };
 
 export const KeyNext = ['ArrowRight', 'Numpad6', 'ArrowDown'];

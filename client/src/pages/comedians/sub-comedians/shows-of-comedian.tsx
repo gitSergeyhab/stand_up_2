@@ -1,34 +1,18 @@
 import { Filter } from "../../../components/filters/filter"
-import { ContentName, DefaultPageParam, FilterName } from "../../../const/const"
+import { DefaultPageParam, FilterName } from "../../../const/const"
 import { useGetIdSearch } from "../../../hooks/use-get-id-search";
 import {  useGetShowsOfComedianQuery } from "../../../store/shows-api"
-import { GridCard, GridCardType } from "../../../components/grid-card/grid-card";
+import { GridCard } from "../../../components/grid-card/grid-card";
 import { CardContainer } from "../../../components/card-container/card-container";
 import { TopTabs } from "../../../components/top-tabs/top-tabs";
 import { Titles } from "../../../components/titles/titles";
 import { Pagination } from "../../../components/pagination/pagination";
-import { ShowsOfComedianCardCC } from "../../../types/show-types";
 
-
-const getShowCard = (data: ShowsOfComedianCardCC): GridCardType => ({
-  avgRate: data.avgShowRate,
-  extId: data.comedianId,
-  extName: data.comedianNik,
-  id: data.showId,
-  name: data.showName,
-  picture: data.mainPicture,
-  type: ContentName.Shows,
-  extType: ContentName.Comedians,
-  viewsCount: data.viewsCount,
-  date: data.showDate,
-  rateCount: data.rateCount,
-})
 
 
 export function ShowsOfComedian() {
 
   const { id, search, type, pathname } = useGetIdSearch();
-
   const { isError, isLoading, data } = useGetShowsOfComedianQuery( {id, search} )
 
   if (isLoading) {
@@ -39,24 +23,16 @@ export function ShowsOfComedian() {
     return <h2>Error</h2>
   }
 
-  const {count, data: shows, titles} = data;
-
-  const cards = shows.map((item) =>  {
-    const card = getShowCard(item)
-    return <GridCard key={item.showId} card={card} />
-  })
-
+  const {count, list, titles} = data;
+  const cards = list.map((item) =>   <GridCard key={item.id} card={item} />)
   const tabProps = { id, type, pathname };
-
-  const { comedianNik, comedianNikEn } = titles;
+  const { native, en } = titles;
   const filters = [{name: FilterName.Year, title: 'Год выступления'}]
-
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
-
 
   return (
     <>
-      <Titles native={comedianNik} en={comedianNikEn} />
+      <Titles native={native} en={en} />
       <TopTabs tabProps={tabProps} />
       <Filter filters={filters}/>
       <CardContainer> {cards} </CardContainer>

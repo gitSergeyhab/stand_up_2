@@ -9,22 +9,20 @@ export type ResourceType = {
 
 
 export type GridCardType = {
-  type: ContentName;
-  id: string;
-  // name: string;
-  // nameEn: string | null;
-  nik: string;
-  picture: string | null;
-  extType: ContentName | null;
-  extId: string | null;
-  extName: string | null;
-  extNameEn: string | null;
-
-  date: string | null;
-  rate: number | null | undefined;
-  numberOfRate: number | null | undefined;
-  status: string | null;
-};
+  picture?: string,
+  id: string,
+  extId?: string|number,
+  name: string,
+  extName?: string,
+  type: ContentName,
+  extType?: ContentName,
+  avgRate?: number,
+  userRate?: number,
+  rateCount?: string,
+  viewsCount: string,
+  date?: string,
+  status?: string
+}
 
 export type SimpleDict = { [key: string]: string };
 export type SimpleDictEmpty = {[key:string]:string|undefined}

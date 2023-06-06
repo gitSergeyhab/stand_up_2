@@ -1,42 +1,63 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { Column, ColumnId, ImageType, OrderValues, StatusCode } from "../const/const";
-import { convertFormDataToDate, getDataFromSQL, getDataInsertQueryStr, insertView } from "../utils/sql-utils";
+import { Column, ColumnId, DefaultQueryParams, ImageType, OrderValues, StatusCode } from "../const/const";
+import { convertFormDataToDate, getDataFromSQL, getDataInsertQueryStr, getTitles, insertView } from "../utils/sql-utils";
 import { imageService } from "../service/image-service";
 import { ImageFile, SimpleDict } from "../types";
-import { or } from "sequelize";
 import { ApiError } from "../custom-errors/api-error";
+import { getDefaultFromToYears } from "../utils/date-utils";
+import { getBetweenYearsWhereStr } from '../utils/sql-where-utils'
+import { getDataFromSQLWithTitles } from "../utils/sql-utils";
 
+
+const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
 
 class ShowsController {
     async getShowById(req: Request, res: Response) {
+        console.log('______________getShowById______________')
         try {
             const {id, user_id = '1'} = req.params
                 const shows = await sequelize.query(
                     `
-                    SELECT
-                        show_id, show_date, show_date_added, show_name, show_description, show_poster,
-                        comedian_id, comedian_first_name, comedian_last_name, comedian_first_name_en, comedian_last_name_en, comedian_avatar,
+                    SELECT 
+                        show_id, show_name, show_name_en, show_date, 
+                        show_description, 
+                        show_date_added,
+                        events.event_id, event_name, event_name_en,
+                        comedians.comedian_id, comedian_nik, comedian_nik_en,
+                        places.place_id, place_name, place_name_en,
+                        languages.language_id, language_name, language_name_en,
                         countries.country_id, country_name, country_name_en,
-                        place_id, place_name, place_name_en,
-                        language_id, language_name, language_name_en,
-                        users.user_id AS user_show_added_id, user_nik AS user_show_added_nik,
-                        get_pictures('show_id', :id) AS pictures,
+                        users.user_id, user_nik,
                         get_views_count('show_id', :id, 7) AS views,
                         get_views_count('show_id', :id, 1000000) AS total_views,
                         get_videos_by_show(:id) AS videos,
-                        COUNT (show_rating_id)::int AS number_of_rate, AVG (show_rate)::real AS avg_rate
+                        get_main_pictures(show_main_picture_id) AS show_picture,
+                        get_main_pictures(place_main_picture_id) AS place_picture,
+                        get_main_pictures(event_main_picture_id) AS event_picture,
+                        get_main_pictures(comedian_main_picture_id) AS comedian_picture,
+                        COUNT (show_rating_id)::int AS number_of_rate, 
+                        AVG (show_rate)::real AS avg_rate
+
                     FROM shows
-                    LEFT JOIN comedians USING (comedian_id)
-                    LEFT JOIN countries ON shows.country_id = countries.country_id
-                    LEFT JOIN languages USING (language_id)
-                    LEFT JOIN places USING (place_id)
+                    LEFT JOIN events ON events.event_id = shows.event_id
+                    LEFT JOIN comedians ON comedians.comedian_id = shows.comedian_id
+                    LEFT JOIN places ON places.place_id = shows.place_id
+                    LEFT JOIN languages ON languages.language_id = shows.language_id
+                    LEFT JOIN countries ON places.country_id = countries.country_id
                     LEFT JOIN users ON shows.user_added_id = user_id
                     LEFT JOIN show_ratings USING (show_id)
-                    
-                    WHERE show_id = :id
-                    GROUP BY language_name, language_name_en, users.user_id, 
-                    show_id, comedian_id, comedian_first_name, comedian_last_name, comedian_first_name_en, comedian_last_name_en, comedian_avatar, countries.country_id, place_name, place_name_en
+
+                    WHERE shows.show_id = :id
+
+                    GROUP BY 
+                        shows.show_id, 
+                        events.event_id, 
+                        comedians.comedian_id, 
+                        places.place_id, 
+                        languages.language_id, 
+                        countries.country_id, 
+                        users.user_id
                     ;
                     `,
                     { 
@@ -44,14 +65,15 @@ class ShowsController {
                         type: 'SELECT'
                     }
                 );
-
+                console.log('______________getShowById______________2')
                 if (!shows.length) {
                     return res.status(StatusCode.NotFoundError).json({message: `where is not show with ID: ${id}`})
                 }
 
                 await insertView(id, user_id, Column.Show)
+                console.log({shows}, '_________________show_______________')
         
-                return res.status(StatusCode.Ok).json({show: shows[0]})
+                return res.status(StatusCode.Ok).json(shows[0])
             
         } catch {
             return res.status(StatusCode.ServerError).json({message: 'error get show by id'})
@@ -119,7 +141,7 @@ class ShowsController {
             )
 
             
-            const data = getDataFromSQL(result, 'shows')
+            const data = getDataFromSQL(result)
 
 
             return res.status(200).json({data});
@@ -161,7 +183,7 @@ class ShowsController {
             }
             );
 
-            const data = getDataFromSQL(result, 'shows')
+            const data = getDataFromSQL(result)
 
             return res.status(StatusCode.Ok).json(data);
 
@@ -257,7 +279,7 @@ class ShowsController {
                 }
             )
             
-            const data = getDataFromSQL(result, 'shows');
+            const data = getDataFromSQL(result);
             return res.status(200).json({...data})
             // return checkTitles(data, res);
 
@@ -300,7 +322,125 @@ class ShowsController {
         }
     }
 
+    async getShows(req: Request, res: Response) {
+        try {
+            const { yearFrom, yearTo } = getDefaultFromToYears()
+            const { type, id } = req.params;
+            const { year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset } = req.query;
+
+            const columnId = ColumnId[type];
+            const titlesSqlQuery = getTitles(type);
+            console.log({titlesSqlQuery}, '+ ================= +')
+
+            const where = `
+                WHERE 1=1
+                ${columnId ? `AND shows.${columnId} = :id`: '' } 
+                ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('show_date')}` : '' }
+            `;
+
+
+
+        const countQuery = `SELECT COUNT(show_id) FROM shows ${where};`;
+
+            const result = await sequelize.query(
+                `
+                SELECT
+                    shows.show_id, 
+                    show_name, 
+                    show_date, 
+                    show_date_added,
+                    destination || filename AS main_picture,
+                    comedians.comedian_id, 
+                    comedian_nik,
+                    count (DISTINCT  view_id) AS views_count,
+                    count (DISTINCT  show_rating_id) AS number_of_rate,
+                    AVG(show_rate)::real AS avg_show_rate
+                FROM shows
+                LEFT JOIN comedians ON comedians.comedian_id = shows.comedian_id
+                LEFT JOIN show_ratings ON show_ratings.show_id = shows.show_id
+                LEFT JOIN main_pictures ON show_main_picture_id = main_picture_id
+				LEFT JOIN views ON views.show_id = shows.show_id
+
+                ${where}
+
+                GROUP BY 
+                    shows.show_id, 
+                    comedians.comedian_id, 
+                    comedian_first_name, 
+                    comedian_last_name, 
+                    comedian_first_name_en, 
+                    comedian_last_name_en, 
+                    destination, 
+                    filename, 
+                    comedian_nik
+                ORDER BY number_of_rate DESC
+                LIMIT :limit
+                OFFSET :offset
+                ;
+                ${titlesSqlQuery}
+                ${countQuery}
+                ;`,
+                {
+                    replacements: { id, limit, offset, year_from, year_to },
+                    type: 'SELECT'
+                }
+
+            )
+            console.log({result}, 'result___________________________', 'getShows +++')
+
+            const data = type ? getDataFromSQLWithTitles(result) : getDataFromSQL(result)
+            return res.status(200).json(data);
+    
+        } catch(err) {
+            console.log(err)
+            return res.status(StatusCode.ServerError).json({message: 'error getShows'})
+        }
+    }
+
 }
 
 
 export const showsController = new ShowsController();
+
+
+// SELECT 
+// show_id, show_name, show_name_en, show_date, 
+// -- show_description, 
+// show_date_added,
+// events.event_id, event_name, event_name_en,
+// comedians.comedian_id, comedian_nik, comedian_nik_en,
+// places.place_id, place_name, place_name_en,
+// languages.language_id, language_name, language_name_en,
+// countries.country_id, country_name, country_name_en,
+// users.user_id, user_nik,
+// get_views_count('show_id', 2, 7) AS views,
+// get_views_count('show_id', 2, 1000000) AS total_views,
+// get_videos_by_show(1) AS videos,
+// get_main_pictures(show_main_picture_id) AS show_picture,
+// get_main_pictures(place_main_picture_id) AS place_picture,
+// get_main_pictures(event_main_picture_id) AS event_picture,
+// COUNT (show_rating_id)::int AS number_of_rate, 
+// AVG (show_rate)::real AS avg_rate
+
+
+// FROM shows
+// LEFT JOIN events ON events.event_id = shows.event_id
+// LEFT JOIN comedians ON comedians.comedian_id = shows.comedian_id
+
+// LEFT JOIN places ON places.place_id = shows.place_id
+// LEFT JOIN languages ON languages.language_id = shows.language_id
+
+// LEFT JOIN countries ON places.country_id = countries.country_id
+// LEFT JOIN users ON shows.user_added_id = user_id
+
+// LEFT JOIN show_ratings USING (show_id)
+
+// GROUP BY 
+// 	shows.show_id, 
+// 	events.event_id, 
+// 	comedians.comedian_id, 
+// 	places.place_id, 
+// 	languages.language_id, 
+// 	countries.country_id, 
+// 	users.user_id
+// ;

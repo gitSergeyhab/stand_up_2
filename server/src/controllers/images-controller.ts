@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
-import { ColumnId, ImageType, StatusCode } from "../const/const";
+import { ColumnId, ImageType, StatusCode, TableName } from "../const/const";
 import { sequelize } from "../sequelize";
 import { getDataFromSQL, getDataFromSQLWithTitles, getTitlesQuery } from "../utils/sql-utils";
+import { ApiError } from "../custom-errors/api-error";
+import { filesRemover } from "../utils/file-remover";
+import { checkDigitList } from "../utils/cheks-utils";
 
 const getIdFromTable = (table: string) => table.slice(0, -1) + '_id'
 
@@ -37,7 +40,7 @@ class ImagesController {
             );
 
             const data = getDataFromSQLWithTitles(result);
-            console.log(data)
+            console.log(data, 'getImageById')
             return res.status(200).json(data)
 
         } catch(err) {
@@ -116,6 +119,7 @@ class ImagesController {
                 }
             )
 
+
             console.log({id, type})
             return res.status(StatusCode.Added).json(`Ok. Added ${files.length} images for ${type} id=${id}`)
 
@@ -123,6 +127,40 @@ class ImagesController {
             console.log({err});
 
             return res.status(StatusCode.ServerError).json('postImagesByTypeAndId Error')
+        }
+    }
+
+    
+
+    async removeImagesByIdList(req: Request, res: Response) {
+
+
+        try {
+            const {indexes} = req.query as {indexes: string};
+
+            if (!checkDigitList(indexes)) {
+                throw new ApiError(StatusCode.ServerError, 'removeImagesByIdList Error: no id list')
+            }
+
+            const result = await sequelize.query(`
+                DELETE FROM images 
+                WHERE image_id IN (${indexes})
+                RETURNING destination || filename AS path;
+            `, {
+                    type: 'DELETE'
+                }
+            )
+
+            const filenames = (result as {path: string}[]).map((item) => item.path);
+            if (filenames?.length) {
+                filesRemover(filenames)
+            }
+
+           return res.status(StatusCode.Deleted).json(`deleted`)
+
+        } catch (err) {
+            console.log({err})
+            throw new ApiError(StatusCode.ServerError, err.message || 'unknown error')
         }
     }
 }

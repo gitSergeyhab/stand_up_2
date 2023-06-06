@@ -1,48 +1,7 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithReauth } from './auth-api';
-
-
-export type ImageSC = {
-  image_id: string,
-  image_path: string,
-}
-
-export type ImageCC = {
-  imageId: string,
-  imagePath: string,
-}
-
-
-
-const adaptImageToClient = (data:ImageSC): ImageCC => ({
-  imageId: data.image_id,
-  imagePath: data.image_path
-});
-
-export type ImageDataSC = {
-  data: ImageSC[],
-  titles: {
-    native: string,
-    en?: string,
-  },
-  count: string
-}
-
-export type ImageDataCC = {
-  data: ImageCC[],
-  titles: {
-    native: string,
-    en?: string,
-  },
-  count: number
-}
-
-
-const adaptImageDataToClient = (result: ImageDataSC): ImageDataCC => ({
-  ...result,
-  data: result.data.map(adaptImageToClient),
-  count: +result.count
-});
+import { ImageDataCC } from '../types/pic-types';
+import { adaptImageDataToClient } from '../utils/adapters/pic-adapter';
 
 
 const getImagePath = (pathname: string) => pathname.split('/').slice(0,3).join('/')
@@ -50,20 +9,33 @@ const getImagePath = (pathname: string) => pathname.split('/').slice(0,3).join('
 export const imagesApi = createApi({
   reducerPath: 'imagesApi',
   baseQuery: baseQueryWithReauth,
+  tagTypes: ['imageData'],
   endpoints: (build) => ({
-    getImages: build.query<ImageDataCC, string>({
-      query: (pathname) => `images${getImagePath(pathname)}` ,
-      transformResponse: adaptImageDataToClient
+    getImages: build.query<ImageDataCC, {pathname: string}>({
+      query: ({pathname}) => `images${getImagePath(pathname)}` ,
+      transformResponse: adaptImageDataToClient,
+      providesTags: ['imageData']
     }),
-
-    postImage: build.mutation<string, {queries: string, body: FormData}>({
-      query: ({body, queries}) => ({
-        url: `images${queries}`,
+    addImages: build.mutation<string, {body: FormData, mainType: string, id: string}> ({
+      query: ({body, mainType, id}) => ({
+        url: `/images/${mainType}/${id}`,
+        method: 'POST',
         body,
-        method: 'POST'
-      })
+        params: {dir: mainType}
+      }),
+      invalidatesTags: ['imageData']
+    }),
+    deleteImages: build.mutation<string, {indexes: string[]}> ({
+      query: ({indexes}) => ({
+        url: `/images`,
+        method: 'DELETE',
+        params: {indexes}
+      }),
+      invalidatesTags: ['imageData']
     })
   }),
+
+
 });
 
-export const { useGetImagesQuery } = imagesApi;
+export const { useGetImagesQuery, useLazyGetImagesQuery, useAddImagesMutation, useDeleteImagesMutation } = imagesApi;

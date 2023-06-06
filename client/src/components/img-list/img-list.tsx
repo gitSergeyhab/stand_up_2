@@ -1,30 +1,109 @@
-import { MouseEventHandler } from 'react';
-import { Image, ImageList, ItemLi } from './img-list-style';
+import { Dispatch, MouseEventHandler, SetStateAction, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
+import {  Gallery, GalleryImg, GalleryLi, GalleryLink, GalleryNotLoaded, MarkerButton, MarkerButtonLabel } from './img-list-style';
 import { SERVER_URL } from '../../const/const';
-import { ImageCC } from '../../store/images-api';
+import { ImageCC } from '../../types/pic-types';
 
-type ImageItemType = {
-  item: ImageCC;
-  handleImgClick: MouseEventHandler<HTMLImageElement>;
+
+type DeleteBtnProps = {
+  id: string;
+  setIdList: Dispatch<SetStateAction<string[]>>;
+  hidden?: boolean;
+  marker: boolean;
+  setMarker: Dispatch<SetStateAction<boolean>>;
+
+}
+export function ChoseMarkerBtn({setIdList, id, hidden=true, marker, setMarker}: DeleteBtnProps) {
+
+
+  const handleBtnClick = () => {
+    setMarker((prev) => !prev);
+    setIdList((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((item) => item !== id);
+      }
+      return [...prev, id]
+    });
+
+  }
+
+  return (
+    <MarkerButtonLabel hidden={hidden}>
+      <MarkerButton onClick={handleBtnClick} marker={marker} hidden={hidden}/>
+    </MarkerButtonLabel>
+  )
+}
+
+
+type GalleryItemProps = {
+  picture: ImageCC;
+  onClick: () => void;
+  idList: string[];
+  setIdList: Dispatch<SetStateAction<string[]>>;
+  hidden?: boolean;
 };
 
-function ImgItem({ item, handleImgClick }: ImageItemType) {
-  return <Image onClick={handleImgClick} src={`${SERVER_URL}${item.imagePath}`} />;
+function GalleryItem({onClick, picture, idList, setIdList, hidden}: GalleryItemProps) {
+  const [marker, setMarker] = useState(idList.includes(picture.imageId))
+
+  const {ref, inView} = useInView({
+    threshold: 0.5,
+    triggerOnce: true
+  })
+
+  const {imagePath} = picture;
+  const src = `${SERVER_URL}${imagePath}`
+
+  const handleLinkClick: MouseEventHandler<HTMLAnchorElement> = (evt) => {
+    evt.preventDefault()
+    onClick();
+  }
+
+  const imageElement = inView ? (
+    <GalleryLink to="/" onClick={handleLinkClick} >
+      <GalleryImg src={src}  />
+    </GalleryLink>
+  ) : <GalleryNotLoaded/>
+
+
+  return (
+    <GalleryLi ref={ref} marker={marker}>
+      <ChoseMarkerBtn
+        id={picture.imageId}
+        setIdList={setIdList}
+        hidden={hidden}
+        marker={marker}
+        setMarker={setMarker}
+      />
+      {imageElement}
+    </GalleryLi>
+  )
+
 }
 
 type ImgListProps = {
   pictures: ImageCC[];
   handleImgClick: (pic: ImageCC) => void;
-  info?: boolean;
+  isInfo?: boolean;
+  idList: string[];
+  setIdList: Dispatch<SetStateAction<string[]>>;
+  hidden?: boolean;
 };
-export function ImgList({ pictures, info, handleImgClick }: ImgListProps) {
 
-  console.log({pictures})
+export function ImgList({ pictures, handleImgClick, idList, setIdList, isInfo, hidden=true }: ImgListProps) {
+
+
+
   const imageElements = pictures.map((item) => (
-    <ItemLi info={info} key={item.imageId}>
-      <ImgItem item={item} handleImgClick={() => handleImgClick(item)} />
-    </ItemLi>
+   <GalleryItem
+      onClick={() => handleImgClick(item)}
+      picture={item}
+      idList={idList}
+      setIdList={setIdList}
+      key={item.imageId}
+      hidden={hidden}
+    />
   ));
 
-  return <ImageList info={info}>{imageElements}</ImageList>;
+  return <Gallery isInfo={isInfo}>{imageElements}</Gallery>;
 }

@@ -1,4 +1,5 @@
-import { ResourceType } from "./types"
+import { CommonListDataType, CommonListDataWithTitlesType } from "./common-types"
+import { GridCardType, ResourceType } from "./types"
 
 export const enum EventStatus {
   Planned = 'planned',
@@ -93,55 +94,123 @@ export type EventShow = {
 
 
 
-export type OneEventTypeSC = {
-  country_id?: number;
-  country_name?: string;
-  country_name_en?: string;
-  event_comedians?: EventComedian[];
-  event_date?: string;
-  event_date_added: string;
+// export type OneEventTypeSC = {
+//   country_id?: number;
+//   country_name?: string;
+//   country_name_en?: string;
+//   event_comedians?: EventComedian[];
+//   event_date?: string;
+//   event_date_added: string;
+//   event_description?: string;
+//   event_id: string;
+//   event_name: string;
+//   event_name_en?: string;
+//   event_picture?: string;
+//   event_resources?: ResourceType[];
+//   event_shows?: EventShow[];
+//   event_status: EventStatus;
+//   place_id?: string;
+//   place_name?: string;
+//   place_name_en?: string;
+//   place_picture?: string;
+//   total_views?: string;
+//   user_avatar?: string;
+//   user_id?: string;
+//   user_nik?: string;
+//   views?: string;
+// };
+
+// export type OneEventTypeCC = {
+//   countryId?: number;
+//   countryName?: string;
+//   countryNameEn?: string;
+//   eventComedians?: EventComedian[];
+//   eventDate?: string;
+//   eventDateAdded: string;
+//   eventDescription?: string;
+//   eventId: string;
+//   eventName: string;
+//   eventNameEn?: string;
+//   eventPicture?: string;
+//   eventResources?: ResourceType[];
+//   eventShows?: EventShow[];
+//   eventStatus: EventStatus;
+//   placeId?: string;
+//   placeName?: string;
+//   placeNameEn?: string;
+//   placePicture?: string;
+//   totalViews?: string;
+//   userAvatar?: string;
+//   userId?: string;
+//   userNik?: string;
+//   views?: string;
+// };
+
+//---------
+
+export type EventCardSC = {
+  event_id: string,
+  event_name: string,
+  event_date?: string,
+  event_date_added: string,
+  event_status: string,
+  main_picture?: string,
+  place_id?: string,
+  place_name?: string,
+  views_count: string,
+}
+
+export type OneEventSC = {
+  event_id:          string;
+  event_name:        string;
+  event_name_en?:     null;
   event_description?: string;
-  event_id: string;
-  event_name: string;
-  event_name_en?: string;
-  event_picture?: string;
-  event_resources?: ResourceType[];
-  event_shows?: EventShow[];
-  event_status: EventStatus;
-  place_id?: string;
-  place_name?: string;
-  place_name_en?: string;
-  place_picture?: string;
-  total_views?: string;
-  user_avatar?: string;
-  user_id?: string;
-  user_nik?: string;
-  views?: string;
-};
+  event_date?:        string;
+  event_date_added:  string;
+  event_status:      string;
+  main_picture?:      string;
+  place_id?:          string;
+  place_name?:        string;
+  user_nik?:          string;
+  user_id?:           string;
+  user_picture?:      string;
+  place_picture?:      string;
+  event_resources?:   ResourceType[];
+  views:             string;
+  total_views:       string;
+  place_country_id?: string;
+  place_country_name?: string;
+  place_city?: string;
+}
 
-export type OneEventTypeCC = {
-  countryId?: number;
-  countryName?: string;
-  countryNameEn?: string;
-  eventComedians?: EventComedian[];
-  eventDate?: string;
-  eventDateAdded: string;
+export type OneEventCC = {
+  eventId:          string;
+  eventName:        string;
+  eventNameEn?:     null;
   eventDescription?: string;
-  eventId: string;
-  eventName: string;
-  eventNameEn?: string;
-  eventPicture?: string;
-  eventResources?: ResourceType[];
-  eventShows?: EventShow[];
-  eventStatus: EventStatus;
-  placeId?: string;
-  placeName?: string;
-  placeNameEn?: string;
-  placePicture?: string;
-  totalViews?: string;
-  userAvatar?: string;
-  userId?: string;
-  userNik?: string;
-  views?: string;
-};
+  eventDate?:        string;
+  eventDateAdded:  string;
+  eventStatus:      string;
+  mainPicture?:      string;
+  placeId?:          string;
+  placeName?:        string;
+  userNik?:          string;
+  userId?:           string;
+  userPicture?:      string;
+  placePicture?:      string;
+  eventResources?:   ResourceType[];
+  views:             string;
+  totalViews:       string;
+  placeCountryId?: string;
+  placeCountryName?: string;
+  placeCity?: string;
+}
 
+
+export type EventCardServerDataSC = CommonListDataType<EventCardSC>
+
+export type EventCardServerDataCC = CommonListDataType<GridCardType>
+
+export type EventCardServerDataWithTitlesSC = CommonListDataWithTitlesType<EventCardSC>
+
+export type EventCardServerDataWithTitlesCC = CommonListDataWithTitlesType<GridCardType>
