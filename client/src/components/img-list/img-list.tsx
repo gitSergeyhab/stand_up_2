@@ -91,9 +91,6 @@ type ImgListProps = {
 };
 
 export function ImgList({ pictures, handleImgClick, idList, setIdList, isInfo, hidden=true }: ImgListProps) {
-
-
-
   const imageElements = pictures.map((item) => (
    <GalleryItem
       onClick={() => handleImgClick(item)}

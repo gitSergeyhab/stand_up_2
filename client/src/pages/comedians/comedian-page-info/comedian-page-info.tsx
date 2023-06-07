@@ -3,7 +3,6 @@ import { useParams, useLocation } from 'react-router-dom';
 
 import { AboutBlock } from '../../../components/about-block/about-block';
 import { ImageModal } from '../../../components/image-modal/image-modal';
-import { ImgList } from '../../../components/img-list/img-list';
 import { MainPic } from '../../../components/main-pic/main-pic';
 import { Rating } from '../../../components/rating/rating';
 import { ResourceBlock } from '../../../components/resource-block/resource-block';
@@ -16,6 +15,7 @@ import { useGetComedianByIdQuery } from '../../../store/comedians-api';
 import { ErrorPage } from '../../error-page/error-page';
 import { BigSpinner } from '../../../components/spinner/big-spinner';
 import { ImageCC } from '../../../types/pic-types';
+import { ImgListInfo } from '../../../components/img-list-info/img-list-info';
 
 export function ComedianPageInfo() {
   const { id } = useParams();
@@ -95,13 +95,13 @@ export function ComedianPageInfo() {
     />
   ) : null;
 
-  // const imageListElement = pictures && pictures.length ? (
-  //   <ImgList
-  //     handleImgClick={handleClickImg}
-  //     pictures={pictures.slice(0, 3)}
-  //     isInfo
-  //   />
-  // ) : null;
+  const imageListElement = pictures && pictures.length ? (
+    <ImgListInfo
+      handleImgClick={handleClickImg}
+      pictures={pictures.slice(0, 3)}
+      isInfo
+    />
+  ) : null;
 
   return (
     <>
@@ -126,7 +126,7 @@ export function ComedianPageInfo() {
 
       <ResourceBlock resources={resources} />
 
-      {/* {imageListElement} */}
+      {imageListElement}
       {imageModal}
     </>
   );

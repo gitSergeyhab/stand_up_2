@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 
 
-export const Gallery = styled.ul<{isInfo?: boolean}>`
+export const Gallery = styled.ul`
   list-style: none;
   margin: 0;
   padding: 1rem;
@@ -23,9 +23,6 @@ export const Gallery = styled.ul<{isInfo?: boolean}>`
     grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
   }
 
-  ${({isInfo}) => isInfo ? 'display: flex' : ''};
-
-  & > * {}
 `;
 
 
