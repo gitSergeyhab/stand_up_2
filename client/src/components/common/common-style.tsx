@@ -55,7 +55,7 @@ export const CommonFieldSet = styled.fieldset`
   border-style: solid;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem
+  gap: 0.4rem;
 `;
 
 export const CommonRightFormContainer = styled.section`
@@ -78,26 +78,7 @@ export const CommonRightFormContainer = styled.section`
 `
 
 
-// export const CommonRightForm = styled.form`
-//   width: 100%;
-//   background-color: #300606;
-//   color: gold;
-//   display: flex;
-//   flex-direction: column;
-//   border: solid 2px #000000;
-//   font-size: 12px;
 
-//   @media (min-width: 600px) {
-//     font-size: 14px;
-//   }
-
-//   @media (min-width: 1200px) {
-//     width: 18%;
-//     position: absolute;
-//     right: 1rem;
-//     top: 5rem;
-//   }
-// `;
 
 export const CommonSideForm = styled.form`
   width: 100%;
@@ -106,3 +87,11 @@ export const CommonSideForm = styled.form`
   flex-direction: column;
   border: solid 2px #000000;
 `;
+
+
+export const TopLeftDiv = styled.div`
+position: absolute;
+display: flex;
+left: 0;
+top: -0.5rem;
+`

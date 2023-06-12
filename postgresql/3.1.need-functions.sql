@@ -61,4 +61,12 @@ RETURNS TEXT AS $$
 	destination || filename 
 	FROM main_pictures
 	WHERE main_picture_id = idx
-$$ LANGUAGE SQL;s
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION get_avg_show_rate(show_idx BIGINT) RETURNS SETOF NUMERIC AS $$
+	SELECT
+	AVG(show_rate) AS avg_show_rate
+	FROM show_ratings
+	WHERE show_id = show_idx
+	GROUP BY show_id 
+$$ LANGUAGE SQL;

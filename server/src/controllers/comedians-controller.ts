@@ -1,7 +1,7 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
 import {  Column, ColumnId, DefaultQueryParams, ImageType, SQLFunctionName, StatusCode, TableName } from "../const/const";
-import { getDataFromSQL, getDataInsertQueryStr, insertView } from "../utils/sql-utils";
+import { getDataFromSQL, getDataInsertQueryStr, insertView, separateGraphTitles, separateListCount } from "../utils/sql-utils";
 import { getDataFromSQLWithTitles } from "../utils/sql-utils";
 import { ImageFile, SimpleDict } from "../types";
 import { imageService } from "../service/image-service";
@@ -562,6 +562,107 @@ console.log(req.query.year_from, req.query.year_to, 'req.query.year_from || req.
             const {message} = err;
             throw new ApiError(StatusCode.ServerError, message || 'unknown error')
         } 
+    }
+
+    async getShowsRatingsByComedianId(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const { limit = Limit, offset=Offset, digit='0' } = req.query;
+            console.log(req.query, 'req-query____________________________________')
+
+            const where = `WHERE shows.show_id IN (
+                SELECT show_id
+                FROM shows
+                WHERE comedian_id = :id
+            )
+            ${digit !=='0' ? ` AND show_rate = ${digit}`: ''}
+            `
+
+
+            const result = await sequelize.query(
+                `
+                SELECT 
+                    users.user_id, users.user_nik,
+                    shows.show_id, shows.show_name, 
+                    show_ratings.show_rating_id, show_rate, show_ratings.show_date_rate,
+                    get_views_count('show_id', shows.show_id, 7) AS weekly_views,
+                    get_views_count('show_id', shows.show_id, 1000000) AS total_views,
+                    get_avg_show_rate(shows.show_id)::real AS avg_show_rate,
+                    avatars.destination || avatars.filename AS user_avatar,
+                    main_pictures.destination || main_pictures.filename AS show_picture
+                FROM show_ratings
+                LEFT JOIN users ON show_ratings.user_id = users.user_id
+                LEFT JOIN shows ON show_ratings.show_id = shows.show_id
+                LEFT JOIN avatars ON avatars.avatar_id = users.user_avatar_id
+                LEFT JOIN main_pictures ON main_picture_id = shows.show_main_picture_id
+                ${where}
+                ORDER BY show_date_rate DESC
+                LIMIT :limit
+                OFFSET :offset
+                ;
+                SELECT count(show_rating_id)
+                FROM show_ratings
+                LEFT JOIN shows ON show_ratings.show_id = shows.show_id
+                ${where}
+                `,
+                {
+                    replacements: { id, limit, offset }, 
+                    type: 'SELECT'
+                }
+            );
+
+            const data = separateListCount(result)
+
+            console.log({data})
+            
+            return res.status(StatusCode.Ok).json(data)
+
+        } catch (err) {
+            return res.status(StatusCode.Ok).json({message: 'Error getRatings'})
+        }
+    }
+    async getShowsRatingDataByComedianId(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+
+            const where = `WHERE shows.show_id IN (
+                SELECT show_id
+                FROM shows
+                WHERE comedian_id = :id
+            )`
+
+
+            const result = await sequelize.query(
+                `
+                SELECT
+                    show_rate AS rate,
+                    COUNT (show_rating_id)
+                FROM show_ratings
+                LEFT JOIN shows USING(show_id)
+                WHERE comedian_id = :id
+                GROUP BY show_rate
+                ORDER BY rate DESC
+                ;
+                SELECT 
+                    comedian_nik AS native,
+                    comedian_nik_en AS en
+                FROM comedians
+                WHERE comedian_id = :id
+                    ;
+                `,
+                {
+                    replacements: { id }, 
+                    type: 'SELECT'
+                }
+            );
+
+            const data = separateGraphTitles(result)
+            
+            return res.status(StatusCode.Ok).json(data)
+
+        } catch (err) {
+            return res.status(StatusCode.Ok).json({message: 'Error getRatings'})
+        }
     }
 
 }

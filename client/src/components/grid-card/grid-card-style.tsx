@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
 export const Card = styled.li`
-  transition: 0.5s;
+  position: relative;
   min-height: 100px;
   width: 100%;
   background-color: #300606;
@@ -12,27 +12,29 @@ export const Card = styled.li`
   border-radius: 13px;
   padding: 1rem;
   outline: #000000 2px solid;
-  box-shadow: 7px 6px 36px 0px rgba(60, 8, 6, 0.5);
+  box-shadow: inset 0 0 1rem #000, 0 0 0.1rem #000;
+  transition:  all 0.3s ease-in-out;
+
 
   &:hover,
   &:focus {
-    scale: 1.01;
-    transition: 0.5s;
-    box-shadow: 9px 8px 40px 2px rgba(60, 8, 6, 1);
+    /* scale: 1.01; */
+    box-shadow: inset 0 0 0.1rem #000, 0 0 1rem #000;
   }
 `;
 
 export const Img = styled.img`
   height: 100%;
+  width: 100%;
+  object-fit: contain;
+
 `;
 
 export const CardLink = styled(Link)`
   background-color: inherit;
   display: flex;
-  /* flex-grow: 1; */
   justify-content: center;
   align-items: center;
-  width: 100%;
   color: wheat;
   text-decoration: none;
   height: 160px;
@@ -42,7 +44,23 @@ export const CardLink = styled(Link)`
 
   &:focus,
   &:hover {
-    outline: goldenrod 1px solid;
+    box-shadow: 0 0 1rem #000;
+  }
+`;
+
+export const CardTitleLink = styled(Link)`
+  background-color: inherit;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: wheat;
+  text-decoration: none;
+  overflow: hidden;
+
+  &:focus,
+  &:hover {
+    color: goldenrod;
+    box-shadow: 0 0 1rem #000;
   }
 `;
 
@@ -93,3 +111,4 @@ export const ExtNoLink = styled.span`
     color: goldenrod;
   }
 `;
+

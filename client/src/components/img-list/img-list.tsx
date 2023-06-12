@@ -1,6 +1,6 @@
 import { Dispatch, MouseEventHandler, SetStateAction, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
-import {  Gallery, GalleryImg, GalleryLi, GalleryLink, GalleryNotLoaded, MarkerButton, MarkerButtonLabel } from './img-list-style';
+import { Gallery, GalleryImg, GalleryLi, GalleryLink, GalleryNotLoaded, MarkerButton, MarkerButtonLabel } from './img-list-style';
 import { SERVER_URL } from '../../const/const';
 import { ImageCC } from '../../types/pic-types';
 
@@ -52,7 +52,7 @@ function GalleryItem({onClick, picture, idList, setIdList, hidden}: GalleryItemP
   })
 
   const {imagePath} = picture;
-  const src = `${SERVER_URL}${imagePath}`
+  const src = `${SERVER_URL}${imagePath}`;
 
   const handleLinkClick: MouseEventHandler<HTMLAnchorElement> = (evt) => {
     evt.preventDefault()
@@ -84,13 +84,12 @@ function GalleryItem({onClick, picture, idList, setIdList, hidden}: GalleryItemP
 type ImgListProps = {
   pictures: ImageCC[];
   handleImgClick: (pic: ImageCC) => void;
-  isInfo?: boolean;
   idList: string[];
   setIdList: Dispatch<SetStateAction<string[]>>;
   hidden?: boolean;
 };
 
-export function ImgList({ pictures, handleImgClick, idList, setIdList, isInfo, hidden=true }: ImgListProps) {
+export function ImgList({ pictures, handleImgClick, idList, setIdList,  hidden=true }: ImgListProps) {
   const imageElements = pictures.map((item) => (
    <GalleryItem
       onClick={() => handleImgClick(item)}
@@ -102,5 +101,5 @@ export function ImgList({ pictures, handleImgClick, idList, setIdList, isInfo, h
     />
   ));
 
-  return <Gallery isInfo={isInfo}>{imageElements}</Gallery>;
+  return <Gallery >{imageElements}</Gallery>;
 }

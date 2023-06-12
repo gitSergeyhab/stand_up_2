@@ -7,13 +7,9 @@ import { Header } from '../components/header/header';
 import Footer from '../components/footer/footer';
 
 import { MainContainer, MainMain, MainWrapper, PageWrapper } from './app-style';
-import { PageCardFilterList } from '../pages/proto/page-card-filter-list/page-card-filter-list';
-import { FilterName } from '../const/const';
 import { ComediansPage } from '../pages/comedians/comedians-page/comedians-page';
 import { ComedianPageInfo } from '../pages/comedians/comedian-page-info/comedian-page-info';
-import { useGetEventsQuery, useGetShowsQuery } from '../store/sub-api';
 import { PagePictureList } from '../pages/proto/page-picture-list/page-picture-list';
-import { PageRatingList } from '../pages/proto/page-rate-list/page-rate-list';
 import { RegistrationPage } from '../pages/registration-page/registration-page';
 import { LoginPage } from '../pages/login-page/login-page';
 import { ErrorPage } from '../pages/error-page/error-page';
@@ -30,6 +26,7 @@ import { ShowsPage } from '../pages/shows/shows-page/shows-page';
 import { ShowPageInfo } from '../pages/shows/show-page-info/show-page-info';
 import { PlacesPage } from '../pages/places/places-page/places-page';
 import { PlacePageInfo } from '../pages/places/place-page-info/place-page-info';
+import { RatingsOfComedian } from '../pages/comedians/sub-comedians/ratings-of-comedian';
 
 const AppRoute = {
   Main: '/',
@@ -41,7 +38,9 @@ const AppRoute = {
   ComedianRatings: '/comedians/:id/ratings',
 
   Pictures: '/:mainType/:id/images',
-  Ratings: '/:mainType/:id/ratings',
+  // Ratings: '/:mainType/:id/ratings',
+  ComedianRating: 'comedians/id/ratings',
+
 
   Comedians: '/comedians',
   Show: '/shows/:id/info',
@@ -85,9 +84,10 @@ export function App() {
                 <Route path={AppRoute.Comedian} element={<ComedianPageInfo />} />
                 <Route path={AppRoute.ComedianShows} element={<ShowsOfComedian />} />
                 <Route path={AppRoute.ComedianEvents} element={<EventsOfComedian />} />
+                <Route path={AppRoute.ComedianRatings} element={<RatingsOfComedian />} />
+
 
                 <Route path={AppRoute.Pictures} element={<PagePictureList />} />
-                <Route path={AppRoute.Ratings} element={<PageRatingList />} />
 
                 <Route path={AppRoute.Events} element={<EventsPage/>}/>
                 <Route path={AppRoute.Event} element={<EventPageInfo />} />

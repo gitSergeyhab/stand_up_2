@@ -156,7 +156,7 @@ export type ShowCardSC = {
   comedian_id: string,
   comedian_nik: string,
   views_count: string,
-  rate_count: string,
+  number_of_rate: string,
   avg_show_rate: number,
   show_date?: string,
 }

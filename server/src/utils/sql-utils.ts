@@ -24,6 +24,20 @@ export const getDataFromSQLWithTitles = (result: [unknown[], unknown])  =>
         ...result[result.length - 1] as {count: string }
     });
 
+export const separateGraphTitles = (result: [unknown[], unknown])  => 
+    ({
+        graph: result.slice(0, result.length - 1), 
+        titles: result[result.length - 1] as TitlesDataType, 
+     
+    });
+
+export const separateListCount = (result: [unknown[], unknown])  => 
+    ({
+        list: result.slice(0, result.length - 1), 
+        ...result[result.length - 1] as {count: string }
+     
+    });
+
 
 /**
  * Проверяет, есть ли заголовки(а значит и комик/событие/место...) с данным айдишником, и если нет выдает онибку 404

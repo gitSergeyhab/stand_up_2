@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
-import { ColumnId, StatusCode } from "../const/const";
+import { ColumnId, DefaultQueryParams, StatusCode } from "../const/const";
 import { sequelize } from "../sequelize";
 import { RateResult } from "../types";
+
+const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
 
 
 
@@ -80,6 +82,57 @@ class RatingController {
             return res.status(StatusCode.Ok).json({message: 'Error getRatings'})
         }
     }
+    // async getShowsRatingsByComedianId(req: Request, res: Response) {
+    //     try {
+    //         const { id } = req.params;
+    //         const { limit = Limit, offset=Offset } = req.query;
+
+    //         const where = `WHERE shows.show_id IN (
+    //             SELECT show_id
+    //             FROM shows
+    //             WHERE comedian_id = :id
+    //         )`
+
+
+    //         const result = await sequelize.query(
+    //             `
+    //             SELECT 
+    //                 users.user_id, users.user_nik,
+    //                 shows.show_id, shows.show_name, 
+    //                 show_ratings.show_rating_id, show_rate, show_ratings.show_date_rate,
+    //                 get_views_count('show_id', shows.show_id, 7) AS weekly_views,
+    //                 get_views_count('show_id', shows.show_id, 1000000) AS total_views,
+    //                 get_avg_show_rate(shows.show_id)::real AS avg_show_rate,
+    //                 avatars.destination || avatars.filename AS user_avatar,
+    //                 main_pictures.destination || main_pictures.filename AS show_picture
+    //             FROM show_ratings
+    //             LEFT JOIN users ON show_ratings.user_id = users.user_id
+    //             LEFT JOIN shows ON show_ratings.show_id = shows.show_id
+    //             LEFT JOIN avatars ON avatars.avatar_id = users.user_avatar_id
+    //             LEFT JOIN main_pictures ON main_picture_id = shows.show_main_picture_id
+    //             ${where}
+    //             ORDER BY show_date_rate DESC
+    //             LIMIT :limit
+    //             OFFSET :offset
+    //             ;
+    //             SELECT count(show_rating_id)
+    //             FROM show_ratings
+    //             LEFT JOIN shows ON show_ratings.show_id = shows.show_id
+    //             ${where}
+    //             `,
+    //             {
+    //                 replacements: { id, limit, offset }, 
+    //                 type: 'SELECT'
+    //             }
+    //         );
+
+            
+    //         return res.status(StatusCode.Ok).json(result)
+
+    //     } catch (err) {
+    //         return res.status(StatusCode.Ok).json({message: 'Error getRatings'})
+    //     }
+    // }
 }
 
 export const ratingController = new RatingController()

@@ -1,7 +1,6 @@
 import {ReactNode} from 'react'
 import styled from 'styled-components';
-import { GridCardType } from '../../types/types';
-import { GridCard } from '../grid-card/grid-card1';
+
 
 export const CardContainerUl = styled.ul`
   width: 100%;
@@ -21,15 +20,6 @@ export const CardContainerUl = styled.ul`
     grid-template-columns: 90%;
   }
 `;
-
-// export function CardContainer({ cards }: { cards: GridCardType[] }) {
-//   const cardElements = cards
-//     .filter((item) => item.id)
-//     .map((item) => <GridCard key={item.id} card={item} />);
-
-//   return <CardContainerUl>{cardElements}</CardContainerUl>;
-// }
-
 
 
 export function CardContainer({children}: {children: ReactNode[]}) {

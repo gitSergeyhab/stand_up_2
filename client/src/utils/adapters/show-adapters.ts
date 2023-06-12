@@ -14,7 +14,7 @@ const adaptServerShowToClientCard = (data: ShowCardSC): GridCardType => ({
   extType: ContentName.Comedians,
   viewsCount: data.views_count,
   date: data.show_date,
-  rateCount: data.rate_count
+  rateCount: data.number_of_rate
 });
 
 export const adaptServerShowDataToCard = (result: ShowCardDataSC): ShowCardDataCC => ({
