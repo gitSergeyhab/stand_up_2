@@ -99,7 +99,6 @@ export function ComedianPageInfo() {
     <ImgListInfo
       handleImgClick={handleClickImg}
       pictures={pictures.slice(0, 3)}
-      isInfo
     />
   ) : null;
 

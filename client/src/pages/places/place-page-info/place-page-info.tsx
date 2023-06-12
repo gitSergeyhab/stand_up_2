@@ -13,7 +13,7 @@ import { useGetPlaceByIdQuery } from '../../../store/places-api';
 import { ResourceBlock } from '../../../components/resource-block/resource-block';
 import { ImageModal } from '../../../components/image-modal/image-modal';
 import { ImageCC } from '../../../types/pic-types';
-import { ImgList } from '../../../components/img-list/img-list';
+import { ImgListInfo } from '../../../components/img-list-info/img-list-info';
 
 export function PlacePageInfo() {
   const { id } = useParams();
@@ -77,8 +77,7 @@ export function PlacePageInfo() {
   ];
 
   const imageListElement = pictures && pictures.length ? (
-    <ImgList
-      info
+    <ImgListInfo
       handleImgClick={handleClickImg}
       pictures={pictures.slice(0, 3)}
     />
@@ -99,8 +98,8 @@ export function PlacePageInfo() {
 
       <ResourceBlock resources={resources} />
 
-{imageListElement}
-{imageModal}
+      {imageListElement}
+      {imageModal}
 
     </>
   );
