@@ -163,7 +163,7 @@ export type EventCardSC = {
 export type OneEventSC = {
   event_id:          string;
   event_name:        string;
-  event_name_en?:     null;
+  event_name_en?:     string;
   event_description?: string;
   event_date?:        string;
   event_date_added:  string;
@@ -186,7 +186,7 @@ export type OneEventSC = {
 export type OneEventCC = {
   eventId:          string;
   eventName:        string;
-  eventNameEn?:     null;
+  eventNameEn?:     string;
   eventDescription?: string;
   eventDate?:        string;
   eventDateAdded:  string;
@@ -214,3 +214,16 @@ export type EventCardServerDataCC = CommonListDataType<GridCardType>
 export type EventCardServerDataWithTitlesSC = CommonListDataWithTitlesType<EventCardSC>
 
 export type EventCardServerDataWithTitlesCC = CommonListDataWithTitlesType<GridCardType>
+
+export type EventState = {
+  eventId:          string;
+  eventName:        string;
+  eventNameEn:      string;
+  eventDescription: string;
+  eventDate:        string;
+  eventStatus:      string;
+  mainPicture:      string;
+  placeId:          string;
+  placeName:        string;
+
+}

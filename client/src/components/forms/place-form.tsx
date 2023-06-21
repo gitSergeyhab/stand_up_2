@@ -1,9 +1,11 @@
 import { FormEventHandler, useRef, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { toast } from "react-toastify";
 import { Form, TextArea } from "./form-style";
 import { DateField, Field } from "../admin-form-field/admin-form-field";
 import { tableField } from "../../const/const";
 import { SubmitButton } from "../common/submit-button";
-import { useAddMainContentMutation } from "../../store/post-form-api";
+import { useAddMainContentMutation, useChangeMainContentMutation } from "../../store/post-form-api";
 import { appendData } from "../../utils/form-utils";
 import { getPlaceErrorMessages } from "../../utils/validation/place-form-validation";
 import { FormDataItemCC } from "../../store/form-data-api";
@@ -12,25 +14,39 @@ import { setDataError } from "../../utils/error-utils";
 import { DataErrorType, ErrorDataFieldType, OptionType } from "../../types/types";
 import { InputWithList } from "../input-with-list/input-with-list";
 import { ImageField } from "../image-field/image-field";
+import { PlaceState } from "../../types/place-types";
+import { getDateFromString } from "../../utils/date-utils";
+import { getOption } from "../../utils/utils";
 
 
 type PlaceFormProps = {
-  countries: FormDataItemCC[]
+  countries: FormDataItemCC[],
+  state?: PlaceState
 }
-export function PlaceForm ({countries}: PlaceFormProps) {
+export function PlaceForm ({countries, state}: PlaceFormProps) {
 
-  const formRef = useRef<HTMLFormElement|null>(null)
 
-  const [chosenCountry, setCountry] = useState<OptionType|null>(null);
-  const [dateFounded, setDateFounded] = useState<Date|null>(null);
-  const [dateClosed, setDateClosed] = useState<Date|null>(null);
+  const formRef = useRef<HTMLFormElement|null>(null);
+  const navigate = useNavigate();
 
-  const [isPic, setPic] = useState(false);
+  const stateCountryOption = getOption(state?.countryId, state?.countryName)
+  // state?.countryId && state.countryName ?
+  //   {id: state.countryId, name: state.countryName} : null;
+
+// console.log(dayjs(state?.placeDateClosed).toDate(), 'yoDate', getDateFromString(state?.placeDateClosed))
+  const [chosenCountry, setCountry] = useState<OptionType|null>(stateCountryOption);
+  const [dateFounded, setDateFounded] = useState<Date|null|undefined>(getDateFromString(state?.placeDateFounded));
+  const [dateClosed, setDateClosed] = useState<Date|null|undefined>(getDateFromString(state?.placeDateClosed));
+
+  const [isPic, setPic] = useState( !!state?.mainPicture);
+  const [isPicChanged, setPicChanged] = useState(false);
+  // console.log({isPic})
 
   const [disabled, setDisabled] = useState(false);
   const [errors, setErrors] = useState<ErrorDataFieldType>({errorIndexes:[],errorMessages:[]});
 
-  const [addContent] = useAddMainContentMutation();
+  const [addContent] =  useAddMainContentMutation();
+  const [changeContent] =  useChangeMainContentMutation();
 
   const resetForm = () => {
     formRef.current?.reset();
@@ -50,6 +66,9 @@ export function PlaceForm ({countries}: PlaceFormProps) {
     }
 
     const formData = new FormData(formRef.current);
+    if (isPicChanged) {
+      formData.append('isPicChanged', 'true')
+    }
     appendData(
       formData,
       [chosenCountry],
@@ -62,22 +81,29 @@ export function PlaceForm ({countries}: PlaceFormProps) {
     if (errorData.errorMessages.length) {
       setErrors(errorData);
       setDisabled(false);
-    } else {
-      try {
-        await addContent({body: formData, dir: 'places'}).unwrap()
-        resetForm();
-      } catch (err) {
-        setDataError({ setErrors, data: err as DataErrorType })
-        setDisabled(false);
-      }
+      return;
     }
 
-
-
-    console.log(Object.fromEntries(formData))
-
+    try {
+      if (state) {
+        console.log(Object.fromEntries(formData), 'Object.fromEntries(formData) - state')
+        await changeContent({body: formData, dir: 'places', id: state.placeId}).unwrap();
+        navigate(`/places/${state.placeId}/info`);
+      } else {
+        console.log(Object.fromEntries(formData), 'Object.fromEntries(formData) - NO state')
+        await addContent({body: formData, dir: 'places'}).unwrap()
+        toast.info('новая площадка добавлена')
+      }
+      resetForm();
+    } catch (err) {
+      setDataError({ setErrors, data: err as DataErrorType })
+      setDisabled(false);
+    }
   }
+
   const errorBlock = <UserErrorsBlock errors={errors.errorMessages} />;
+
+  const submitText = state ? 'Внести изменения' : 'Добавить';
 
   return (
     <Form action="/" ref={formRef} onSubmit={handleSubmit}>
@@ -86,12 +112,14 @@ export function PlaceForm ({countries}: PlaceFormProps) {
         id={tableField.places.placeName}
         placeholder="название площадки"
         errorIndexes={errors.errorIndexes}
+        stateValue={state?.placeName}
         required
       />
       <Field
         id={tableField.places.placeNameEn}
         placeholder="place name"
         errorIndexes={errors.errorIndexes}
+        stateValue={state?.placeNameEn}
       />
       <br />
       <InputWithList
@@ -105,18 +133,19 @@ export function PlaceForm ({countries}: PlaceFormProps) {
         id={tableField.places.placeCity}
         placeholder="город"
         errorIndexes={errors.errorIndexes}
+        stateValue={state?.placeCity}
       />
       <Field
         id={tableField.places.placeCityEn}
         placeholder="city"
         errorIndexes={errors.errorIndexes}
+        stateValue={state?.placeCityEn}
       />
       <br />
-      {/* <Field id={tableField.places.placeActive} placeholder="действует"/>!!!
-      <br /> */}
-      <ImageField setPic={setPic} isPic={isPic}/>
+      <ImageField setPic={setPic} isPic={isPic} statePicture={state?.mainPicture} setPicChanged={setPicChanged}/>
       <br />
       <TextArea
+        defaultValue={state?.placeDescription}
         name={tableField.places.placeDescription}
         placeholder="описание" />
       <br/>
@@ -124,7 +153,9 @@ export function PlaceForm ({countries}: PlaceFormProps) {
       <DateField id={tableField.places.placeDateClosed} date={dateClosed} setDate={setDateClosed} label="закрыт"/>
 
       {errorBlock}
-      <SubmitButton disabled={disabled}> Добавить</SubmitButton>
+      <SubmitButton disabled={disabled}>
+        {submitText}
+      </SubmitButton>
     </Form>
   )
 }

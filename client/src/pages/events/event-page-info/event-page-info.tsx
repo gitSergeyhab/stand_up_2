@@ -10,6 +10,7 @@ import { ContentName } from '../../../const/const';
 import { TabData } from '../../../const/data';
 import { useGetEventByIdQuery } from '../../../store/events-api';
 import { ErrorPage } from '../../error-page/error-page';
+import { LongLink } from '../../../components/common/common-style';
 
 export function EventPageInfo() {
   const { id } = useParams();
@@ -76,6 +77,21 @@ export function EventPageInfo() {
       <Titles native={eventName} en={eventNameEn || ''} />
 
       <TopTabs tabProps={tabProps} />
+
+      <LongLink
+        to={`/events/${id}/change`}
+        state={{
+          eventId,
+          eventName,
+          eventNameEn,
+          eventDescription,
+          eventDate,
+          eventStatus,
+          mainPicture,
+          placeId,
+          placeName,
+        }}
+      >Изменить</LongLink>
 
       <MainPic src={mainPicture} alt={eventName} />
 

@@ -1,13 +1,14 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
 import {  Column, ColumnId, DefaultQueryParams, ImageType, SQLFunctionName, StatusCode, TableName } from "../const/const";
-import { getDataFromSQL, getDataInsertQueryStr, insertView, separateGraphTitles, separateListCount } from "../utils/sql-utils";
+import { getDataFromSQL, getDataInsertQueryStr, getDataUpdateQueryStr, insertView, separateGraphTitles, separateListCount } from "../utils/sql-utils";
 import { getDataFromSQLWithTitles } from "../utils/sql-utils";
 import { ImageFile, SimpleDict } from "../types";
 import { imageService } from "../service/image-service";
 import { ApiError } from "../custom-errors/api-error";
 import { getDefaultFromToYears } from "../utils/date-utils";
 import { getBetweenYearsWhereStr } from "../utils/sql-where-utils";
+import { getNullObj, getValueOrNull } from "../utils/utils";
 
 const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
 
@@ -33,13 +34,6 @@ class ComedianController {
                 limit = null, offset = null, order='pop', direction=null
             } = req.query;
 
-            console.log({year_from, year_to})
-//!!goodwhere
-            // const where = `
-            //     WHERE (country_id ${country_id ? ' = :country_id' : ' = country_id OR 1 = 1'})
-            //     AND ${ city ?  '(LOWER(comedian_city) = LOWER(:city)) OR (LOWER(comedian_city_en) = LOWER(:city))' : '1 = 1'}
-            //     AND ${getBetweenYearsWhereStr('comedian_date_birth')}
-            // `;
 
             const where = `
                 WHERE (country_id ${country_id ? ' = :country_id' : ' = country_id OR 1 = 1'})
@@ -94,61 +88,6 @@ class ComedianController {
             return res.status(500).json({message: 'error get comedians'})
         }
     }
-    // async getComedians(req: Request, res: Response) {
-    //     try {
-
-    //         const {country_id, city, limit = null, offset = null, order='pop', direction=null} = req.query;
-
-    //         const where = `
-    //             WHERE country_id = ${country_id ? ':country_id' : 'country_id'}
-    //             AND (LOWER(comedian_city) = ${city ? 'LOWER(:city)' : 'LOWER(comedian_city)'} OR LOWER(comedian_city_en) = ${city ? 'LOWER(:city)' : 'LOWER(comedian_city_en)'})
-    //         `
-    
-    //             const result = await sequelize.query(
-    //                 `
-    //                 SELECT 
-    //                     comedian_id, comedian_first_name, comedian_last_name, comedian_first_name_en, comedian_last_name_en, comedian_date_added, comedian_city, comedian_avatar,
-    //                     comedian_first_name  || ' ' || comedian_last_name AS first_title, comedian_first_name_en  || ' ' || comedian_last_name_en AS second_title, 
-    //                     country_id, country_name, country_name_en,
-    //                     AVG(comedian_rate)::real AS avg_rate, COUNT (comedian_id) AS number_of_rate,
-    //                     get_views_count('comedian_id', comedian_id, 7) AS views,
-    //                     get_views_count('comedian_id', comedian_id, 1000000) AS total_views
-    //                 FROM comedians
-
-    //                 LEFT JOIN countries USING(country_id)
-    //                 LEFT JOIN comedian_ratings USING(comedian_id)
-                    
-    //                 ${where}
-
-    //                 GROUP BY comedian_id, country_id, country_name, country_name_en
-
-    //                 ORDER BY ${ComedianOrder[order as string] || ComedianOrder.pop} ${direction === 'asc' ? 'ASC' : 'DESC'}
-
-    //                 LIMIT :limit
-    //                 OFFSET :offset
-    //                 ;
-
-    //                 SELECT COUNT(comedian_id)::int FROM comedians
-    //                 ${where}
-    //                 ;
-    //                 `,
-    //                 { 
-    //                     replacements: {offset, limit, country_id, city},
-    //                     type: 'SELECT'
-    //                 }
-    //             );
-
-    //             const data = getDataFromSQL(result, 'comedians')
-        
-    //             return res.status(200).json({...data})
-                
-
-    //     } catch(e) {
-    //         console.log(e)
-    //         return res.status(500).json({message: 'error get comedians'})
-    //     }
-    // }
-
 
     async getComedianById(req: Request, res: Response) {
         try {
@@ -163,10 +102,13 @@ class ComedianController {
                 SELECT 
                     comedian_id,
                     comedian_nik,
+                    comedian_nik_en,
                     comedian_first_name,
                     comedian_last_name,
+                    comedian_second_name,
                     comedian_first_name_en,
                     comedian_last_name_en,
+                    comedian_second_name_en,
                     comedian_city,
                     comedian_city_en,
                     destination || filename AS main_picture,
@@ -551,6 +493,50 @@ console.log(req.query.year_from, req.query.year_to, 'req.query.year_from || req.
                 // HARDCODE user_added_id = 1 !!! 
                 replacements: {...body, comedian_main_picture_id, user_added_id: '1'}, 
                 type: "INSERT"
+            })
+
+            console.log({file, result})
+
+            return res.status(StatusCode.Added).json(result)
+
+        
+        } catch (err) {
+            const {message} = err;
+            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
+        } 
+    }
+
+    async changeComedian (req: Request, res: Response ) {
+        try {
+            const {body} = req;
+            const {id} = req.params
+            const dir = req.query.dir as string;
+            console.log({dir, body})
+            const file = req.file as ImageFile;
+            const comedian_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
+            // HARDCODE user_added_id = 1 !!!   
+            const {
+                user_added_id = '1', country_id, 
+                comedian_nik, comedian_nik_en, comedian_first_name, comedian_second_name, comedian_last_name, comedian_first_name_en, comedian_second_name_en, comedian_last_name_en,
+                comedian_city, comedian_city_en, comedian_description,
+                comedian_date_birth, comedian_date_death, isPicChanged
+            } = body as SimpleDict;
+            const fields = [
+                {user_added_id}, {country_id}, 
+                {comedian_nik}, {comedian_nik_en}, {comedian_first_name}, {comedian_second_name}, {comedian_last_name}, {comedian_first_name_en}, {comedian_second_name_en}, {comedian_last_name_en},
+                {comedian_city}, {comedian_city_en}, {comedian_description},
+                {comedian_date_birth}, {comedian_date_death}
+
+            ] as SimpleDict[];
+
+        
+            const pictureIdValue = getValueOrNull(comedian_main_picture_id);
+            const allFields = [...fields, isPicChanged ? {comedian_main_picture_id} : null].filter((item) => item);
+            const sqlQuery = getDataUpdateQueryStr(allFields, dir)
+            const result = await sequelize.query(sqlQuery, {
+                // HARDCODE user_added_id = 1 !!! 
+                replacements: getNullObj({...body, comedian_main_picture_id: pictureIdValue, user_added_id: '1', id}),
+                type: "UPDATE"
             })
 
             console.log({file, result})

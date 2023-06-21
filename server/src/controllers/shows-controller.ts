@@ -1,13 +1,14 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
 import { Column, ColumnId, DefaultQueryParams, ImageType, OrderValues, StatusCode } from "../const/const";
-import { convertFormDataToDate, getDataFromSQL, getDataInsertQueryStr, getTitles, insertView } from "../utils/sql-utils";
+import { convertFormDataToDate, getDataFromSQL, getDataInsertQueryStr, getDataUpdateQueryStr, getTitles, insertView } from "../utils/sql-utils";
 import { imageService } from "../service/image-service";
 import { ImageFile, SimpleDict } from "../types";
 import { ApiError } from "../custom-errors/api-error";
 import { getDefaultFromToYears } from "../utils/date-utils";
 import { getBetweenYearsWhereStr } from '../utils/sql-where-utils'
 import { getDataFromSQLWithTitles } from "../utils/sql-utils";
+import { getNullObj, getValueOrNull } from "../utils/utils";
 
 
 const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
@@ -294,12 +295,12 @@ class ShowsController {
         try {
             const {body} = req;
             const dir = req.query.dir as string;
-            console.log({dir})
+            console.log({dir, body})
             const file = req.file as ImageFile;
             const show_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
             // HARDCODE user_added_id = 1 !!!   
-            const {user_added_id = '1', event_id, comedian_id, place_id, language_id, show_date, show_name, show_description} = body as SimpleDict;
-            const fields = [{show_name}, {user_added_id}, {event_id}, {comedian_id}, {place_id}, {language_id}, {show_date}, {show_description}] as SimpleDict[];
+            const {user_added_id = '1', event_id, comedian_id, place_id, language_id, show_date, show_name, show_name_en, show_description} = body as SimpleDict;
+            const fields = [{show_name}, {show_name_en},{user_added_id}, {event_id}, {comedian_id}, {place_id}, {language_id}, {show_date}, {show_description}] as SimpleDict[];
             const allFields = [...fields, {show_main_picture_id}]
 
             const sqlQuery = getDataInsertQueryStr(allFields, dir)
@@ -320,6 +321,46 @@ class ShowsController {
             const {message} = err;
             throw new ApiError(StatusCode.ServerError, message || 'unknown error')
         }
+    }
+
+    async changeShow (req: Request, res: Response ) {
+        try {
+            const {body} = req;
+            const {id} = req.params
+            const dir = req.query.dir as string;
+            console.log({dir, body})
+            const file = req.file as ImageFile;
+            const show_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
+            // HARDCODE user_added_id = 1 !!!   
+            const {
+                user_added_id = '1', event_id, comedian_id, place_id, language_id, 
+                show_date, show_name, show_name_en, show_description,
+                isPicChanged
+            } = body as SimpleDict;
+            const fields = [
+                {user_added_id}, {event_id}, {comedian_id}, {place_id}, {language_id}, 
+                {show_date}, {show_name}, {show_name_en}, {show_description},
+            ] as SimpleDict[];
+
+        
+            const pictureIdValue = getValueOrNull(show_main_picture_id);
+            const allFields = [...fields, isPicChanged ? {show_main_picture_id} : null].filter((item) => item);
+            const sqlQuery = getDataUpdateQueryStr(allFields, dir)
+            const result = await sequelize.query(sqlQuery, {
+                // HARDCODE user_added_id = 1 !!! 
+                replacements: getNullObj({...body, show_main_picture_id: pictureIdValue, user_added_id: '1', id}),
+                type: "UPDATE"
+            })
+
+            console.log({file, result})
+
+            return res.status(StatusCode.Added).json(result)
+
+        
+        } catch (err) {
+            const {message} = err;
+            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
+        } 
     }
 
     async getShows(req: Request, res: Response) {

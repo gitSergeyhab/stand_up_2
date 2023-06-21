@@ -95,3 +95,18 @@ display: flex;
 left: 0;
 top: -0.5rem;
 `
+export const LongLink = styled(Link)`
+  color: #FFF;
+  background-color: #480909;
+  text-decoration: none;
+  padding: 2px 4px;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  transition: 0.3s ease-in-out all;
+
+  &:hover {
+    color: gold;
+    background-color: #000000;
+  }
+`;

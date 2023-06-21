@@ -11,6 +11,7 @@ showsRouter.get('/', asyncHandler(showsController.getShows));
 showsRouter.get('/:id', asyncHandler(showsController.getShowById) );
 showsRouter.get('/:id/votes', showsController.getVotesByShowId);
 showsRouter.post('/',  imageUploader.single('image'), asyncHandler(showsController.addShow));
+showsRouter.put('/:id', imageUploader.single('image'), asyncHandler(showsController.changeShow));
 
 
 

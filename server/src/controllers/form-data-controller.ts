@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { sequelize } from "../sequelize";
 import { StatusCode } from "../const/const";
+import { ApiError } from "../custom-errors/api-error";
 
 
 class FormDataController {
@@ -57,7 +58,46 @@ class FormDataController {
 
         } catch (err) {
             console.log({err}, '___________________________________')
-            return res.status(StatusCode.ServerError).json('Error')
+            throw new ApiError(StatusCode.ServerError, 'Error getPreloadForm')
+            
+        }
+    }
+
+    async getPreloadCountries(req: Request, res: Response) {
+        try {
+            const result = await sequelize.query(
+                `
+                SELECT
+                country_id, country_name
+                FROM countries;
+                `, { type: 'SELECT' }
+            );
+
+            return res.status(StatusCode.Ok).json(result)
+
+        } catch (err) {
+            console.log({err}, '___________________________________')
+            throw new ApiError(StatusCode.ServerError, 'Error getPreloadCountries')
+            
+        }
+    }
+
+    
+    async getPreloadPlaces(req: Request, res: Response) {
+        try {
+            const result = await sequelize.query(
+                `
+                SELECT
+                place_id, place_name
+                FROM places;
+                `, { type: 'SELECT' }
+            );
+
+            return res.status(StatusCode.Ok).json(result)
+
+        } catch (err) {
+            console.log({err}, '___________________________________')
+            throw new ApiError(StatusCode.ServerError, 'Error getPreloadPlaces')
             
         }
     }

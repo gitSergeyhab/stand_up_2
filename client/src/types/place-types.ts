@@ -76,3 +76,17 @@ export type PlaceCardDataCC = CommonListDataType<GridCardType>
 // export type ShowCardDataWithTitlesSC = CommonListDataWithTitlesType<ShowCardSC>
 
 // export type ShowCardDataWithTitlesCC = CommonListDataWithTitlesType<GridCardType>
+
+export type PlaceState = {
+  placeName: string,
+  placeNameEn?: string,
+  countryId?: number,
+  countryName?: string,
+  placeCity?: string,
+  placeCityEn?: string,
+  mainPicture?: string,
+  placeDescription?: string,
+  placeDateClosed?: string,
+  placeDateFounded?: string,
+  placeId: string
+}

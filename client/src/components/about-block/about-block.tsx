@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { AboutTable, TR, TDR, TDL } from './about-block-style';
 import { DefaultPath, SERVER_URL } from '../../const/const';
 
-type AboutRowType = {
+export type AboutRowType = {
   point: string;
   value?: string;
   src?: string;
@@ -14,6 +14,7 @@ type AboutRowType = {
 const AboutTableImg = styled.img`
   width: 2rem;
   height: 2rem;
+  object-fit: cover;
 `
 
 

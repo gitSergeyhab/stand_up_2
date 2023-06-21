@@ -16,6 +16,7 @@ import { ErrorPage } from '../../error-page/error-page';
 import { BigSpinner } from '../../../components/spinner/big-spinner';
 import { ImageCC } from '../../../types/pic-types';
 import { ImgListInfo } from '../../../components/img-list-info/img-list-info';
+import { LongLink } from '../../../components/common/common-style';
 
 export function ComedianPageInfo() {
   const { id } = useParams();
@@ -59,7 +60,13 @@ export function ComedianPageInfo() {
     pictures,
     resources,
     mainPicture,
-    comedianNik
+    comedianNik,
+    comedianId,
+    countryId,
+    comedianCityEn,
+    comedianSecondName,
+    comedianSecondNameEn,
+    comedianNikEn
   } = comedian;
 
   const about = [
@@ -110,6 +117,29 @@ export function ComedianPageInfo() {
       />
 
       <TopTabs tabProps={tabProps} />
+
+      <LongLink
+        to={`/comedians/${id}/change`}
+        state={{
+          comedianId,
+          comedianDateBirth,
+          comedianDateDeath,
+          comedianDescription,
+          comedianSecondName,
+          comedianSecondNameEn,
+          comedianFirstName,
+          comedianLastName,
+          comedianLastNameEn,
+          comedianFirstNameEn,
+          comedianNik,
+          comedianNikEn,
+          countryId,
+          comedianCity,
+          comedianCityEn,
+          countryName,
+          mainPicture
+        }}
+      >Изменить</LongLink>
 
       <MainPic
         src={mainPicture}

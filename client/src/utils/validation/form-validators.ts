@@ -20,7 +20,7 @@ export const dateValidator = (date: string) => {
  * @returns
  */
 export const checkListInputValue = (values: FormDataItemCC[], value?: string) =>
-  values.map((item) => String(item.id)).includes(value || '');
+ !value || values.map((item) => String(item.id)).includes(value);
 
 export const getIdFieldError = (idDict: SimpleDictEmpty, message: string) =>
   `${Object.keys(idDict)[0]  }: ${ message }`;

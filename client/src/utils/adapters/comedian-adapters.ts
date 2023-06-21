@@ -1,4 +1,3 @@
-import { ImageCC, ImageSC } from '../../store/images-api';
 import {
   ComedianCardCC,
   ComedianCardDataCC,
@@ -8,6 +7,7 @@ import {
   OneComedianTypeSC,
 
 } from '../../types/comedian-types';
+import { ImageCC, ImageSC } from '../../types/pic-types';
 
 
 
@@ -41,6 +41,9 @@ export const adaptOneComedianToClient = (data: OneComedianTypeSC): OneComedianTy
   comedianDescription: data.comedian_description,
   comedianDateBirth: data.comedian_date_birth,
   comedianDateDeath: data.comedian_date_death,
+  comedianNikEn: data.comedian_nik_en,
+  comedianSecondName: data.comedian_second_name,
+  comedianSecondNameEn: data.comedian_second_name_en,
 });
 
 

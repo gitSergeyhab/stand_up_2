@@ -1,12 +1,13 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
 import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId, ImageType, DefaultQueryParams } from "../const/const";
-import { getDataFromSQL, getDataInsertQueryStr, getTitles, insertView } from "../utils/sql-utils";
+import { getDataFromSQL, getDataInsertQueryStr, getDataUpdateQueryStr, getTitles, insertView } from "../utils/sql-utils";
 import { ImageFile, SimpleDict } from "../types";
 import { imageService } from "../service/image-service";
 import { ApiError } from "../custom-errors/api-error";
 import { getDefaultFromToYears } from "../utils/date-utils";
 import { getBetweenYearsWhereStr } from '../utils/sql-where-utils'
+import { getNullObj, getValueOrNull } from "../utils/utils";
 
 
 const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
@@ -58,7 +59,6 @@ class PlacesController {
                         type: 'SELECT'
                     }
                 );
-console.log(places)
                 if (!places.length) {
                     return res.status(StatusCode.NotFoundError).json({message: `not found place with ID: ${id}`})
                 }
@@ -112,7 +112,7 @@ console.log(places)
         try {
             const {body} = req;
             const dir = req.query.dir as string;
-            console.log({dir})
+            console.log({dir, body})
             const file = req.file as ImageFile;
             const place_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
             // HARDCODE user_added_id = 1 !!!   
@@ -122,9 +122,8 @@ console.log(places)
                 place_city, place_city_en,
                 place_date_founded, place_date_closed,
                 place_description
-
-
             } = body as SimpleDict;
+
             const fields = [
                 {user_added_id}, {country_id}, 
                 {place_name}, {place_name_en}, 
@@ -137,7 +136,7 @@ console.log(places)
 
             const sqlQuery = getDataInsertQueryStr(allFields, dir)
 
-            
+
             const result = await sequelize.query(sqlQuery, {
                 // HARDCODE user_added_id = 1 !!! 
                 replacements: {...body, place_main_picture_id, user_added_id: '1'}, 
@@ -147,6 +146,51 @@ console.log(places)
             console.log({file, result})
 
             return res.status(StatusCode.Added).json(result)
+
+        
+        } catch (err) {
+            const {message} = err;
+            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
+        } 
+    }
+
+    async changePlace (req: Request, res: Response ) {
+        try {
+            const {body} = req;
+            const {id} = req.params
+            const dir = req.query.dir as string;
+            const file = req.file as ImageFile;
+            const place_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
+            // HARDCODE user_added_id = 1 !!!   
+            const {
+                user_added_id = '1', country_id, 
+                place_name, place_name_en, 
+                place_city, place_city_en,
+                place_date_founded, place_date_closed,
+                place_description, isPicChanged
+            } = body as SimpleDict;
+            const fields = [
+                {user_added_id}, {country_id}, 
+                {place_name}, {place_name_en}, 
+                {place_city}, {place_city_en},
+                {place_date_founded}, {place_date_closed}, 
+                {place_description}
+
+            ] as SimpleDict[];
+            
+            const placePictureIdValue = getValueOrNull(place_main_picture_id);
+            const allFields = [...fields, isPicChanged ? {place_main_picture_id} : null].filter((item) => item)
+            const sqlQuery = getDataUpdateQueryStr(allFields, dir)
+
+
+            const result = await sequelize.query(sqlQuery, {
+                replacements: getNullObj({...body, place_main_picture_id: placePictureIdValue, user_added_id: '1', id}), 
+                type: "UPDATE"
+            })
+
+            console.log({file, result})
+
+            return res.status(StatusCode.Added).json({sqlQuery, id})
 
         
         } catch (err) {

@@ -5,26 +5,34 @@ import { InvisibleImageInput } from "../common/hidden-file-input";
 
 
 
-type ImageFieldProps = {setPic: Dispatch<SetStateAction<boolean>>, isPic: boolean}
-export function ImageField({setPic, isPic}: ImageFieldProps) {
+type ImageFieldProps = {
+  setPic: Dispatch<SetStateAction<boolean>>,
+  setPicChanged: Dispatch<SetStateAction<boolean>>,
+  isPic: boolean,
+  statePicture?: string
+}
+export function ImageField({setPic, isPic, statePicture, setPicChanged}: ImageFieldProps) {
+  console.log({isPic}, `${SERVER_URL}${statePicture}`)
 
-  const [src, setSrc] = useState(`${SERVER_URL}images/default/default.png`);
-  const [fileName, setFileName] = useState('test.test');
+  const [src, setSrc] = useState( statePicture ? `${SERVER_URL}${statePicture}` : undefined);
+  const [fileName, setFileName] = useState(statePicture);
   const inputRef = useRef<HTMLInputElement|null>(null)
 
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = (evt) => {
     const {files} = evt.target
     if (files && files[0]) {
-      setPic(true)
-      setFileName(files[0].name)
-      setSrc(URL.createObjectURL(files[0]))
+      setPic(true);
+      setPicChanged(true);
+      setFileName(files[0].name);
+      setSrc(URL.createObjectURL(files[0]));
     }
   }
 
   const handleBtnCleanPictureClock = () => {
-      setPic(false)
-      setFileName('')
-      setSrc('')
+      setPic(false);
+      setPicChanged(true);
+      setFileName('');
+      setSrc('');
   }
 
   const handleBtnClick = () => {

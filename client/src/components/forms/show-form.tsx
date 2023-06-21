@@ -1,4 +1,6 @@
 import { FormEventHandler, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Form, TextArea } from "./form-style";
 import { DateField, Field } from "../admin-form-field/admin-form-field";
 import { tableField } from "../../const/const";
@@ -11,31 +13,52 @@ import { getShowErrorMessages } from "../../utils/validation/show-form-validatio
 import { UserErrorsBlock } from "../user-errors-block/user-errors-block";
 import { setDataError } from "../../utils/error-utils";
 import { appendData } from "../../utils/form-utils";
-import { useAddMainContentMutation } from "../../store/post-form-api";
+import { useAddMainContentMutation, useChangeMainContentMutation } from "../../store/post-form-api";
+import { ShowState } from "../../types/show-types";
+import { getOption } from "../../utils/utils";
+import { getDateFromString } from "../../utils/date-utils";
 
 
 
 type ShowFormProps = {
   comedians: FormDataItemCC[],
   events: FormDataItemCC[],
-  places: FormDataItemCC[]
-  languages: FormDataItemCC[]
+  places: FormDataItemCC[],
+  languages: FormDataItemCC[],
+  state?: ShowState
 }
 
-export function ShowForm ({comedians, events, places, languages}: ShowFormProps) {
 
+
+export function ShowForm ({comedians, events, places, languages, state}: ShowFormProps) {
+
+  console.log({state})
   const formRef = useRef<HTMLFormElement|null>(null);
-  const [chosenComedian, setComedian] = useState<OptionType|null>(null);
-  const [chosenPlace, setPlace] = useState<OptionType|null>(null);
-  const [chosenEvent, setEvent] = useState<OptionType|null>(null);
-  const [chosenLanguage, setLanguage] = useState<OptionType|null>(null);
-  const [showDate, setShowDate] = useState<Date|null>(null);
-  const [isPic, setPic] = useState(false);
+  const navigate = useNavigate();
+  const stateComedianOption = getOption(state?.comedianId, state?.comedianNik);
+  const stateEventOption = getOption(state?.eventId, state?.eventName);
+  const statePlaceOption = getOption(state?.placeId, state?.placeName);
+  const stateLanguageOption = getOption(state?.languageId, state?.languageName) ;
+
+
+
+  const [chosenComedian, setComedian] = useState<OptionType|null>(stateComedianOption);
+  const [chosenPlace, setPlace] = useState<OptionType|null>(statePlaceOption);
+  const [chosenEvent, setEvent] = useState<OptionType|null>(stateEventOption);
+  const [chosenLanguage, setLanguage] = useState<OptionType|null>(stateLanguageOption);
+
+  const [showDate, setShowDate] = useState<Date|null|undefined>(getDateFromString(state?.showDate));
+
+  const [isPic, setPic] = useState(!!state?.showPicture);
+  const [isPicChanged, setPicChanged] = useState(false);
+
 
   const [disabled, setDisabled] = useState(false);
   const [errors, setErrors] = useState<ErrorDataFieldType>({errorIndexes:[],errorMessages:[]});
 
   const [addContent] = useAddMainContentMutation()
+  const [changeContent] =  useChangeMainContentMutation();
+
 
   const resetForm = () => {
     formRef.current?.reset();
@@ -57,6 +80,11 @@ export function ShowForm ({comedians, events, places, languages}: ShowFormProps)
     }
 
     const formData = new FormData(formRef.current);
+
+    if (isPicChanged) {
+      formData.append('isPicChanged', 'true')
+    }
+
     appendData(
       formData,
       [chosenComedian, chosenPlace, chosenEvent, chosenLanguage],
@@ -69,15 +97,22 @@ export function ShowForm ({comedians, events, places, languages}: ShowFormProps)
     if (errorData.errorMessages.length) {
       setErrors(errorData);
       setDisabled(false);
-    } else {
-      try {
-        await addContent({body: formData, dir: 'shows'}).unwrap()
-        resetForm();
-      } catch (err) {
-        setDataError({ setErrors, data: err as DataErrorType })
-        setDisabled(false);
-      }
+      return;
     }
+    try {
+      if (state) {
+        await changeContent({body: formData, dir: 'shows', id: state.showId}).unwrap();
+        navigate(`/shows/${state.showId}/info`);
+      } else {
+        await addContent({body: formData, dir: 'shows'}).unwrap();
+        toast.info('новое выступление добавлено')
+      }
+      resetForm();
+    } catch (err) {
+      setDataError({ setErrors, data: err as DataErrorType })
+      setDisabled(false);
+    }
+
 
 
 
@@ -85,6 +120,7 @@ export function ShowForm ({comedians, events, places, languages}: ShowFormProps)
 
   }
   const errorBlock = <UserErrorsBlock errors={errors.errorMessages} />;
+  const submitText = state ? 'Внести изменения' : 'Добавить';
 
   return (
     <Form action="/" ref={formRef} onSubmit={handleSubmit}>
@@ -93,7 +129,14 @@ export function ShowForm ({comedians, events, places, languages}: ShowFormProps)
         id={tableField.shows.showName}
         placeholder="название шоу"
         errorIndexes={errors.errorIndexes}
+        stateValue={state?.showName}
         required
+      />
+      <Field
+        id={tableField.shows.showNameEn}
+        placeholder="show name"
+        errorIndexes={errors.errorIndexes}
+        stateValue={state?.showNameEn}
       />
       <br/>
 
@@ -132,15 +175,18 @@ export function ShowForm ({comedians, events, places, languages}: ShowFormProps)
       />
 
       <br/>
-      <ImageField setPic={setPic} isPic={isPic}/>
+      <ImageField statePicture={state?.showPicture} setPicChanged={setPicChanged} setPic={setPic} isPic={isPic}/>
+
       <br/>
       <TextArea
         name={tableField.shows.showDescription}
-        placeholder="описание !!!" />
+        placeholder="описание !!!"
+        defaultValue={state?.showDescription}
+      />
       <br/>
       <DateField id={tableField.shows.showDate} date={showDate} setDate={setShowDate} label="дата"/>
       {errorBlock}
-      <SubmitButton disabled={disabled}> Добавить</SubmitButton>
+      <SubmitButton disabled={disabled}> {submitText}</SubmitButton>
     </Form>
   )
 }

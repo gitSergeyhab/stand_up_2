@@ -9,6 +9,7 @@ placesRouter.get('/', asyncHandler(placesController.getPlaces));
 placesRouter.get('/search', placesController.searchPlacesByName);
 placesRouter.get('/:id', asyncHandler(placesController.getPlaceById));
 placesRouter.post('/', imageUploader.single('image'), asyncHandler(placesController.addPlace));
+placesRouter.put('/:id', imageUploader.single('image'), asyncHandler(placesController.changePlace));
 
 
 

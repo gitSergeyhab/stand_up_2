@@ -11,6 +11,8 @@ eventsRouter.get('/:id', asyncHandler(eventsController.getEventById));
 eventsRouter.get('/', asyncHandler(eventsController.getEvents));
 
 eventsRouter.post('/',  imageUploader.single('image'), asyncHandler(eventsController.addEvent));
+eventsRouter.put('/:id', imageUploader.single('image'), asyncHandler(eventsController.changeEvent));
+
 
 // comedianRouter.get('/:id', comedianController.getComedianById);
 // comedianRouter.get('/:id/votes', comedianController.getVotesByComedianId);

@@ -1,5 +1,5 @@
-import { ImageCC, ImageSC } from '../store/images-api';
 import { CommonListDataType } from './common-types';
+import { ImageCC, ImageSC } from './pic-types';
 import { ResourceType } from './types';
 
 export type OneComedianTypeSC = {
@@ -13,8 +13,11 @@ export type OneComedianTypeSC = {
   comedian_description?: string;
   comedian_first_name?: string;
   comedian_first_name_en?: string;
+  comedian_second_name?: string;
+  comedian_second_name_en?: string;
   comedian_id: number;
   comedian_nik: string;
+  comedian_nik_en?: string;
   comedian_last_name?: string;
   comedian_last_name_en?: string;
   country_id?: number;
@@ -42,8 +45,11 @@ export type OneComedianTypeCC = {
   comedianFirstNameEn?: string;
   comedianId: number;
   comedianNik: string;
+  comedianNikEn?: string;
   comedianLastName?: string;
   comedianLastNameEn?: string;
+  comedianSecondName?: string;
+  comedianSecondNameEn?: string;
   countryId?: number;
   countryName?: string;
   countryNameEn?: string;
@@ -84,3 +90,23 @@ export type ComedianCardCC = {
 export type ComedianCardDataSC = CommonListDataType<ComedianCardSC>
 
 export type ComedianCardDataCC = CommonListDataType<ComedianCardCC>
+
+export type ComedianState = {
+  comedianId: string,
+  comedianDateBirth?: string,
+  comedianDateDeath?: string,
+  comedianDescription?: string,
+  comedianSecondName?: string,
+  comedianSecondNameEn?: string,
+  comedianFirstName?: string,
+  comedianLastName?: string,
+  comedianLastNameEn?: string,
+  comedianFirstNameEn?: string,
+  comedianNik: string,
+  comedianNikEn?: string,
+  countryId?: number,
+  countryName?: string,
+  comedianCity?: string,
+  comedianCityEn?: string,
+  mainPicture?:string
+}

@@ -10,12 +10,6 @@ export const getDataFromSQL = (result: [unknown[], unknown]) =>
         ...result[result.length - 1] as {count: string }
     });
 
-type DataType = {
-    data: unknown[];
-    titles: TitlesDataType;
-}
-
-
 
 export const getDataFromSQLWithTitles = (result: [unknown[], unknown])  => 
     ({
@@ -28,32 +22,15 @@ export const separateGraphTitles = (result: [unknown[], unknown])  =>
     ({
         graph: result.slice(0, result.length - 1), 
         titles: result[result.length - 1] as TitlesDataType, 
-     
     });
 
 export const separateListCount = (result: [unknown[], unknown])  => 
     ({
         list: result.slice(0, result.length - 1), 
         ...result[result.length - 1] as {count: string }
-     
     });
 
 
-/**
- * Проверяет, есть ли заголовки(а значит и комик/событие/место...) с данным айдишником, и если нет выдает онибку 404
- * @param data обработанные данные их SQL
- * @param res response
- * @returns респонсит ошибку 404 - когда нет заголовка; либо данные
- *  */    
-
-// export const checkTitles = async (data: DataType | DataTypeRate, res: Response) => {
-//     const native = data.titles?.native;
-//     if (!native) {
-        
-//         return res.status(StatusCode.NotFoundError).json({message: `not found this content with such id`})
-//     }
-//     return res.status(StatusCode.Ok).json(data);
-// }
 
 export const getIdFromTable = (table: string) => table.slice(0, -1) + '_id';
 
@@ -104,13 +81,21 @@ export const getNeedYears = (from: any, to: any) => {
 export const convertToDate = (date: string, pattern: string) => `to_date(:${date}, ${pattern})`;
 export const convertFormDataToDate = (date: string) => convertToDate(date, `'dd.MM.yyyy'`);
 
-const getFieldNames = (fields: SimpleDict[]) => {
-    const fieldNames = fields.filter((item) => {
-        const value = Object.entries(item)[0][1];
-        return value && typeof value === 'string';
-    }).map((item) => Object.entries(item)[0][0]);
-    return fieldNames;
-}
+
+
+const filterNotNull = (fields: SimpleDict[]) => fields.filter((item) => Object.entries(item)[0][1] !== null)
+const filterNotEmpty = (fields: SimpleDict[]) => fields.filter((item) => Object.entries(item)[0][1])
+/**
+ * из массива {key: value}[] возвращает массив названий key
+ * @param fields 
+ * @returns 
+ */
+// const getFieldNames = (fields: SimpleDict[]) => filterNotNull(fields).map((item) => Object.entries(item)[0][0]);
+
+const getFieldNames = (fields: SimpleDict[], update=false) => {
+    const filter = update ? filterNotNull : filterNotEmpty;
+    return filter(fields).map((item) => Object.entries(item)[0][0]);
+} 
 
 const prepareFields = (fields: string[]) => {
     return fields.map((item) => {
@@ -127,18 +112,70 @@ const prepareFields = (fields: string[]) => {
  * @param dir папка для картинки, она же таблица
  * @returns id
  */
+// export const getDataInsertQueryStr = (fields: SimpleDict[], dir: string) => {
+//     const fieldNames = getFieldNames(fields);
+//     const fieldsStr = fieldNames.join(', ');
+//     const valuesStr = prepareFields(fieldNames).join(', ')
+//     const idName = getIdFromTable(dir)
+//     const sqlQuery = `
+//     INSERT INTO ${dir} (${fieldsStr})
+//     VALUES (${valuesStr})
+//     RETURNING ${idName}
+//     `
+//     return sqlQuery
+// }
+
 export const getDataInsertQueryStr = (fields: SimpleDict[], dir: string) => {
+    console.log({fields})
     const fieldNames = getFieldNames(fields);
+    const columnId = getIdFromTable(dir);
     const fieldsStr = fieldNames.join(', ');
-    const valuesStr = prepareFields(fieldNames).join(', ')
-    const idName = getIdFromTable(dir)
+    const valuesStr = prepareFieldsToQuery(filterNotEmpty(fields)).join(', ');
+    console.log({fieldsStr, valuesStr})
     const sqlQuery = `
     INSERT INTO ${dir} (${fieldsStr})
     VALUES (${valuesStr})
-    RETURNING ${idName}
+    RETURNING ${columnId}
     `
     return sqlQuery
 }
+
+
+/**
+ * проверят поля на "" / _date / остальные и возвращает подготовленный массив значений
+ * @param fields {key:value} : key - поле, value - значение из формы с клиента
+ * @returns массив значений:  :key / to_date(:${date}, ${pattern}) / null
+ */
+export const prepareFieldsToQuery = (fields: SimpleDict[]) => {
+    return fields.map((item) => {
+        const [key, value] = Object.entries(item)[0]
+        if (!/_date/.test(key)) {
+            return `:${key}`;
+        }
+        if (value) {
+            return convertFormDataToDate(key);
+        }
+        return 'null';
+    })
+}
+
+export const getDataUpdateQueryStr = (fields: SimpleDict[], dir: string) => {
+    console.log({fields})
+    const fieldNames = getFieldNames(fields, true);
+    const columnId = getIdFromTable(dir);
+    const fieldsStr = fieldNames.join(', ');
+    // const valuesStr = prepareFields(fieldNames).join(', ')
+    const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ');
+    console.log({fieldsStr, valuesStr})
+    const sqlQuery = `
+        UPDATE ${dir} 
+        SET (${fieldsStr}) = (${valuesStr})
+        WHERE ${columnId} = :id
+    `
+    return sqlQuery
+}
+
+
 
 /**
  * возвращает sql запрос на получение заголовков, 

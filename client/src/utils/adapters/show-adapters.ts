@@ -51,7 +51,7 @@ export const adaptOneShowToClient = (data: OneShowSC): OneShowCC => ({
   showDateAdded: data.show_date_added,
   showId: data.show_id,
   showName: data.show_name,
-  showNameEn: data.show_name,
+  showNameEn: data.show_name_en,
   totalViews: data.total_views,
   videos: data.videos,
   views: data.views,
@@ -63,5 +63,6 @@ export const adaptOneShowToClient = (data: OneShowSC): OneShowCC => ({
   showPicture: data.show_picture,
   comedianPicture: data.comedian_picture,
   userId: data.user_id,
-  userNik: data.user_nik
+  userNik: data.user_nik,
+  showDescription: data.show_description
 });

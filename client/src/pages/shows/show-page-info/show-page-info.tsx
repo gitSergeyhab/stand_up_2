@@ -10,6 +10,7 @@ import { ContentName } from '../../../const/const';
 import { TabData } from '../../../const/data';
 import { ErrorPage } from '../../error-page/error-page';
 import { useGetShowByIdQuery } from '../../../store/shows-api';
+import { LongLink } from '../../../components/common/common-style';
 
 export function ShowPageInfo() {
   const { id } = useParams();
@@ -26,7 +27,7 @@ export function ShowPageInfo() {
     return <ErrorPage error={error} />;
   }
 
-  if (isLoading || !data /* || 1 + 1 === 2 */) {
+  if (isLoading || !data) {
     return <BigSpinner />;
   }
 
@@ -42,6 +43,7 @@ export function ShowPageInfo() {
     userId, userNik, videos
   } = data;
 
+  console.log({data}, {showDescription})
   const tabProps = {
     id,
     type: ContentName.Shows,
@@ -63,6 +65,17 @@ export function ShowPageInfo() {
       <Titles native={showName} en={showNameEn || ''} />
 
       <TopTabs tabProps={tabProps} />
+      <LongLink
+        to={`/shows/${id}/change`}
+        state={{
+          showId, showName, showNameEn,
+          comedianId, comedianNik,
+          eventId, eventName,
+          placeId, placeName,
+          languageId, languageName,
+          showDescription, showDate, showPicture
+        }}
+      >Изменить</LongLink>
 
       <MainPic src={showPicture} alt={showName} />
 

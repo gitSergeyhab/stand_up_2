@@ -1,6 +1,6 @@
-import { useLocation, useParams } from 'react-router-dom';
+import {  useLocation, useParams } from 'react-router-dom';
 import { useState } from 'react';
-import { AboutBlock } from '../../../components/about-block/about-block';
+import { AboutBlock, AboutRowType } from '../../../components/about-block/about-block';
 import { MainPic } from '../../../components/main-pic/main-pic';
 import { BigSpinner } from '../../../components/spinner/big-spinner';
 import { Titles } from '../../../components/titles/titles';
@@ -14,9 +14,10 @@ import { ResourceBlock } from '../../../components/resource-block/resource-block
 import { ImageModal } from '../../../components/image-modal/image-modal';
 import { ImageCC } from '../../../types/pic-types';
 import { ImgListInfo } from '../../../components/img-list-info/img-list-info';
+import { LongLink } from '../../../components/common/common-style';
 
 export function PlacePageInfo() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const { pathname } = useLocation();
 
   const [currentPic, setPic] = useState<ImageCC | null>(null);
@@ -29,7 +30,7 @@ export function PlacePageInfo() {
     setPic(pic);
   };
 
-  const { data, isError, isLoading, error } = useGetPlaceByIdQuery(id as string);
+  const { data, isError, isLoading, error } = useGetPlaceByIdQuery(id);
   console.log(data, 'PlacePageInfo');
 
   if (isError) {
@@ -52,6 +53,8 @@ export function PlacePageInfo() {
     userId, userNik
   } = data;
 
+  console.log({data, mainPicture})
+
   const tabProps = {
     id,
     type: ContentName.Places,
@@ -68,8 +71,8 @@ export function PlacePageInfo() {
     />
   ) : null;
 
-  const about = [
-    { point: 'Название', value: placeName },
+  const about: AboutRowType[] = [
+    { point: 'Название', value: placeName, src: mainPicture},
     { point: 'Страна', value: countryName },
     { point: 'Город', value: placeCity  || placeCityEn },
     { point: 'Основан', value: placeDateFounded },
@@ -88,6 +91,17 @@ export function PlacePageInfo() {
       <Titles native={placeName} en={placeNameEn || ''} />
 
       <TopTabs tabProps={tabProps} />
+      <LongLink
+        to={`/places/${id}/change`}
+        state={{
+          placeId,
+          placeName, placeNameEn,
+          countryId, countryName, placeCity, placeCityEn,
+          mainPicture,
+          placeDescription,
+          placeDateClosed, placeDateFounded
+        }}
+      >Изменить</LongLink>
 
       <MainPic src={mainPicture} alt={placeName} />
 

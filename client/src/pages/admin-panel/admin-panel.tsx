@@ -16,15 +16,16 @@ type AdminFormProps = {
 }
 
 function AdminForm({currentTab, data}: AdminFormProps) {
-  const {comedians, countries, events, places, shows, languages} = data || {};// SHOW!!!
+  const {comedians, countries, events, places,  languages} = data || {};// SHOW!!!
+  console.log(countries)
 
   switch (currentTab) {
     case ContentName.Shows : return (
-    <ShowForm comedians={comedians} events={events} places={places} languages={languages} />)
+      <ShowForm comedians={comedians} events={events} places={places} languages={languages} />)
     case ContentName.Events : return (
-    <EventForm places={places}/>)
+      <EventForm places={places}/>)
     case ContentName.Places : return (
-    <PlaceForm countries={countries}/>)
+      <PlaceForm countries={countries}/>)
     default : return <ComedianForm countries={countries}/>
   }
 

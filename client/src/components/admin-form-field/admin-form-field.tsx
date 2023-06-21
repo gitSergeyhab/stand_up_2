@@ -12,8 +12,8 @@ export function Required() {
 type DateFieldProps = {
   id: string,
   label: string
-  date: Date | null,
-  setDate: Dispatch<SetStateAction<Date | null>>
+  date: Date | null | undefined,
+  setDate: Dispatch<SetStateAction<Date | null | undefined>>
 
 }
 export function DateField ({id, label, date, setDate} : DateFieldProps) {
@@ -97,11 +97,12 @@ type FieldProps = {
   placeholder: string,
   required?: boolean,
   id: string,
-  errorIndexes?: string[]
+  errorIndexes?: string[],
+  stateValue?: string
 }
-export function Field ({placeholder, required=false, id, errorIndexes=[]}: FieldProps) {
+export function Field ({placeholder, required=false, id, errorIndexes=[], stateValue}: FieldProps) {
 
-const isError = errorIndexes.includes(id)
+  const isError = errorIndexes.includes(id)
 
   return (
     <AdminInputLabel htmlFor={id}>
@@ -112,6 +113,7 @@ const isError = errorIndexes.includes(id)
         placeholder={placeholder}
         required={required}
         error={isError}
+        defaultValue={stateValue}
         // defaultValue="test"
 
       />

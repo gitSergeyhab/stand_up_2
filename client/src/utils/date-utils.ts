@@ -49,7 +49,9 @@ export const getStartDate = () => {
 const DEFAULT_DATE_FORMAT = 'DD.MM.YYYY';
 const DEFAULT_START_DATE = '01.01.1800';
 const DEFAULT_DATE_TIME_FORMAT = 'DD.MM.YYYY | HH:MM'
-const today = dayjs()
+const today = dayjs();
+
+const DEFAULT_DATE_FORMAT_FROM_DB = 'YYYY-MM-DD'
 
 export const checkDateCorrect = (date: string|dayjs.Dayjs, format = DEFAULT_DATE_FORMAT ) =>
   dayjs(date, format).isValid();;
@@ -84,4 +86,9 @@ export const validateDate = ({date, startDate, endDate, format=DEFAULT_DATE_FORM
   return dayjs(date, format).isBetween(start, end, 'day')
 }
 
-export const formatDateType = (dateTime: Date|string) => dayjs(dateTime).format(DEFAULT_DATE_TIME_FORMAT)
+export const formatDateType = (dateTime: Date|string) => dayjs(dateTime).format(DEFAULT_DATE_TIME_FORMAT);
+
+export const getDateFromString = (str: string|undefined) =>
+  (str && (checkDateCorrect(str) || checkDateCorrect(str, DEFAULT_DATE_FORMAT_FROM_DB))) ? dayjs(str).toDate() : null
+
+

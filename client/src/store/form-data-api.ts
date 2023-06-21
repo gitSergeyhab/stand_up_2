@@ -51,32 +51,32 @@ export type FormDataCC = {
    languages: FormDataItemCC[]
 }
 
-const adaptEventsDataToClient = (data: EventsDataSC): FormDataItemCC => ({
+export const adaptEventsDataToClient = (data: EventsDataSC): FormDataItemCC => ({
   id: data.event_id,
   name: data.event_name,
 })
 
-const adaptShowsDataToClient = (data: ShowsDataSC): FormDataItemCC => ({
+export const adaptShowsDataToClient = (data: ShowsDataSC): FormDataItemCC => ({
   id: data.show_id,
   name: data.show_name
 })
 
-const adaptCountriesDataToClient = (data: CountriesDataSC): FormDataItemCC => ({
+export const adaptCountriesDataToClient = (data: CountriesDataSC): FormDataItemCC => ({
   id: data.country_id,
   name: data.country_name,
 })
 
-const adaptComediansDataToClient = (data: ComediansDataSC): FormDataItemCC => ({
+export const adaptComediansDataToClient = (data: ComediansDataSC): FormDataItemCC => ({
   id: data.comedian_id,
   name: data.comedian_nik
 })
 
-const adaptPlacesDataToClient = (data: PlacesDataSC): FormDataItemCC => ({
+export const adaptPlacesDataToClient = (data: PlacesDataSC): FormDataItemCC => ({
   id: data.place_id,
   name: data.place_name,
 })
 
-const adaptLanguagesDataToClient = (data: LanguagesDataSC): FormDataItemCC => ({
+export const adaptLanguagesDataToClient = (data: LanguagesDataSC): FormDataItemCC => ({
   id: data.language_id,
   name: data.language_name,
 })
@@ -100,8 +100,17 @@ export const formDataApi = createApi({
     getPreloadData: build.query<FormDataCC, undefined>({
       query: () => `/form-data/preload`,
       transformResponse: adaptFormDataToClient,
+    }),
+    getPreloadCountries: build.query<FormDataItemCC[], undefined>({
+      query: () => `/form-data/preload-countries`,
+      transformResponse: (data: CountriesDataSC[]) => data.map(adaptCountriesDataToClient)
+    }),
+    getPreloadPlaces: build.query<FormDataItemCC[], undefined>({
+      query: () => `/form-data/preload-places`,
+      transformResponse: (data: PlacesDataSC[]) => data.map(adaptPlacesDataToClient)
     })
   }),
+
 });
 
-export const { useGetPreloadDataQuery } = formDataApi;
+export const { useGetPreloadDataQuery, useGetPreloadCountriesQuery, useGetPreloadPlacesQuery } = formDataApi;

@@ -16,7 +16,7 @@ export type OneShowSC = {
   show_name_en?:     string;
   show_date?:        string;
   show_date_added:  string;
-  showDescription?: string,
+  show_description?: string,
   event_id?:         string;
   event_name?:       string;
   event_name_en?:    string;
@@ -170,3 +170,20 @@ export type ShowCardDataCC = CommonListDataType<GridCardType>
 export type ShowCardDataWithTitlesSC = CommonListDataWithTitlesType<ShowCardSC>
 
 export type ShowCardDataWithTitlesCC = CommonListDataWithTitlesType<GridCardType>
+
+export type ShowState = {
+  showId: string,
+  showName: string,
+  showNameEn: string,
+  comedianId: string,
+  comedianNik: string,
+  eventId: string,
+  eventName: string,
+  placeId: string,
+  placeName: string,
+  languageId: string,
+  languageName: string,
+  showDescription: string,
+  showDate: string,
+  showPicture:string
+}

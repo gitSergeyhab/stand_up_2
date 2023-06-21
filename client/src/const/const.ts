@@ -149,9 +149,16 @@ export const tableField = {
     showMainPictureId: 'show_main_picture_id',
     showDate: 'show_date',
     showName: 'show_name',
+    showNameEn: 'show_name_en',
     showDescription: 'show_description',
     showDateAdded: 'show_date_added'
   }
 }
 
-export const DEFAULT_DATE = '9999/01/01'
+export const DEFAULT_DATE = '9999/01/01';
+
+export const statusOptions = [
+  { id: EventStatus.Canceled, name: 'отменено' },
+  { id: EventStatus.Ended, name: 'завершено' },
+  { id: EventStatus.Planned, name: 'запланировано' },
+];

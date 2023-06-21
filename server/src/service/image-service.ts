@@ -16,7 +16,7 @@ class ImageService {
         const {filename, mimetype, size} = file;
         const table = ImageType[type] || ImageType.images;
         const mainId = getIdFromTable(table);
-        const path = `images/${dir || 'default'}`
+        const path = `images/${dir || 'default'}/`
         //!!! user_added_id HARDCODE = 1
 
         const result = await sequelize.query(`

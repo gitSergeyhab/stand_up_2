@@ -28,7 +28,7 @@ export const getShowErrorMessages = ({
     errorIDs = {...errorIDs, show_name}
   }
   // !!! NEW DB
-  if (!FormPattern.NameEn3to256.test(show_name_en || '')) {
+  if (show_name_en && !FormPattern.NameEn3to256.test(show_name_en)) {
     errorMessages.push(getFieldErrorMessage('show name', FormPatternMessage.NameEn3to256));
     errorIDs = {...errorIDs, show_name_en}
   }

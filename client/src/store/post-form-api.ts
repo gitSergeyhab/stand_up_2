@@ -17,6 +17,15 @@ export const postFormApi = createApi({
         params: {dir}
       })
     }),
+
+    changeMainContent: build.mutation<string, {body: FormData, dir: string, id: string}> ({
+      query: ({body, dir, id}) => ({
+        url: `/${dir}/${id}`,
+        method: 'PUT',
+        body,
+        params: {dir}
+      })
+    }),
     // addImages: build.mutation<string, {body: FormData, mainType: string, id: string}> ({
     //   query: ({body, mainType, id}) => ({
     //     url: `/images/${mainType}/${id}`,
@@ -28,4 +37,4 @@ export const postFormApi = createApi({
   }),
 });
 
-export const { useAddMainContentMutation } = postFormApi;
+export const { useAddMainContentMutation, useChangeMainContentMutation } = postFormApi;

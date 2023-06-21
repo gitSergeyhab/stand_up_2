@@ -15,6 +15,9 @@ const filterValues = (pattern: string, list: OptionType[]) => {
 }
 
 
+
+
+
 type ChosenDataProps = {
   setDataValue: Dispatch<SetStateAction<OptionType | null>>
   chosenDataValue: OptionType
@@ -31,17 +34,25 @@ function ChosenData({chosenDataValue, setDataValue}: ChosenDataProps) {
 
 }
 
+
+// const getChosenDataElement = (chosenDataValue: OptionType) => {
+//   return (
+//     const chosenDataElement = chosenDataValue ? <ChosenData chosenDataValue={chosenDataValue} setDataValue={setDataValue}/> : null;
+
+//   )
+// }
+
 type InputWithListProps = {
   setDataValue: Dispatch<SetStateAction<OptionType | null>>
   options: OptionType[],
   id: string,
   dataName: string,
-  chosenDataValue: OptionType|null
-  required?:boolean
+  chosenDataValue: OptionType|null|undefined,
+  required?:boolean,
 }
 
 
-export function InputWithList({options, id, dataName, required, setDataValue, chosenDataValue} : InputWithListProps) {
+export function InputWithList({options, id, dataName, required, setDataValue, chosenDataValue}: InputWithListProps) {
   const [values, setValues] = useState(options);
   const [inputValue, setInputValue] = useState('');
 

@@ -16,7 +16,7 @@ export function MainPic({ src, alt }: { src?: string; alt: string }) {
   return (
     <MainPicSection>
       <MainPicImg
-        src={src ? `${SERVER_URL}${src}` : DefaultPath.ComedianAvatar}
+        src={src ? `${SERVER_URL}${src}` : DefaultPath.Any}
         alt={alt}
       />
     </MainPicSection>

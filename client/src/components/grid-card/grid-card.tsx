@@ -33,7 +33,7 @@ export function GridCard({ card }: { card: GridCardType }) {
     type, extType,
     date,  status
   } = card;
-  console.log({rateCount, avgRate}, {card})
+  // console.log({rateCount, avgRate}, {card})
   const image = picture ? `${SERVER_URL}${picture}` : DefaultPath.Any;
   const to = `/${type}/${id}/info`;
   const toExt = extId ? `/${extType}/${extId || ''}/info` : '';
