@@ -210,7 +210,7 @@ class EventsController {
 
                 ${titlesSqlQuery}
 
-                SELECT COUNT (event_id) 
+                SELECT COUNT (DISTINCT event_id) 
                 FROM events
                 LEFT JOIN comedians_events USING(event_id)
 				LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id

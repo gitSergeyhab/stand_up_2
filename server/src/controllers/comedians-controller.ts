@@ -31,7 +31,7 @@ class ComedianController {
 
             const {
                 country_id, city, year_from=yearFrom, year_to=yearTo,
-                limit = null, offset = null, order='pop', direction=null
+                limit = Limit, offset = Offset, order='pop', direction=null
             } = req.query;
 
 

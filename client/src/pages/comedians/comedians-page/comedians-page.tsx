@@ -1,12 +1,13 @@
 import { useLocation } from "react-router-dom";
 import { CardContainer } from "../../../components/card-container/card-container";
 import { Filter } from "../../../components/filters/filter";
-import { GridCard, GridCardType } from "../../../components/grid-card/grid-card";
+import { GridCard } from "../../../components/grid-card/grid-card";
 import { Pagination } from "../../../components/pagination/pagination";
 import { Titles } from "../../../components/titles/titles";
 import { ContentName, DefaultPageParam, FilterName } from "../../../const/const";
 import { useGetComediansQuery } from "../../../store/comedians-api";
 import { ComedianCardCC } from "../../../types/comedian-types";
+import { GridCardType } from "../../../types/types";
 
 
 const getComedianCard = (data: ComedianCardCC): GridCardType=> ({
@@ -37,6 +38,7 @@ export function ComediansPage() {
   }
 
   const {count, list } = data;
+  console.log({data})
 
   const cards = list.map((item) => {
     const card = getComedianCard(item)

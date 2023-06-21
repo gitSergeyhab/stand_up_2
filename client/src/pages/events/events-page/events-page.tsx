@@ -30,6 +30,8 @@ export function EventsPage() {
 
   const  {count, list} = data;
 
+  console.log({data})
+
 
   const cards = list.map((item) => <GridCard key={item.id} card={item} />)
 
