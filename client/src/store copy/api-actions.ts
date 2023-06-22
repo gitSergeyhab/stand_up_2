@@ -1,11 +1,9 @@
 import { toast } from 'react-toastify';
 import { adaptLoginUserDataToClient } from '../utils/adapters/user-adapters';
 import { storageUtils } from '../utils/storage-utils';
-import { setPreloadData, setUser } from './actions';
+import { setUser } from './actions';
 import { getRefresh } from './refresh-api';
 import { ThunkActionResult } from './store';
-import { FormDataSC } from '../types/preload-type';
-import { adaptFormDataToClient } from '../utils/adapters/preload-adapters';
 
 
 export const authAction = (): ThunkActionResult => async (dispatch) => {
@@ -26,13 +24,5 @@ export const authAction = (): ThunkActionResult => async (dispatch) => {
 
 export const fetchPreloadData = (): ThunkActionResult =>
   async(dispatch, _getState, api) => {
-    try {
-      const {data} = await api.get<FormDataSC>('form-data/preload');
-      const adaptedData = adaptFormDataToClient(data);
-      dispatch(setPreloadData(adaptedData));
-      console.log({adaptedData})
-    } catch (err) {
-      console.log({err})
-      toast.error('Данные не загрузились. Попробуте позже')
-    }
+    const {} = await api.get('form-data/preload')
   }

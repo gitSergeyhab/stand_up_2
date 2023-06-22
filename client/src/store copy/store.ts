@@ -1,5 +1,6 @@
 import { Action, ThunkAction, combineReducers, configureStore } from '@reduxjs/toolkit';
 import { AxiosInstance } from 'axios';
+// import { api } from './axios-api';
 
 import { comediansApi } from './comedians-api';
 import { eventsApi } from './events-api';
@@ -13,12 +14,9 @@ import { imagesApi } from './images-api';
 import { formDataApi } from './form-data-api';
 import { postFormApi } from './post-form-api';
 import { placesApi } from './places-api';
-import { preloadReducer } from './preload-reducer/preload-reducer';
-import { api } from './api';
 
 export const enum ReducerName {
   User = 'User',
-  Preload = 'Preload'
 }
 
 export const reducer = combineReducers({
@@ -26,7 +24,6 @@ export const reducer = combineReducers({
   [eventsApi.reducerPath]: eventsApi.reducer,
   [subApi.reducerPath]: subApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
-  [ReducerName.Preload]: preloadReducer,
   [ReducerName.User]: userReducer,
   [testSlice.name]: testSlice.reducer,
   [showsApi.reducerPath]: showsApi.reducer,
@@ -38,7 +35,7 @@ export const reducer = combineReducers({
 
 export const store = configureStore({
   reducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware( { thunk: { extraArgument: api } } )
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(/* { thunk: { extraArgument: api } } */)
     .concat(comediansApi.middleware)
     .concat(userApi.middleware)
     .concat(subApi.middleware)

@@ -36,7 +36,7 @@ export function EventsPage() {
   const cards = list.map((item) => <GridCard key={item.id} card={item} />)
 
 
-  const filters = [{name: FilterName.Year, title: 'Год рождения'}]
+  const filters = [{name: FilterName.Year, title: 'Год События'}, {name: FilterName.EventStatus, title: 'Статус'}]
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
   return (

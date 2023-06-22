@@ -1,6 +1,7 @@
 import { FormEventHandler, useRef, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import { Form, TextArea } from "./form-style";
 import { DateField, Field } from "../admin-form-field/admin-form-field";
 import { tableField } from "../../const/const";
@@ -8,7 +9,6 @@ import { SubmitButton } from "../common/submit-button";
 import { useAddMainContentMutation, useChangeMainContentMutation } from "../../store/post-form-api";
 import { appendData } from "../../utils/form-utils";
 import { getPlaceErrorMessages } from "../../utils/validation/place-form-validation";
-import { FormDataItemCC } from "../../store/form-data-api";
 import { UserErrorsBlock } from "../user-errors-block/user-errors-block";
 import { setDataError } from "../../utils/error-utils";
 import { DataErrorType, ErrorDataFieldType, OptionType } from "../../types/types";
@@ -17,30 +17,27 @@ import { ImageField } from "../image-field/image-field";
 import { PlaceState } from "../../types/place-types";
 import { getDateFromString } from "../../utils/date-utils";
 import { getOption } from "../../utils/utils";
+import { getCountries } from "../../store/preload-reducer/preload-selectors";
 
 
 type PlaceFormProps = {
-  countries: FormDataItemCC[],
   state?: PlaceState
 }
-export function PlaceForm ({countries, state}: PlaceFormProps) {
+export function PlaceForm ({state}: PlaceFormProps) {
 
 
+  const countries = useSelector(getCountries);
   const formRef = useRef<HTMLFormElement|null>(null);
   const navigate = useNavigate();
 
   const stateCountryOption = getOption(state?.countryId, state?.countryName)
-  // state?.countryId && state.countryName ?
-  //   {id: state.countryId, name: state.countryName} : null;
 
-// console.log(dayjs(state?.placeDateClosed).toDate(), 'yoDate', getDateFromString(state?.placeDateClosed))
   const [chosenCountry, setCountry] = useState<OptionType|null>(stateCountryOption);
   const [dateFounded, setDateFounded] = useState<Date|null|undefined>(getDateFromString(state?.placeDateFounded));
   const [dateClosed, setDateClosed] = useState<Date|null|undefined>(getDateFromString(state?.placeDateClosed));
 
   const [isPic, setPic] = useState( !!state?.mainPicture);
   const [isPicChanged, setPicChanged] = useState(false);
-  // console.log({isPic})
 
   const [disabled, setDisabled] = useState(false);
   const [errors, setErrors] = useState<ErrorDataFieldType>({errorIndexes:[],errorMessages:[]});

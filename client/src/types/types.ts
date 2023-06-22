@@ -94,7 +94,7 @@ export type TypedDispatch<T> = ThunkDispatch<T, any, AnyAction>;
 
 
 export type OptionType = {
-  id: string| number, name: string
+  id: string|number, name: string
 }
 
 export type FieldValueType = string | undefined;

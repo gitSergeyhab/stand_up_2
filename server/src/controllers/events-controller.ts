@@ -179,7 +179,7 @@ class EventsController {
                 WHERE 1=1
                 ${columnId ? `AND ${columnId} = :id`: '' } 
                 ${status && status !== EventStatusAll ? 'AND event_status = :status' : '' }  
-                ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
+                ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('event_date')}` : '' }
             `;
 
             const result = await sequelize.query(

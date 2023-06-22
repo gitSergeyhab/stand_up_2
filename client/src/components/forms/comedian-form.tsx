@@ -1,13 +1,13 @@
 import { FormEventHandler, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import { Form, TextArea } from "./form-style";
 import { DateField, Field } from "../admin-form-field/admin-form-field";
 import { tableField } from "../../const/const";
 import { SubmitButton } from "../common/submit-button";
 import { appendData } from "../../utils/form-utils";
 import { getComedianErrorMessages } from "../../utils/validation/comedian-form-validation";
-import { FormDataItemCC } from "../../store/form-data-api";
 import { setDataError } from "../../utils/error-utils";
 import { DataErrorType, ErrorDataFieldType, OptionType } from "../../types/types";
 import { UserErrorsBlock } from "../user-errors-block/user-errors-block";
@@ -16,16 +16,19 @@ import { ImageField } from "../image-field/image-field";
 import { useAddMainContentMutation, useChangeMainContentMutation } from "../../store/post-form-api";
 import { ComedianState } from "../../types/comedian-types";
 import { getDateFromString } from "../../utils/date-utils";
+import { getCountries } from "../../store/preload-reducer/preload-selectors";
 
 
 type ComedianFormProps = {
-  countries: FormDataItemCC[],
+  // countries: FormDataItemCC[],
   state?: ComedianState
 }
 
 
-export function ComedianForm ({countries, state}: ComedianFormProps)  {
+export function ComedianForm ({ state}: ComedianFormProps)  {
   console.log({state})
+  const countries = useSelector(getCountries);
+
 
   const formRef = useRef<HTMLFormElement|null>(null);
   const navigate = useNavigate();

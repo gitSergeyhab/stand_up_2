@@ -1,6 +1,7 @@
 import { FormEventHandler, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import { Form, TextArea } from "./form-style";
 import { DateField, Field } from "../admin-form-field/admin-form-field";
 import { tableField } from "../../const/const";
@@ -8,7 +9,7 @@ import { SubmitButton } from "../common/submit-button";
 import { InputWithList } from "../input-with-list/input-with-list";
 import { DataErrorType, ErrorDataFieldType, OptionType } from "../../types/types";
 import { ImageField } from "../image-field/image-field";
-import { FormDataItemCC } from "../../store/form-data-api";
+// import { FormDataItemCC } from "../../store/form-data-api";
 import { getShowErrorMessages } from "../../utils/validation/show-form-validation";
 import { UserErrorsBlock } from "../user-errors-block/user-errors-block";
 import { setDataError } from "../../utils/error-utils";
@@ -17,20 +18,22 @@ import { useAddMainContentMutation, useChangeMainContentMutation } from "../../s
 import { ShowState } from "../../types/show-types";
 import { getOption } from "../../utils/utils";
 import { getDateFromString } from "../../utils/date-utils";
+import { getComedians, getEvents, getLanguages, getPlaces } from "../../store/preload-reducer/preload-selectors";
 
 
 
 type ShowFormProps = {
-  comedians: FormDataItemCC[],
-  events: FormDataItemCC[],
-  places: FormDataItemCC[],
-  languages: FormDataItemCC[],
   state?: ShowState
 }
 
 
 
-export function ShowForm ({comedians, events, places, languages, state}: ShowFormProps) {
+export function ShowForm ({ state}: ShowFormProps) {
+
+  const comedians = useSelector(getComedians);
+  const events = useSelector(getEvents);
+  const places = useSelector(getPlaces);
+  const languages = useSelector(getLanguages);
 
   console.log({state})
   const formRef = useRef<HTMLFormElement|null>(null);
@@ -112,13 +115,9 @@ export function ShowForm ({comedians, events, places, languages, state}: ShowFor
       setDataError({ setErrors, data: err as DataErrorType })
       setDisabled(false);
     }
-
-
-
-
-    console.log(Object.fromEntries(formData))
-
+    console.log(Object.fromEntries(formData));
   }
+
   const errorBlock = <UserErrorsBlock errors={errors.errorMessages} />;
   const submitText = state ? 'Внести изменения' : 'Добавить';
 

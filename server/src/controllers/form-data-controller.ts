@@ -6,6 +6,7 @@ import { ApiError } from "../custom-errors/api-error";
 
 class FormDataController {
     async getPreloadForm(req: Request, res: Response) {
+        console.log('______________getPreloadForm_____________')
         try {
             const result = await sequelize.query(
                 `

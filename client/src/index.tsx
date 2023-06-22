@@ -10,6 +10,7 @@ import { setUser } from './store/actions';
 import 'react-toastify/dist/ReactToastify.css';
 import 'normalize.css';
 import './index.css';
+import { fetchPreloadData } from './store/api-actions';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -17,6 +18,7 @@ const root = ReactDOM.createRoot(
 
 const user = storageUtils.getUser();
 store.dispatch(setUser(user));
+store.dispatch(fetchPreloadData());
 
 // Стрикт мод убивает проверку авторизации
 // - дважды отправляет на сервер запрос с одними и теми же куками,
