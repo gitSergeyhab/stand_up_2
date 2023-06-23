@@ -8,6 +8,7 @@ import { ContentName, DefaultPageParam, FilterName } from "../../../const/const"
 import { useGetComediansQuery } from "../../../store/comedians-api";
 import { ComedianCardCC } from "../../../types/comedian-types";
 import { GridCardType } from "../../../types/types";
+import { CommonAsideContainer } from "../../../components/common/common-style";
 
 
 const getComedianCard = (data: ComedianCardCC): GridCardType=> ({
@@ -38,7 +39,6 @@ export function ComediansPage() {
   }
 
   const {count, list } = data;
-  console.log({data})
 
   const cards = list.map((item) => {
     const card = getComedianCard(item)
@@ -46,13 +46,16 @@ export function ComediansPage() {
   })
 
 
-  const filters = [{name: FilterName.Year, title: 'Год рождения'}]
+  const filters = [{name: FilterName.Year, title: 'Год рождения'}, {name: FilterName.Country}]
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
   return (
     <>
       <Titles native="Комики" en="Comedians" />
+      <CommonAsideContainer side="left">
       <Filter filters={filters}/>
+      </CommonAsideContainer>
+
       <CardContainer> {cards} </CardContainer>
       {pagination}
     </>

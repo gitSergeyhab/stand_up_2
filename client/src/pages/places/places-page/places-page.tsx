@@ -6,6 +6,7 @@ import { Pagination } from "../../../components/pagination/pagination";
 import { Titles } from "../../../components/titles/titles";
 import { DefaultPageParam, FilterName } from "../../../const/const";
 import { useGetPlacesQuery } from "../../../store/places-api";
+import { CommonAsideContainer } from "../../../components/common/common-style";
 
 
 
@@ -23,20 +24,22 @@ export function PlacesPage() {
     return <h2>Error</h2>
   }
 
-  console.log({data})
   const  {count, list} = data;
 
 
   const cards = list.map((item) => <GridCard key={item.id} card={item} />)
 
 
-  const filters = [{name: FilterName.Year, title: 'Год основания'}]
+  const filters = [{name: FilterName.Year, title: 'Год основания'}, {name: FilterName.Country}]
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
   return (
     <>
       <Titles native="Площадки" en="Places" />
-      <Filter filters={filters}/>
+      <CommonAsideContainer side="left">
+        <Filter filters={filters}/>
+      </CommonAsideContainer>
+
       <CardContainer> {cards} </CardContainer>
       {pagination}
     </>

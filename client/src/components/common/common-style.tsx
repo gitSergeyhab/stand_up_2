@@ -56,6 +56,7 @@ export const CommonFieldSet = styled.fieldset`
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  position: relative;
 `;
 
 export const CommonRightFormContainer = styled.section`
@@ -74,9 +75,29 @@ export const CommonRightFormContainer = styled.section`
     right: 1rem;
     top: 5rem;
   }
-
 `
 
+export const CommonAsideContainer = styled.aside<{side?:string}>`
+  width: 100%;
+  background-color: #300606;
+  font-size: 12px;
+  color: gold;
+
+  @media (min-width: 600px) {
+    font-size: 14px;
+  }
+
+  @media (min-width: 1200px) {
+    width: 18%;
+    position: fixed;
+    /* right: 1rem; */
+    top: 5rem;
+
+    ${({side}) => side === 'left' ? 'left: 1rem;' : 'right: 1rem;'}
+
+
+  }
+`
 
 
 

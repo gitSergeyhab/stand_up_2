@@ -367,14 +367,15 @@ class ShowsController {
         try {
             const { yearFrom, yearTo } = getDefaultFromToYears()
             const { type, id } = req.params;
-            const { year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset } = req.query;
+            const { year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset, language_id } = req.query;
+            console.log(req.query, 'req.query')
 
             const columnId = ColumnId[type];
             const titlesSqlQuery = getTitles(type);
             console.log({titlesSqlQuery}, '+ ================= +')
 
             const where = `
-                WHERE 1=1
+                WHERE (language_id ${(language_id && language_id !== '-1') ? ' = :language_id' : ' = language_id OR 1 = 1'})
                 ${columnId ? `AND shows.${columnId} = :id`: '' } 
                 ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('show_date')}` : '' }
             `;
@@ -422,7 +423,7 @@ class ShowsController {
                 ${countQuery}
                 ;`,
                 {
-                    replacements: { id, limit, offset, year_from, year_to },
+                    replacements: { id, limit, offset, year_from, year_to, language_id },
                     type: 'SELECT'
                 }
 

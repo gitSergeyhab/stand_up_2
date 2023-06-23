@@ -1,6 +1,5 @@
-
 import { Filter } from "../../../components/filters/filter"
-import { ContentName, DefaultPageParam, FilterName } from "../../../const/const"
+import {  DefaultPageParam, FilterName } from "../../../const/const"
 import { useGetIdSearch } from "../../../hooks/use-get-id-search";
 import { GridCard, } from "../../../components/grid-card/grid-card";
 import { CardContainer } from "../../../components/card-container/card-container";
@@ -8,7 +7,7 @@ import { TopTabs } from "../../../components/top-tabs/top-tabs";
 import { Titles } from "../../../components/titles/titles";
 import { useGetEventsOfComedianQuery } from "../../../store/events-api";
 import { Pagination } from "../../../components/pagination/pagination";
-import { EventsOfComedianCardCC } from "../../../types/event-types";
+import { CommonAsideContainer } from "../../../components/common/common-style";
 
 
 
@@ -56,7 +55,10 @@ export function EventsOfComedian() {
     <>
       <Titles native={native} en={en} />
       <TopTabs tabProps={tabProps} />
-      <Filter filters={filters}/>
+      <CommonAsideContainer side="left">
+        <Filter filters={filters}/>
+      </CommonAsideContainer>
+
       <CardContainer> {cards} </CardContainer>
       {pagination}
     </>

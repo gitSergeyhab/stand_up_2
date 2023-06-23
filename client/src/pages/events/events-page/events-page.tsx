@@ -7,6 +7,7 @@ import { Titles } from "../../../components/titles/titles";
 import { DefaultPageParam, FilterName } from "../../../const/const";
 
 import { useGetEventsQuery } from "../../../store/events-api";
+import { CommonAsideContainer } from "../../../components/common/common-style";
 
 
 
@@ -36,13 +37,16 @@ export function EventsPage() {
   const cards = list.map((item) => <GridCard key={item.id} card={item} />)
 
 
-  const filters = [{name: FilterName.Year, title: 'Год События'}, {name: FilterName.EventStatus, title: 'Статус'}]
+  const filters = [{name: FilterName.Year, title: 'Год События'}, {name: FilterName.EventStatus, title: 'Статус'}, {name: FilterName.Country}]
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
   return (
     <>
       <Titles native="События" en="Events" />
-      <Filter filters={filters}/>
+      <CommonAsideContainer side="left">
+        <Filter filters={filters}/>
+      </CommonAsideContainer>
+
       <CardContainer> {cards} </CardContainer>
       {pagination}
     </>

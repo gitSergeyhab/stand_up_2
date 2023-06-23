@@ -6,6 +6,7 @@ import { Pagination } from "../../../components/pagination/pagination";
 import { Titles } from "../../../components/titles/titles";
 import { DefaultPageParam, FilterName } from "../../../const/const";
 import { useGetShowsQuery } from "../../../store/shows-api";
+import { CommonAsideContainer } from "../../../components/common/common-style";
 
 
 
@@ -30,13 +31,15 @@ export function ShowsPage() {
   const cards = list.map((item) => <GridCard key={item.id} card={item} />)
 
 
-  const filters = [{name: FilterName.Year, title: 'Год выступленя'}]
+  const filters = [{name: FilterName.Year, title: 'Год выступленя'}, {name: FilterName.Language, title: 'Язык'}]
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
   return (
     <>
       <Titles native="Выступления" en="Shows" />
-      <Filter filters={filters}/>
+      <CommonAsideContainer side="left">
+        <Filter filters={filters}/>
+      </CommonAsideContainer>
       <CardContainer> {cards} </CardContainer>
       {pagination}
     </>

@@ -1,7 +1,7 @@
 import { ChangeEventHandler } from 'react';
 import { EventStatus, FilterName } from '../../../const/const';
 import { EventStatusFieldSet } from './event-status-filter-style';
-import { FilterPropsType } from '../../../types/firler-type';
+import { FilterPropsType } from '../../../types/filter-type';
 
 const EventName: { [key: string]: string } = {
   [EventStatus.All]: 'Любые',

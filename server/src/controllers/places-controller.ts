@@ -203,11 +203,11 @@ class PlacesController {
         try {
             const { yearFrom, yearTo } = getDefaultFromToYears()
             const { id } = req.params;
-            const { year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset } = req.query;
+            const { country_id, year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset } = req.query;
 
 
             const where = `
-                WHERE 1=1
+                WHERE (places.country_id ${country_id ? ' = :country_id' : ' = places.country_id OR 1 = 1'})
                 ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('place_date_founded')}` : '' }
             `;
 
@@ -242,7 +242,7 @@ class PlacesController {
                 ${countQuery}
                 ;`,
                 {
-                    replacements: { id, limit, offset, year_from, year_to },
+                    replacements: { id, limit, offset, year_from, year_to, country_id },
                     type: 'SELECT'
                 }
 

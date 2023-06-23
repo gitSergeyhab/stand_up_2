@@ -8,7 +8,7 @@ export const FilterForm = styled.form`
   flex-direction: column;
   border: solid 2px #000000;
   font-size: 12px;
-
+/*
   @media (min-width: 600px) {
     font-size: 14px;
   }
@@ -18,7 +18,7 @@ export const FilterForm = styled.form`
     position: absolute;
     left: 1rem;
     top: 5rem;
-  }
+  } */
 `;
 
 export const SubmitButton = styled.button.attrs({ type: 'submit' })`

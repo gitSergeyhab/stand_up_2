@@ -169,14 +169,14 @@ class EventsController {
         try {
             const { yearFrom, yearTo } = getDefaultFromToYears()
             const { type, id } = req.params;
-            const { year_from=yearFrom, year_to=yearTo, status = EventStatusAll, limit = Limit, offset = Offset } = req.query;
+            const { country_id, year_from=yearFrom, year_to=yearTo, status = EventStatusAll, limit = Limit, offset = Offset } = req.query;
 
             const columnId = ColumnId[type];
             const titlesSqlQuery = getTitles(type);
             console.log({titlesSqlQuery}, '+=================+')
 
             const where = `
-                WHERE 1=1
+                WHERE (places.country_id ${country_id ? ' = :country_id' : ' = places.country_id OR 1 = 1'})
                 ${columnId ? `AND ${columnId} = :id`: '' } 
                 ${status && status !== EventStatusAll ? 'AND event_status = :status' : '' }  
                 ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('event_date')}` : '' }
@@ -219,7 +219,7 @@ class EventsController {
                 ;
                 `,
                 {
-                    replacements: { id, limit, offset, status, year_from, year_to },
+                    replacements: { id, limit, offset, status, year_from, year_to, country_id },
                     type: 'SELECT'
                 }
             )

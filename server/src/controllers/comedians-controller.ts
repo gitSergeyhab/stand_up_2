@@ -36,7 +36,7 @@ class ComedianController {
 
 
             const where = `
-                WHERE (country_id ${country_id ? ' = :country_id' : ' = country_id OR 1 = 1'})
+                WHERE (country_id ${(country_id && country_id !== '-1')? ' = :country_id' : ' = country_id OR 1 = 1'})
                 ${ city ?  'AND (LOWER(comedian_city) = LOWER(:city)) OR (LOWER(comedian_city_en) = LOWER(:city))' : ''}
                 ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
             `;
