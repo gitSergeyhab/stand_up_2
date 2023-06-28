@@ -29,7 +29,11 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION insert_view (_col text, idx BIGINT, user_watched_idx BIGINT) 
 RETURNS void AS $$
 BEGIN
-	EXECUTE 'INSERT INTO views (' || quote_ident(_col) || ', user_watched_id) VALUES (' || idx || ', '|| user_watched_idx ||');';
+   IF (user_watched_idx = 0) THEN
+      EXECUTE 'INSERT INTO views (' || quote_ident(_col) || ') VALUES (' || idx || ');';
+   ELSE
+      EXECUTE 'INSERT INTO views (' || quote_ident(_col) || ', user_watched_id) VALUES (' || idx || ', '|| user_watched_idx ||');';
+   END IF;
 END
 $$ LANGUAGE plpgsql;
 

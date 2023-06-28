@@ -16,7 +16,7 @@ export const userMiddleware = (req: ReqUser, res: Response, next: NextFunction) 
         if (req.method === 'OPTIONS') {
             next();
         }
-        console.log({req})
+        // console.log({req})
         console.log(req.headers, '_________req.headers')
         
         const token = tokenService.getTokenFromRequest({req});

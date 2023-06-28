@@ -49,7 +49,7 @@ export function GridCard({ card }: { card: GridCardType }) {
     />
   ) : null;
 
-  const countBadge = avgRate ? (
+  const countBadge = +viewsCount ? (
     <Badge
       first={viewsCount}
       firstColor='#FFF'

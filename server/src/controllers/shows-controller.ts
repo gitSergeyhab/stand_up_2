@@ -19,7 +19,7 @@ class ShowsController {
         console.log('______________getShowById______________')
         try {
             const {id} = req.params;
-            const {user_id = '0'} = req.user
+            const user_id = req.user?.user_id || '0';
             const shows = await sequelize.query(
                 `
                 SELECT 
@@ -197,49 +197,6 @@ class ShowsController {
         }
 
     }
-    // async searchShowsByNames(req: Request, res: Response) {
-    //     try {
-    //         const {search, limit = null, offset = null} = req.query;
-
-
-    //         const shows = await sequelize.query(
-    //             `
-    //             SELECT
-    //             show_id, show_date, show_name, average_show_rating, number_show_rating, show_poster,
-    //             comedian_id, comedian_first_name, comedian_last_name, comedian_first_name_en, comedian_last_name_en,
-    //             country_id, country_name, country_name_en,
-    //             place_id, place_name, place_name_en,
-    //             language_id
-    //             FROM shows
-    //             LEFT JOIN comedians ON comedian_id = fk_comedian_id
-    //             LEFT JOIN countries ON shows.fk_country_id = country_id
-    //             LEFT JOIN languages ON shows.fk_language_id = language_id
-    //             LEFT JOIN places ON shows.fk_place_id = place_id
-    //             WHERE comedian_first_name ILIKE :search 
-    //                 OR comedian_last_name ILIKE :search  
-    //                 OR comedian_first_name_en ILIKE :search  
-    //                 OR comedian_last_name_en ILIKE :search
-    //                 OR comedian_last_name ILIKE :search  
-    //                 OR show_name ILIKE :search
-    //                 ORDER BY number_show_rating
-    //                 LIMIT :limit
-    //                 OFFSET :offset
-    //             ;
-    //             `,
-    //             {
-    //                 replacements: {search: `%${search}%`, limit, offset},
-    //                 type: 'SELECT'
-    //             }
-    //         )
-
-    //         return res.status(200).json({shows});
-    
-   
-    //     } catch (e) {
-    //         console.log(e)
-    //         return res.status(500).json({message: 'error search shows'})
-    //     }
-    // }
 
     async getShowsByColumnId(req: Request, res: Response) {
 
