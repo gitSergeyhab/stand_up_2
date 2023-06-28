@@ -164,3 +164,33 @@ export const statusOptions = [
   { id: EventStatus.Ended, name: 'завершено' },
   { id: EventStatus.Planned, name: 'запланировано' },
 ];
+
+export const SortDirection = {
+  ASC: 'asc',
+  DESC: 'desc',
+}
+
+export const SortType = {
+  Added: 'added',
+  New: 'new',
+  Name: 'name',
+  ViewsWeekly: 'views_weekly',
+  ViewsTotal: 'views_total',
+  Rate: 'rate',
+  RateCount: 'rate_count',
+}
+
+export const SortTypeName = {
+  [SortType.Added]: 'по добавлению',
+  [SortType.New]: 'по времени',
+  [SortType.Name]: 'по имени',
+  [SortType.ViewsWeekly]: 'по попурности (неделя)',
+  [SortType.ViewsTotal]: 'по попурности (общее)',
+  [SortType.Rate]: 'по рейтингу',
+  [SortType.RateCount]: 'по количеству оценок',
+}
+
+export const DefaultSorterParam = {
+  Direction: SortDirection.ASC,
+  Type: SortType.ViewsWeekly
+};

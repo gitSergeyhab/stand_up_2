@@ -4,17 +4,16 @@ import { Filter } from "../../../components/filters/filter";
 import { GridCard } from "../../../components/grid-card/grid-card";
 import { Pagination } from "../../../components/pagination/pagination";
 import { Titles } from "../../../components/titles/titles";
-import { DefaultPageParam, FilterName } from "../../../const/const";
+import { DefaultPageParam, FilterName, SortType } from "../../../const/const";
 import { useGetShowsQuery } from "../../../store/shows-api";
 import { CommonAsideContainer } from "../../../components/common/common-style";
+import { Sorter } from "../../../components/sorters/sorter";
 
 
 
 export function ShowsPage() {
 
   const { search } = useLocation();
-
-
 
   const { isError, isLoading, data } = useGetShowsQuery(search);
   console.log({data})
@@ -37,12 +36,18 @@ export function ShowsPage() {
   const filters = [{name: FilterName.Year, title: 'Год выступленя'}, {name: FilterName.Language, title: 'Язык'}]
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
+  const types = Object.values(SortType);
+
   return (
     <>
-      <Titles native="Выступления" en="Shows" />
+      <Titles native="Выступления" en="" />
       <CommonAsideContainer side="left">
         <Filter filters={filters}/>
       </CommonAsideContainer>
+      <CommonAsideContainer side="right">
+        <Sorter types={types}/>
+      </CommonAsideContainer>
+
       <CardContainer> {cards} </CardContainer>
       {pagination}
     </>

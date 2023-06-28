@@ -42,3 +42,17 @@ export function Badge({first, second, firstColor, secondColor, title}: BadgeProp
   )
 }
 
+export const BadgeSquireDiv = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: rgb(255, 155, 5);
+  font-weight: 700;
+  border: 2px solid rgb(225, 135, 1);
+  border-radius: 2px;
+  font-size: 1.3rem;
+  box-shadow: 2px -1px 2px 2px rgba(34, 60, 80, 0.4);
+  background-color: #000;
+`

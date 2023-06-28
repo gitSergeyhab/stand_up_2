@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 
 export const LogRegP = styled.p`
   color: #ffffff;
@@ -140,3 +140,11 @@ export const LongLink = styled(Link)`
     background-color: #000000;
   }
 `;
+
+export const hiddenStyle = css`
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+`
