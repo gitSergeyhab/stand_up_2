@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 
 export const RatingSection = styled.section`
+  min-width: 320px;
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto min-content;
   margin: 0 auto;
   padding: 10px 15px;
   background: #f8f8f8;
@@ -12,7 +13,7 @@ export const RatingSection = styled.section`
 export const StarsDiv = styled.div`
   &:not(:checked) > label:hover:before,
   &:not(:checked) > label:hover ~ label:before {
-    color: goldenrod;
+    color: #da9320;
   }
 `;
 

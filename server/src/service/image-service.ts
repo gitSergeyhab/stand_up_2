@@ -4,10 +4,6 @@ import { ImageFile } from "../types";
 import { getIdFromTable } from "../utils/sql-utils";
 
 
-
-
-
-
 class ImageService {
     async createImage({file, type, dir} : {file: ImageFile, type: string, dir: string}) {
         if (!file) {

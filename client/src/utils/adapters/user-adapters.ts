@@ -5,6 +5,10 @@ import {
   LoginUserDataSC,
   OneUserTypeCC,
   OneUserTypeSC,
+  RatingCC,
+  RatingSC,
+  ReviewCC,
+  ReviewSC,
   TestUserCC,
   TestUserSC,
 } from '../../types/user-types';
@@ -62,3 +66,20 @@ export const adaptTestUserToClient = (data: TestUserSC): TestUserCC => ({
   countryName: data.country_name,
   roles: data.roles,
 });
+
+export const adaptReviewToClient = (data: ReviewSC): ReviewCC => ({
+  reviewId: data.review_id,
+  userId: data.user_id,
+  eventId: data.event_id,
+  placeId: data.place_id,
+  showId: data.show_id
+});
+
+export const adaptReviewsToClient = (data: ReviewSC[]): ReviewCC[] => data.map(adaptReviewToClient);
+
+export const adaptRatingToClient = (data: RatingSC): RatingCC => ({
+  rate: data.show_rate,
+  rateId: data.show_rating_id
+})
+
+export const adaptRatingsToClient = (data: RatingSC[]): RatingCC[] => data.map(adaptRatingToClient);

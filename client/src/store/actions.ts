@@ -1,7 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ContentName } from '../const/const';
 import { OptionType, Titles } from '../types/types';
-import { AuthUserTypeCC } from '../types/user-types';
+import { AuthUserTypeCC, UserInfo } from '../types/user-types';
 import { InitialPreloadState } from './preload-reducer/preload-reducer';
 
 export const enum Role {
@@ -52,6 +52,7 @@ export const enum Action {
   SetType = 'main/SetType',
   SetTitles = 'main/SetTitles',
   SetUser = 'main/SetUser',
+  SetUserInfo = 'user/SetUserInfo',
   SetUsers = 'users/SetUsers',
 
   SetPreloadComedians = 'preload/SetPreloadComedians',
@@ -68,7 +69,7 @@ export const setTitles = createAction(Action.SetTitles, (type: Titles) => ({payl
 export const setUser = createAction(Action.SetUser,(user: AuthUserTypeCC | null) => ({ payload: user }));
 export const setUsers = createAction(Action.SetUsers,(users: UsersTypeCC[]) => ({ payload: users }));
 
-
+export const setUserInfo = createAction(Action.SetUserInfo, (info: UserInfo | null) => ({ payload: info }));
 
 export const setPreloadData = createAction(Action.SetPreloadData, (payload: InitialPreloadState) => ({ payload }));
 export const setPreloadComedians = createAction(Action.SetPreloadComedians, (payload: OptionType[]) => ({ payload }));

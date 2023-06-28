@@ -1,5 +1,6 @@
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { ContentName } from '../const/const';
+import { RatingCC } from './user-types';
 
 export type ResourceType = {
   id: number;
@@ -17,11 +18,11 @@ export type GridCardType = {
   type: ContentName,
   extType?: ContentName,
   avgRate?: number,
-  userRate?: number,
+  userRate?: RatingCC,
   rateCount?: string,
   viewsCount: string,
   date?: string,
-  status?: string
+  status?: string,
 }
 
 export type SimpleDict = { [key: string]: string };
@@ -88,6 +89,9 @@ export const enum TokenType {
   Refresh = 'Refresh',
   Access = 'Access',
 }
+
+
+
 
 // eslint-disable-next-line
 export type TypedDispatch<T> = ThunkDispatch<T, any, AnyAction>;

@@ -102,6 +102,7 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { ReducerType } from '../../store/store';
 import { fetchTodos, Todo, deleteTodo, addTodo } from '../../store/test-store';
+import { SERVER_URL } from '../../const/const';
 
 function TodoItem({ todo }: { todo: Todo }) {
   // const dispatch = useDispatch();
@@ -131,6 +132,8 @@ export function TestPage() {
 
   const [page, setPage] = useState(1)
   const [todoList, setTodo] = useState<Todo[]>([]);
+  const [jet, setJet] = useState<string>('null')
+
 
   const {hash, key, pathname, search} = useLocation()
   console.log({hash, key, pathname, search})
@@ -148,10 +151,18 @@ const handleBtnClick = () => setPage((p) => p + 1)
     </li>
   ));
 
+  const handleJet = () => {
+    axios.get<Todo[]>(`${SERVER_URL}api/test/secondary`)
+    .then((res) => { setJet('Success!'); console.log({res})})
+    .catch((err) =>{ setJet('Error!'); console.log({err})})
+  }
+
   return (
     <>
       <br />
       <h1>Test</h1>
+      <h1>JET: {jet}</h1>
+      <button type='button' onClick={handleJet}>JET</button>
       <ul>{todoElements}</ul>
       <button type='button' onClick={handleBtnClick}>Подгрузить еще</button>
     </>

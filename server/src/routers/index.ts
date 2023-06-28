@@ -9,6 +9,7 @@ import { subRouter } from './sub-routers';
 import { userRouter } from './users-router';
 import { imagesRouter } from './images-router';
 import { formDataRouter } from './form-data-router';
+import { testRouter } from './test-router';
 
 const router =  Router();
 
@@ -22,6 +23,7 @@ router.use('/events', eventsRouter);
 router.use('/pictures', pictureRouter);
 router.use('/images', imagesRouter);
 router.use('/form-data', formDataRouter);
+router.use('/test', testRouter);
 
 router.use('/sub', subRouter)
 

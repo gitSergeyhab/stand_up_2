@@ -11,17 +11,17 @@ import { TabData } from '../../../const/data';
 import { ErrorPage } from '../../error-page/error-page';
 import { useGetShowByIdQuery } from '../../../store/shows-api';
 import { LongLink } from '../../../components/common/common-style';
+import { Rating } from '../../../components/rating/rating';
 
 export function ShowPageInfo() {
   const { id } = useParams();
   const { pathname } = useLocation();
 
-  // console.log(id);
+
 
   const { data, isError, isLoading, error } = useGetShowByIdQuery(
     id as string,
   );
-  console.log(data, 'ShowPageInfo');
 
   if (isError) {
     return <ErrorPage error={error} />;
@@ -40,7 +40,7 @@ export function ShowPageInfo() {
     eventPicture, showPicture, placePicture, comedianPicture,
     languageId, languageName, languageNameEn,
     placeId, placeName, placeNameEn,
-    userId, userNik, videos
+    userId, userNik, videos, userRate
   } = data;
 
   console.log({data}, {showDescription})
@@ -78,7 +78,7 @@ export function ShowPageInfo() {
       >Изменить</LongLink>
 
       <MainPic src={showPicture} alt={showName} />
-
+      <Rating avgRate={avgRate} votes={numberOfRate} userRate={userRate} showId={showId} />
       <ViewsBlock totalViews={totalViews} views={views} />
 
       <AboutBlock about={about} />

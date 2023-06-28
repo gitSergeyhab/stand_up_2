@@ -111,10 +111,19 @@ export const CommonSideForm = styled.form`
 
 
 export const TopLeftDiv = styled.div`
-position: absolute;
-display: flex;
-left: 0;
-top: -0.5rem;
+  position: absolute;
+  display: flex;
+  left: 0;
+  top: -0.5rem;
+`
+
+
+export const AbsoluteDiv = styled.div<{side: 'left'| 'right', height: 'top'|'bottom' }>`
+  position: absolute;
+  display: flex;
+
+  ${({side}) => `${side}: 0;`}
+  ${({height}) => `${height}: ${height === 'bottom' ? '' : '-'}0.5rem;`}
 `
 export const LongLink = styled(Link)`
   color: #FFF;

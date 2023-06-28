@@ -14,6 +14,8 @@ userRouter.get('/refresh', asyncHandler(userController.refreshToken));
 // userRouter.get('/', rolesMiddleware([Role.Admin, Role.Moderator, Role.Super]), asyncHandler(userController.getUsersByQueries));
 userRouter.get('/', authMiddleware, asyncHandler(userController.getUsersByQueries));      
 
+// userRouter.get('/user-info', authMiddleware, asyncHandler(userController.getUserInfo));
+
 
 userRouter.get('/:id', userController.getUserById);
 
@@ -23,6 +25,7 @@ userRouter.post('/logout', asyncHandler(userController.logout));
 
 userRouter.get('/activate/:link', asyncHandler(userController.activate));
 userRouter.get('/refresh', asyncHandler(userController.refreshToken))
+
 
 
 

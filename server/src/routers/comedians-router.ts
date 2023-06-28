@@ -8,10 +8,10 @@ const comedianRouter =  Router();
 comedianRouter.get('/', comedianController.getComedians);
 comedianRouter.get('/search', comedianController.searchComedianByNames);
 
-comedianRouter.get('/:id', comedianController.getComedianById);
+comedianRouter.get('/:id', asyncHandler(comedianController.getComedianById));
 comedianRouter.get('/:id/votes', comedianController.getVotesByComedianId);
-comedianRouter.get('/:id/ratings', comedianController.getShowsRatingsByComedianId);
-comedianRouter.get('/:id/rating-data', comedianController.getShowsRatingDataByComedianId);
+comedianRouter.get('/:id/ratings', asyncHandler(comedianController.getShowsRatingsByComedianId));
+comedianRouter.get('/:id/rating-data', asyncHandler(comedianController.getShowsRatingDataByComedianId));
 comedianRouter.put('/:id', imageUploader.single('image'), asyncHandler(comedianController.changeComedian));
 // comedianRouter.get('/:id/events', comedianController.getEventsByComedianId);
 // comedianRouter.get('/:id/shows', comedianController.getShowsByComedianId);

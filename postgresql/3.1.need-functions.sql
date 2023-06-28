@@ -70,3 +70,60 @@ CREATE OR REPLACE FUNCTION get_avg_show_rate(show_idx BIGINT) RETURNS SETOF NUME
 	WHERE show_id = show_idx
 	GROUP BY show_id 
 $$ LANGUAGE SQL;
+
+
+
+CREATE OR REPLACE FUNCTION get_reviews_by_type_id_user(_col TEXT, idx BIGINT, user_idx BIGINT) RETURNS TABLE(
+	review_id BIGINT, 
+	user_id BIGINT,
+	show_id BIGINT, 
+	event_id BIGINT, 
+	place_id BIGINT, 
+	review_title VARCHAR, 
+	review_text TEXT, 
+	review_date_added TIMESTAMP with time zone,
+	review_date_updated TIMESTAMP with time zone
+) AS $$
+BEGIN
+	RETURN QUERY EXECUTE '
+	SELECT 
+	review_id, user_id, show_id, event_id, place_id, review_title, review_text, review_date_added, review_date_updated
+	FROM reviews
+	WHERE ' || quote_ident(_col) || ' = ' || idx ||'
+	AND user_id = ' || user_idx ||'
+	';
+END     
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION get_reviews_by_type_id_user(_col TEXT, idx BIGINT, user_idx BIGINT)
+RETURNS SETOF JSON AS $$
+BEGIN
+	RETURN QUERY EXECUTE '
+	SELECT
+	JSON_AGG(JSON_BUILD_OBJECT(
+		''review_id'', review_id, 
+		''user_id'', user_id, 
+		''show_id'', show_id,
+		''event_id'', event_id, 
+		''place_id'', place_id
+	))
+	FROM reviews
+	WHERE ' || quote_ident(_col) || ' = ' || idx ||'
+	AND user_id = ' || user_idx ||'
+	';
+END     
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION get_user_show_rating(show_idx BIGINT, user_idx BIGINT)
+RETURNS JSON AS $$
+	SELECT
+	JSON_BUILD_OBJECT(
+		'show_rating_id', show_rating_id, 
+		'show_rate', show_rate
+	)
+	FROM show_ratings
+	WHERE user_id = user_idx 
+	AND show_id = show_idx;  
+$$ LANGUAGE SQL;

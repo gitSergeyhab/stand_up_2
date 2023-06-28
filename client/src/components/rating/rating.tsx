@@ -1,32 +1,37 @@
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { round1 } from '../../utils/utils';
-import {
-  LineDiv,
-  RatingInput,
-  RatingLabel,
-  RatingSection,
-  StarsDiv,
-  UserRateDiv,
-  VotesSpan,
-} from './rating-style';
+import { LineDiv, RatingInput, RatingLabel, RatingSection, StarsDiv, UserRateDiv, VotesSpan } from './rating-style';
+import { getUser } from '../../store/user-reducer/user-selectors';
+import { usePostShowRateMutation } from '../../store/shows-api';
+import { RatingCC } from '../../types/user-types';
+
+
+const STARS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 type RadioBtnProps = {
   value: number;
   checkedValue?: number;
-  onClick: Dispatch<SetStateAction<number | undefined>>;
+  showId: string;
 };
 
-function RadioBtn({ value, checkedValue, onClick }: RadioBtnProps) {
+function RadioBtn({ value, checkedValue,  showId }: RadioBtnProps) {
   const id = `star${value}`;
-  const defaultChecked = value === checkedValue;
-  const handleClick = () => onClick(value);
+
+  const [rateShow] = usePostShowRateMutation()
+
+  const handleClick = () => {
+    rateShow({rate: value, showId })
+      .then(() => toast.success(`оценка  ${value} добавлена`))
+      .catch(() => toast.error('что-то пошло не так, попробуйте позже'))
+  }
 
   return (
     <>
       <RatingInput
         id={id}
         value={value}
-        defaultChecked={defaultChecked}
+        defaultChecked={value === checkedValue}
         onClick={handleClick}
       />
       <RatingLabel htmlFor={id} />
@@ -34,33 +39,35 @@ function RadioBtn({ value, checkedValue, onClick }: RadioBtnProps) {
   );
 }
 
+
 type AVGLineProps = { avgRate: number/* ; votes: number */ };
 
 function AVGLine({ avgRate/* , votes */ }: AVGLineProps) {
   const size = avgRate * 10;
-
   return <LineDiv size={size} />;
 }
 
+
+
 type RatingProps = {
   avgRate?: number;
-  votes?: string;
-  checkedValue?: number;
+  votes?: string|number;
+  showId: string;
+  userRate?: RatingCC
 };
 
-export function Rating({ checkedValue, avgRate, votes }: RatingProps) {
-  const starsArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+export function Rating({  avgRate, votes, showId, userRate }: RatingProps) {
 
-  const [value, setValue] = useState(checkedValue);
+  const user = useSelector(getUser)
 
-  const starsElements = starsArr.map((item) => {
-    const star = starsArr.length - item + 1;
+  const starsElements =  STARS.map((item) => {
+    const star = STARS.length - item + 1;
     return (
       <RadioBtn
         key={star}
         value={star}
-        onClick={setValue}
-        checkedValue={checkedValue}
+        checkedValue={userRate?.rate}
+        showId={showId}
       />
     );
   });
@@ -70,17 +77,16 @@ export function Rating({ checkedValue, avgRate, votes }: RatingProps) {
 
   const avgDigit = votesClient ? avgRateClient : '-';
 
+    const activeBlock = user ?
+    <><StarsDiv>{starsElements}</StarsDiv><UserRateDiv>{userRate?.rate}</UserRateDiv></> : null;
   return (
     <RatingSection>
-      <StarsDiv>{starsElements}</StarsDiv>
-      <UserRateDiv>{value}</UserRateDiv>
-
+      {activeBlock}
       <AVGLine avgRate={avgRateClient} /* votes={votesClient} */ />
       <UserRateDiv>
-        {avgDigit} <VotesSpan>({votesClient})</VotesSpan>{' '}
+        {avgDigit}<VotesSpan>({votesClient})</VotesSpan>{' '}
       </UserRateDiv>
     </RatingSection>
   );
 }
 
-// my-rate

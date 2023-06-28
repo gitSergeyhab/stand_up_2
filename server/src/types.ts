@@ -1,5 +1,6 @@
 import { ParsedQs } from 'qs';
 import { Role } from './const/const';
+import { Request } from 'express';
 
 export type TitlesDataType = {native: string, en: string | null}
 
@@ -61,3 +62,6 @@ export type ImageFile = {
 }
 
 export type SimpleDict = {[key: string]:string}
+
+
+export type UserRequest = Request & {user: UserPseudoType}

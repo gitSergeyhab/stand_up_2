@@ -17,8 +17,18 @@ const root = ReactDOM.createRoot(
 );
 
 const user = storageUtils.getUser();
+
 store.dispatch(setUser(user));
 store.dispatch(fetchPreloadData());
+root.render(
+  <Provider store={store}>
+    <ToastContainer />
+    <App />
+  </Provider>,
+);
+
+
+
 
 // Стрикт мод убивает проверку авторизации
 // - дважды отправляет на сервер запрос с одними и теми же куками,
@@ -35,9 +45,4 @@ store.dispatch(fetchPreloadData());
 //   </React.StrictMode>,
 // );
 
-root.render(
-  <Provider store={store}>
-    <ToastContainer />
-    <App />
-  </Provider>,
-);
+

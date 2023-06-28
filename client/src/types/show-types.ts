@@ -1,5 +1,6 @@
 import { CommonListDataType, CommonListDataWithTitlesType } from "./common-types";
 import { GridCardType } from "./types";
+import { RatingCC, RatingSC } from "./user-types";
 
 export type VideoType = {
   id: number | string;
@@ -43,6 +44,7 @@ export type OneShowSC = {
   comedian_picture?:    string;
   number_of_rate?:   number;
   avg_rate?:         number;
+  user_rating?: RatingSC
 }
 
 export type OneShowCC = {
@@ -78,6 +80,7 @@ export type OneShowCC = {
   comedianPicture?:    string;
   numberOfRate?:   number;
   avgRate?:         number;
+  userRate?: RatingCC
 }
 
 
@@ -159,6 +162,7 @@ export type ShowCardSC = {
   number_of_rate: string,
   avg_show_rate: number,
   show_date?: string,
+  user_rating: RatingSC
 }
 
 

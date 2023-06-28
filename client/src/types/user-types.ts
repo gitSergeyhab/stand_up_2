@@ -154,3 +154,58 @@ export type TestUserCC = {
   id: string;
   nik: string;
 };
+
+
+// export type UserReviewSC = {
+//   id: string,
+//   show_id: string,
+//   show_name: string,
+//   review_title: string,
+//   review_date_updated: string
+// }
+
+// export type ShowRateSC = {
+//   id: string,
+//   show_id: string,
+//   show_name: string,
+//   show_rate: number,
+//   show_date_rate: string
+// }
+
+
+export type UserReviewSC = {
+  shows: string[],
+  events: string[],
+  places: string[]
+}
+
+export type UserInfo = {
+  reviews: UserReviewSC,
+  rates: {id: string, rate: number}[],
+}
+
+export type ReviewSC = {
+  review_id: string,
+  user_id: string,
+  show_id?: string,
+  event_id?: string,
+  place_id?: string
+};
+
+export type RatingSC = {
+  show_rating_id : string,
+  show_rate : number
+};
+
+export type ReviewCC = {
+  reviewId: string,
+  userId: string,
+  showId?: string,
+  eventId?: string,
+  placeId?: string
+};
+
+export type RatingCC = {
+  rateId : string,
+  rate : number
+};

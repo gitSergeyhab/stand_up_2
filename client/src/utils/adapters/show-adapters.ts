@@ -1,6 +1,7 @@
 import { ContentName } from '../../const/const';
 import {  OneShowCC, OneShowSC, ShowCardDataCC, ShowCardDataSC, ShowCardDataWithTitlesCC, ShowCardDataWithTitlesSC, ShowCardSC } from '../../types/show-types';
 import { GridCardType } from '../../types/types';
+import { adaptRatingToClient } from './user-adapters';
 
 
 const adaptServerShowToClientCard = (data: ShowCardSC): GridCardType => ({
@@ -14,7 +15,8 @@ const adaptServerShowToClientCard = (data: ShowCardSC): GridCardType => ({
   extType: ContentName.Comedians,
   viewsCount: data.views_count,
   date: data.show_date,
-  rateCount: data.number_of_rate
+  rateCount: data.number_of_rate,
+  userRate: data.user_rating ?  adaptRatingToClient(data.user_rating) : undefined
 });
 
 export const adaptServerShowDataToCard = (result: ShowCardDataSC): ShowCardDataCC => ({
@@ -33,6 +35,7 @@ export const adaptServerShowDataToWithTitlesToCard = (result: ShowCardDataWithTi
 });
 
 export const adaptOneShowToClient = (data: OneShowSC): OneShowCC => ({
+  ...data,
   avgRate: data.avg_rate,
   comedianNik: data.comedian_nik,
   comedianNikEn: data.comedian_nik_en,
@@ -64,5 +67,7 @@ export const adaptOneShowToClient = (data: OneShowSC): OneShowCC => ({
   comedianPicture: data.comedian_picture,
   userId: data.user_id,
   userNik: data.user_nik,
-  showDescription: data.show_description
+  showDescription: data.show_description,
+  userRate: data.user_rating ? adaptRatingToClient(data.user_rating) : undefined,
+
 });

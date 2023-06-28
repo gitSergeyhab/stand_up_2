@@ -14,7 +14,10 @@ export function ShowsPage() {
 
   const { search } = useLocation();
 
-  const { isError, isLoading, data } = useGetShowsQuery(search)
+
+
+  const { isError, isLoading, data } = useGetShowsQuery(search);
+  console.log({data})
 
   if (isLoading) {
     return <h2>Loading</h2>
@@ -24,11 +27,11 @@ export function ShowsPage() {
     return <h2>Error</h2>
   }
 
-  console.log({data})
+
   const  {count, list} = data;
 
 
-  const cards = list.map((item) => <GridCard key={item.id} card={item} />)
+  const cards = list.map((item) => <GridCard key={item.id} card={item}  />)
 
 
   const filters = [{name: FilterName.Year, title: 'Год выступленя'}, {name: FilterName.Language, title: 'Язык'}]
