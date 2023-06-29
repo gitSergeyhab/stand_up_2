@@ -20,7 +20,8 @@ export type GridCardType = {
   avgRate?: number,
   userRate?: RatingCC,
   rateCount?: string,
-  viewsCount: string,
+  weeklyViews?: string,
+  totalViews?: string,
   date?: string,
   status?: string,
 }

@@ -113,3 +113,24 @@ export const  ImageType = {
 export const FilterYear = {
   From: 1800,
 }
+
+export const SortDirection = {
+  ASC: 'asc',
+  DESC: 'desc',
+}
+
+export const SortType = {
+  Added: 'added',
+  New: 'new',
+  Name: 'name',
+  WeeklyViews: 'weekly_views',
+  TotalViews: 'total_views',
+  Rate: 'rate',
+  RateCount: 'rate_count',
+}
+
+export const DefaultSorterParam = {
+  Direction: SortDirection.DESC,
+  Type: SortType.WeeklyViews
+};
+

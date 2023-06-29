@@ -1,6 +1,6 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { Column, ColumnId, DefaultQueryParams, ImageType, OrderValues, StatusCode } from "../const/const";
+import { Column, ColumnId, DefaultQueryParams, ImageType, OrderValues, SortDirection, SortType, StatusCode } from "../const/const";
 import { convertFormDataToDate, getDataFromSQL, getDataInsertQueryStr, getDataUpdateQueryStr, getTitles, insertView } from "../utils/sql-utils";
 import { imageService } from "../service/image-service";
 import { ImageFile, SimpleDict, UserPseudoType, UserRequest } from "../types";
@@ -11,6 +11,16 @@ import { getDataFromSQLWithTitles } from "../utils/sql-utils";
 import { getNullObj, getValueOrNull } from "../utils/utils";
 import { contentService } from "../service/content-service";
 
+
+const SortTypeName = {
+    [SortType.Added]: 'show_date_added', //=
+    [SortType.New]: 'show_date_sort', //=
+    [SortType.Name]: 'show_name', //=
+    [SortType.WeeklyViews]: 'weekly_views', //=
+    [SortType.TotalViews]: 'total_views',//=
+    [SortType.Rate]: 'avg_rate', //=
+    [SortType.RateCount]: 'number_of_rate', //=
+  }
 
 const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
 
@@ -32,7 +42,7 @@ class ShowsController {
                     languages.language_id, language_name, language_name_en,
                     countries.country_id, country_name, country_name_en,
                     users.user_id, user_nik,
-                    get_views_count('show_id', :id, 7) AS views,
+                    get_views_count('show_id', :id, 7) AS weekly_views,
                     get_views_count('show_id', :id, 1000000) AS total_views,
                     get_videos_by_show(:id) AS videos,
                     get_main_pictures(show_main_picture_id) AS show_picture,
@@ -329,8 +339,14 @@ class ShowsController {
             const { yearFrom, yearTo } = getDefaultFromToYears()
             const { type, id } = req.params;
             const user_id = req.user?.user_id || '0';
-            const { year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset, language_id } = req.query;
+            const { 
+                year_from=yearFrom, year_to=yearTo, limit=Limit, offset=Offset, language_id,
+                direction, sort_type
+            } = req.query;
             console.log(req.query, 'req.query')
+
+            const sqlDirection = direction === SortDirection.ASC ? direction : SortDirection.DESC;
+            const sqlType = SortTypeName[sort_type as string] || SortTypeName[SortType.WeeklyViews];
 
             const columnId = ColumnId[type];
             const titlesSqlQuery = getTitles(type);
@@ -351,21 +367,24 @@ class ShowsController {
                 SELECT
                     shows.show_id, 
                     show_name, 
-                    show_date, 
+                    show_date,
+                    COALESCE(show_date, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS show_date_sort, 
                     show_date_added,
                     destination || filename AS main_picture,
                     comedians.comedian_id, 
                     comedian_nik,
-                    count (DISTINCT  view_id) AS views_count,
                     count (DISTINCT  show_rating_id) AS number_of_rate,
-                    AVG(show_rate)::real AS avg_show_rate,
+                    COALESCE(AVG(show_rate)::real, 0)  AS avg_rate,
                     get_reviews_by_type_id_user('show_id', shows.show_id, :user_id) AS user_reviews,
-                    get_user_show_rating(shows.show_id, :user_id) AS user_rating
+                    get_user_show_rating(shows.show_id, :user_id) AS user_rating,
+                    get_views_count('show_id', shows.show_id, 7) AS weekly_views,
+                    get_views_count('show_id', shows.show_id, 1000000) AS total_views
                 FROM shows
                 LEFT JOIN comedians ON comedians.comedian_id = shows.comedian_id
                 LEFT JOIN show_ratings ON show_ratings.show_id = shows.show_id
                 LEFT JOIN main_pictures ON show_main_picture_id = main_picture_id
 				LEFT JOIN views ON views.show_id = shows.show_id
+
 
                 ${where}
 
@@ -379,7 +398,7 @@ class ShowsController {
                     destination, 
                     filename, 
                     comedian_nik
-                ORDER BY number_of_rate DESC
+                ORDER BY ${sqlType} ${sqlDirection} 
                 LIMIT :limit
                 OFFSET :offset
                 ;

@@ -5,7 +5,6 @@ const BadgeSpan = styled.span<{color?: string}>`
 `;
 
 const BadgeSecondSpan = styled(BadgeSpan)`
-  color: #FFF;
   font-size: 0.7rem;
 `
 
@@ -19,6 +18,7 @@ const BadgeDiv = styled.div`
   justify-content: center;
   align-items: end;
   min-width: 2.3rem;
+  box-shadow: 2px -2px 2px #00000081;
 `
 
 

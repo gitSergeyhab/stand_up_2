@@ -15,7 +15,7 @@ export function GridCard({ card }: { card: GridCardType }) {
     id, name,
     picture,
     extId, extName,
-    avgRate,  userRate,  viewsCount, rateCount,
+    avgRate,  userRate, rateCount, totalViews, weeklyViews,
     type, extType,
     date,  status
   } = card;
@@ -41,25 +41,21 @@ export function GridCard({ card }: { card: GridCardType }) {
   ) : null;
 
 
-  // const userRateBadge = userRate ? (
-  //   <Badge
-  //     first={roundToPoints(userRate.rate)}
-  //     firstColor='orange'
-  //     title='ваша оценка'
-  //   />
-  // ) : null;
+
 
   const userRateBadge = userRate ? (
     <BadgeSquireDiv title='моя оценка'>{userRate.rate}</BadgeSquireDiv>
   ) : null;
 
-  const countBadge = +viewsCount ? (
+  const viewsBadge = (totalViews && +totalViews) ? (
     <Badge
-      first={viewsCount}
+      first={weeklyViews || 0}
       firstColor='#FFF'
-      title='количество просмотров'
+      title='количество просмотров за неделю (и за всё время)'
+      second={totalViews}
+      secondColor='#ddb31b'
     />
-  ) : null
+  ) : null;
 
   const extLink = toExt ? <ExtLink to={toExt}>{extName}</ExtLink> : <ExtNoLink>{extName}</ExtNoLink>;
 
@@ -76,7 +72,7 @@ export function GridCard({ card }: { card: GridCardType }) {
         {dateElement}
         {statusElement}
         {extLink}
-        <TopLeftDiv>{rateBadge}{countBadge}</TopLeftDiv>
+        <TopLeftDiv>{rateBadge}{viewsBadge}</TopLeftDiv>
         <AbsoluteDiv height='top' side='right'>{userRateBadge}</AbsoluteDiv>
       </CardContent>
     </Card>

@@ -26,6 +26,14 @@ const SorterLabel = styled.label`
 
 `;
 
+
+const SorterItemDiv = styled.div`
+  width: 49%;
+  @media (min-width: 1200px) {
+    width: 100%;
+  }
+`
+
 type SorterDirectionProps = {
   startValue: string,
   value: string,
@@ -44,10 +52,10 @@ export function SorterItem({value, startValue, title, name}: SorterDirectionProp
     navigate(`?${newSearch}`);
   }
   return (
-    <div>
+    <SorterItemDiv>
       <HiddenInput name={name} onChange={handleChange} value={value} id={title} defaultChecked={value === startValue}/>
       <SorterLabel htmlFor={title}>{title}</SorterLabel>
-    </div>
+    </SorterItemDiv>
 
   )
 }

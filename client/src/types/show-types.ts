@@ -35,7 +35,7 @@ export type OneShowSC = {
   country_name_en?:  string;
   user_id?:          string;
   user_nik?:         string;
-  views:            string;
+  weekly_views:     string;
   total_views:      string;
   videos?:           VideoType[];
   show_picture?:     string;
@@ -71,7 +71,7 @@ export type OneShowCC = {
   countryNameEn?:  string;
   userId?:          string;
   userNik?:         string;
-  views:            string;
+  weeklyViews:      string;
   totalViews:      string;
   videos?:           VideoType[];
   showPicture?:     string;
@@ -158,9 +158,10 @@ export type ShowCardSC = {
   main_picture?: string,
   comedian_id: string,
   comedian_nik: string,
-  views_count: string,
+  weekly_views: string,
+  total_views: string,
   number_of_rate: string,
-  avg_show_rate: number,
+  avg_rate: number,
   show_date?: string,
   user_rating: RatingSC
 }

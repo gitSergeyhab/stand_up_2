@@ -1,6 +1,6 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId, ImageType, DefaultQueryParams } from "../const/const";
+import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId, ImageType, DefaultQueryParams, SortType, SortDirection } from "../const/const";
 import { getDataFromSQL, getDataInsertQueryStr, getDataUpdateQueryStr, getTitles, insertView } from "../utils/sql-utils";
 import { ImageFile, SimpleDict } from "../types";
 import { imageService } from "../service/image-service";
@@ -11,11 +11,16 @@ import { getNullObj, getValueOrNull } from "../utils/utils";
 
 
 const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
-const PlaceOrder = {
-    views: 'views',
-    totalViews: 'total_views',
-    dateAdded: 'date_place_added'
-}
+
+const SortTypeName = {
+    [SortType.Added]: 'place_date_added', //=
+    [SortType.New]: 'place_date_founded_sort', //=
+    [SortType.Name]: 'place_name', //=
+    [SortType.WeeklyViews]: 'weekly_views', //=
+    [SortType.TotalViews]: 'total_views',//=
+    // [SortType.Rate]: 'avg_rate', //=
+    // [SortType.RateCount]: 'number_of_rate', //=
+  }
 
 
 
@@ -45,7 +50,7 @@ class PlacesController {
                         get_resources('place_id', :id) AS resources,
                         get_images('place_id', :id) AS pictures,
 
-                        get_views_count('place_id', :id, 7) AS views,
+                        get_views_count('place_id', :id, 7) AS weekly_views,
                         get_views_count('place_id', :id, 1000000) AS total_views
                     FROM places
                     LEFT JOIN countries USING(country_id)
@@ -203,8 +208,17 @@ class PlacesController {
         try {
             const { yearFrom, yearTo } = getDefaultFromToYears()
             const { id } = req.params;
-            const { country_id, year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset } = req.query;
+            const { 
+                country_id, year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset,
+                direction, sort_type
+             } = req.query;
 
+             console.log(req.query, '+++++++++++ ______ req.query ________ ++++++++++++')
+
+            const sqlDirection = direction === SortDirection.ASC ? direction : SortDirection.DESC;
+            const sqlType = SortTypeName[sort_type as string] || SortTypeName[SortType.WeeklyViews];
+
+            console.log( SortTypeName[sort_type as string], 'SortTypeName[sort_type as string]' )
 
             const where = `
                 WHERE (places.country_id ${country_id ? ' = :country_id' : ' = places.country_id OR 1 = 1'})
@@ -223,18 +237,19 @@ class PlacesController {
                     place_city, 
                     place_city_en,
                     place_date_founded, 
+                    COALESCE(place_date_founded, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS place_date_founded_sort, 
                     place_date_closed,
                     place_date_added,
                     place_description,
                     countries.country_id, country_name, 
                     destination || filename AS main_picture,
-                    get_views_count('place_id', place_id, 7) AS views,
+                    get_views_count('place_id', place_id, 7) AS weekly_views,
                     get_views_count('place_id', place_id, 1000000) AS total_views
                 FROM places
                 LEFT JOIN countries ON countries.country_id = places.country_id
                 LEFT JOIN main_pictures ON place_main_picture_id = main_pictures.main_picture_id
-
                 ${where}
+                ORDER BY ${sqlType} ${sqlDirection}
                 LIMIT :limit
                 OFFSET :offset;
                 ;

@@ -171,11 +171,11 @@ export const SortDirection = {
 }
 
 export const SortType = {
-  Added: 'added',
+  Added: 'date_added',
   New: 'new',
   Name: 'name',
-  ViewsWeekly: 'views_weekly',
-  ViewsTotal: 'views_total',
+  ViewsWeekly: 'weekly_views',
+  ViewsTotal: 'total_views',
   Rate: 'rate',
   RateCount: 'rate_count',
 }
@@ -191,6 +191,6 @@ export const SortTypeName = {
 }
 
 export const DefaultSorterParam = {
-  Direction: SortDirection.ASC,
+  Direction: SortDirection.DESC,
   Type: SortType.ViewsWeekly
 };

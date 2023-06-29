@@ -23,7 +23,7 @@ export type OnePlaceSC = {
   user_nik?:           string;
   resources?:          ResourceType[];
   pictures?:           ImageSC[];
-  views:               string;
+  weekly_views:        string;
   total_views:         string;
 }
 
@@ -47,7 +47,7 @@ export type OnePlaceCC = {
   userNik?:           string;
   resources?:         ResourceType[];
   pictures?:          ImageCC[];
-  views:              string;
+  weeklyViews:        string;
   totalViews:         string;
 }
 
@@ -64,7 +64,8 @@ export type PlaceCardSC = {
   country_id?:         number;
   country_name?:       string;
   main_picture?:       string;
-  views_count:         string
+  weekly_views:        string;
+  total_views:         string;
 }
 
 

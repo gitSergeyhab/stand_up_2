@@ -4,8 +4,7 @@ import {
   ComedianCardDataSC,
   ComedianCardSC,
   OneComedianTypeCC,
-  OneComedianTypeSC,
-
+  OneComedianTypeSC
 } from '../../types/comedian-types';
 import { ImageCC, ImageSC } from '../../types/pic-types';
 
@@ -33,7 +32,7 @@ export const adaptOneComedianToClient = (data: OneComedianTypeSC): OneComedianTy
   comedianDateAdded: data.comedian_date_added,
   numberOfRate: data.number_of_rate,
   totalViews: data.total_views,
-  views: data.views,
+  weeklyViews: data.weekly_views,
   userNik: data.user_nik,
   userId: data.user_id,
   resources: data.resources,
@@ -54,7 +53,8 @@ const adaptComedianToClient = (data:ComedianCardSC):ComedianCardCC => ({
   countryId: data.country_id,
   countryName: data.country_name,
   mainPicture: data.main_picture,
-  viewsCount: data.views_count
+  totalViews: data.total_views,
+  weeklyViews: data.weekly_views
 });
 
 

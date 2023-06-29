@@ -1,6 +1,6 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import {  Column, ColumnId, DefaultQueryParams, ImageType, SQLFunctionName, StatusCode, TableName } from "../const/const";
+import {  Column, ColumnId, DefaultQueryParams, ImageType, SQLFunctionName, SortDirection, SortType, StatusCode, TableName } from "../const/const";
 import { getDataFromSQL, getDataInsertQueryStr, getDataUpdateQueryStr, insertView, separateGraphTitles, separateListCount } from "../utils/sql-utils";
 import { getDataFromSQLWithTitles } from "../utils/sql-utils";
 import { ImageFile, SimpleDict } from "../types";
@@ -10,17 +10,17 @@ import { getDefaultFromToYears } from "../utils/date-utils";
 import { getBetweenYearsWhereStr } from "../utils/sql-where-utils";
 import { getNullObj, getValueOrNull } from "../utils/utils";
 
-const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
+const {Limit, Offset } = DefaultQueryParams;
 
-export const ComedianOrder = {
-    dateAdded: 'comedian_date_added',
-    dateWas: 'show_date',
-    rate: 'avg_rate',
-    pop: 'number_of_rate',
-    views: 'views',
-    totalViews: 'total_views'
-}
 
+
+const SortTypeName = {
+    [SortType.Added]: 'comedian_date_added', //=
+    [SortType.New]: 'comedian_date_sort', //=
+    [SortType.Name]: 'comedian_nik', //=
+    [SortType.WeeklyViews]: 'weekly_views', //=
+    [SortType.TotalViews]: 'total_views',//=
+  }
 
 
 class ComedianController {
@@ -31,9 +31,12 @@ class ComedianController {
 
             const {
                 country_id, city, year_from=yearFrom, year_to=yearTo,
-                limit = Limit, offset = Offset, order='pop', direction=null
+                limit = Limit, offset = Offset, 
+                direction, sort_type
             } = req.query;
 
+            const sqlDirection = direction === SortDirection.ASC ? direction : SortDirection.DESC;
+            const sqlType = SortTypeName[sort_type as string] || SortTypeName[SortType.WeeklyViews];
 
             const where = `
                 WHERE (country_id ${(country_id && country_id !== '-1')? ' = :country_id' : ' = country_id OR 1 = 1'})
@@ -45,11 +48,16 @@ class ComedianController {
                 const result = await sequelize.query(
                     `
                     SELECT 
-                        comedian_id, comedian_nik,
+                        comedian_id, 
+                        comedian_nik,
                         destination || filename AS main_picture,
-                        country_id, country_name, comedian_city,
-                        AVG(comedian_rate)::real AS avg_rate, COUNT (comedian_id) AS number_of_rate,
-                        get_views_count('comedian_id', comedian_id, 7) AS views,
+                        COALESCE(comedian_date_birth, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS comedian_date_birth, 
+                        country_id, 
+                        country_name, 
+                        comedian_city,
+                        AVG(comedian_rate)::real AS avg_rate, 
+                        COUNT (comedian_id) AS number_of_rate,
+                        get_views_count('comedian_id', comedian_id, 7) AS weekly_views,
                         get_views_count('comedian_id', comedian_id, 1000000) AS total_views
                     FROM comedians
 
@@ -61,7 +69,7 @@ class ComedianController {
 
                     GROUP BY comedian_id, country_id, country_name, country_name_en, destination, filename
 
-                    ORDER BY ${ComedianOrder[order as string] || ComedianOrder.pop} ${direction === 'asc' ? 'ASC' : 'DESC'}
+                    ORDER BY ${sqlType} ${sqlDirection}
 
                     LIMIT :limit
                     OFFSET :offset

@@ -5,7 +5,7 @@ import { adaptRatingToClient } from './user-adapters';
 
 
 const adaptServerShowToClientCard = (data: ShowCardSC): GridCardType => ({
-  avgRate: data.avg_show_rate,
+  avgRate: data.avg_rate,
   extId: data.comedian_id,
   extName: data.comedian_nik,
   id: data.show_id,
@@ -13,7 +13,8 @@ const adaptServerShowToClientCard = (data: ShowCardSC): GridCardType => ({
   picture: data.main_picture,
   type: ContentName.Shows,
   extType: ContentName.Comedians,
-  viewsCount: data.views_count,
+  weeklyViews: data.weekly_views,
+  totalViews: data.total_views,
   date: data.show_date,
   rateCount: data.number_of_rate,
   userRate: data.user_rating ?  adaptRatingToClient(data.user_rating) : undefined
@@ -57,7 +58,7 @@ export const adaptOneShowToClient = (data: OneShowSC): OneShowCC => ({
   showNameEn: data.show_name_en,
   totalViews: data.total_views,
   videos: data.videos,
-  views: data.views,
+  weeklyViews: data.weekly_views,
   eventId: data.event_id,
   eventName: data.event_name,
   eventNameEn: data.event_name_en,

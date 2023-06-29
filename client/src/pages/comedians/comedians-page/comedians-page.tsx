@@ -4,11 +4,12 @@ import { Filter } from "../../../components/filters/filter";
 import { GridCard } from "../../../components/grid-card/grid-card";
 import { Pagination } from "../../../components/pagination/pagination";
 import { Titles } from "../../../components/titles/titles";
-import { ContentName, DefaultPageParam, FilterName } from "../../../const/const";
+import { ContentName, DefaultPageParam, FilterName, SortType } from "../../../const/const";
 import { useGetComediansQuery } from "../../../store/comedians-api";
 import { ComedianCardCC } from "../../../types/comedian-types";
 import { GridCardType } from "../../../types/types";
 import { CommonAsideContainer } from "../../../components/common/common-style";
+import { Sorter } from "../../../components/sorters/sorter";
 
 
 const getComedianCard = (data: ComedianCardCC): GridCardType=> ({
@@ -19,7 +20,8 @@ const getComedianCard = (data: ComedianCardCC): GridCardType=> ({
   picture: data.mainPicture,
   type: ContentName.Comedians,
   extType: ContentName.Countries,
-  viewsCount: data.viewsCount,
+  totalViews: data.totalViews,
+  weeklyViews: data.weeklyViews
 })
 
 
@@ -49,11 +51,16 @@ export function ComediansPage() {
   const filters = [{name: FilterName.Year, title: 'Год рождения'}, {name: FilterName.Country}]
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;
 
+  const types = [SortType.Added, SortType.Name, SortType.New, SortType.ViewsTotal, SortType.ViewsWeekly];
+
   return (
     <>
       <Titles native="Комики" en="Comedians" />
       <CommonAsideContainer side="left">
-      <Filter filters={filters}/>
+        <Filter filters={filters}/>
+      </CommonAsideContainer>
+      <CommonAsideContainer side="right">
+        <Sorter types={types}/>
       </CommonAsideContainer>
 
       <CardContainer> {cards} </CardContainer>

@@ -13,7 +13,8 @@ const adaptServerPlaceToClientCard = (data: PlaceCardSC): GridCardType => ({
   picture: data.main_picture,
   type: ContentName.Places,
   extType: ContentName.Countries,
-  viewsCount: data.views_count,
+  weeklyViews: data.weekly_views,
+  totalViews: data.total_views,
   date: data.place_date_founded,
 
 });
@@ -41,7 +42,7 @@ export const adaptOnePlaceToClient = (data: OnePlaceSC): OnePlaceCC=> ({
   placeName: data.place_name,
   placeNameEn: data.place_name_en,
   totalViews: data.total_views,
-  views: data.views,
+  weeklyViews: data.weekly_views,
   userId: data.user_id,
   userNik: data.user_nik,
   mainPicture: data.main_picture,

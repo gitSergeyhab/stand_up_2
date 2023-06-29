@@ -15,7 +15,7 @@ import { SortFieldset } from './sorter-style';
 
 const getSorterParams = (search: string) => {
   const direction = (getFieldFromSearch({ field: 'direction', search }) as string) || DefaultSorterParam.Direction;
-  const type = (getFieldFromSearch({ field: 'type', search }) as string) || DefaultSorterParam.Type;
+  const type = (getFieldFromSearch({ field: 'sort_type', search }) as string) || DefaultSorterParam.Type;
   return { direction, type};
 };
 
@@ -26,7 +26,7 @@ export function Sorter( { types }: { types: string[] } ) {
   const { direction, type } = getSorterParams(search);
 
   const sortTypeElements = types.map((item) =>
-    <SorterItem name='type' startValue={type} title={SortTypeName[item]} value={item} key={item}/>
+    <SorterItem name='sort_type' startValue={type} title={SortTypeName[item]} value={item} key={item}/>
   )
 
 

@@ -27,6 +27,7 @@ export type OneComedianTypeSC = {
   pictures?: ImageSC[];
   resources?: ResourceType[];
   total_views: string;
+  weekly_views: string;
   user_id?: string;
   user_nik?: string;
   views?: string;
@@ -55,6 +56,7 @@ export type OneComedianTypeCC = {
   countryNameEn?: string;
   numberOfRate?: string;
   totalViews: string;
+  weeklyViews: string;
   views?: string;
   pictures?: ImageCC[];
   resources?: ResourceType[];
@@ -71,7 +73,8 @@ export type ComedianCardSC = {
   country_id?: string;
   country_name?: string;
   comedian_city?: string;
-  views_count: string;
+  weekly_views: string;
+  total_views: string;
 };
 
 export type ComedianCardCC = {
@@ -81,7 +84,8 @@ export type ComedianCardCC = {
   countryId?: string;
   countryName?: string;
   comedianCity?: string;
-  viewsCount: string;
+  weeklyViews: string;
+  totalViews: string;
 
 };
 

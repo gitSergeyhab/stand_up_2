@@ -157,7 +157,8 @@ export type EventCardSC = {
   main_picture?: string,
   place_id?: string,
   place_name?: string,
-  views_count: string,
+  weekly_views: string,
+  total_views: string
 }
 
 export type OneEventSC = {
@@ -176,7 +177,7 @@ export type OneEventSC = {
   user_picture?:      string;
   place_picture?:      string;
   event_resources?:   ResourceType[];
-  views:             string;
+  weekly_views:             string;
   total_views:       string;
   place_country_id?: string;
   place_country_name?: string;
@@ -199,8 +200,8 @@ export type OneEventCC = {
   userPicture?:      string;
   placePicture?:      string;
   eventResources?:   ResourceType[];
-  views:             string;
   totalViews:       string;
+  weeklyViews:       string;
   placeCountryId?: string;
   placeCountryName?: string;
   placeCity?: string;

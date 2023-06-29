@@ -1,6 +1,6 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import {  DefaultQueryParams, StatusCode, EventStatus, ImageType, TableName, Column } from "../const/const";
+import {  DefaultQueryParams, StatusCode, EventStatus, ImageType, TableName, Column, SortType, SortDirection } from "../const/const";
 import {  getDataFromSQL,  getDataFromSQLWithTitles,  getDataInsertQueryStr, getDataUpdateQueryStr, getTitles, getTitlesQuery, insertView } from "../utils/sql-utils";
 import { ImageFile, SimpleDict, TitlesDataType } from "../types";
 import { imageService } from "../service/image-service";
@@ -9,12 +9,13 @@ import { getDefaultFromToYears } from "../utils/date-utils";
 import {getBetweenYearsWhereStr} from '../utils/sql-where-utils'
 import { getNullObj, getValueOrNull } from "../utils/utils";
 
-const EventOrder = {
-    totalViews: 'total_views',
-    views: 'views',
-    time: 'event_date',
-    upcoming : 'upcoming '
-}
+const SortTypeName = {
+    [SortType.Added]: 'event_date_added', //=
+    [SortType.New]: 'event_date_sort', //=
+    [SortType.Name]: 'event_name', //=
+    [SortType.WeeklyViews]: 'weekly_views', //=
+    [SortType.TotalViews]: 'total_views',//=
+  }
 
 
 const ColumnId = {
@@ -55,7 +56,7 @@ class EventsController {
                         get_main_pictures(event_main_picture_id) AS main_picture,
                         get_main_pictures(place_main_picture_id) AS place_picture,
                         get_resources('event_id', :id)  AS event_resources,
-                        get_views_count('event_id', :id, 7) AS views,
+                        get_views_count('event_id', :id, 7) AS weekly_views,
                         get_views_count('event_id', :id, 1000000) AS total_views
 
                     FROM events
@@ -169,11 +170,17 @@ class EventsController {
         try {
             const { yearFrom, yearTo } = getDefaultFromToYears()
             const { type, id } = req.params;
-            const { country_id, year_from=yearFrom, year_to=yearTo, status = EventStatusAll, limit = Limit, offset = Offset } = req.query;
+            const { 
+                country_id, year_from=yearFrom, year_to=yearTo, status=EventStatusAll, limit=Limit, offset=Offset,
+                direction, sort_type
+             } = req.query;
 
             const columnId = ColumnId[type];
             const titlesSqlQuery = getTitles(type);
-            console.log({titlesSqlQuery}, '+=================+')
+            console.log({titlesSqlQuery}, '+=================+');
+
+            const sqlDirection = direction === SortDirection.ASC ? direction : SortDirection.DESC;
+            const sqlType = SortTypeName[sort_type as string] || SortTypeName[SortType.WeeklyViews];
 
             const where = `
                 WHERE (places.country_id ${country_id ? ' = :country_id' : ' = places.country_id OR 1 = 1'})
@@ -189,12 +196,15 @@ class EventsController {
                     event_name,
                     event_name_en, 
                     event_date, 
+                    COALESCE(event_date, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS event_date_sort,
                     event_date_added,
                     event_status,
                     places.place_id, 
                     place_name,
                     destination || filename AS main_picture,
-                    count (DISTINCT view_id) AS views_count
+                    count (DISTINCT view_id) AS views_count,
+                    get_views_count('event_id', event_id, 7) AS weekly_views,
+                    get_views_count('event_id', event_id, 1000000) AS total_views
 	
 				FROM events
                 LEFT JOIN main_pictures ON event_main_picture_id = main_picture_id
@@ -204,6 +214,7 @@ class EventsController {
                 LEFT JOIN places ON events.place_id = places.place_id
                 ${where}
                 GROUP BY event_id, destination, filename, places.place_id
+                ORDER BY ${sqlType} ${sqlDirection}
                 LIMIT :limit
                 OFFSET :offset
                 ;
