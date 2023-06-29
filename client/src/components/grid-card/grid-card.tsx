@@ -3,7 +3,7 @@ import { GridCardType } from '../../types/types';
 import { getFormatDate } from '../../utils/date-utils';
 import { roundToPoints } from '../../utils/utils';
 import { Badge, BadgeSquireDiv } from '../badge/badge';
-import { AbsoluteDiv, TopLeftDiv } from '../common/common-style';
+import { AbsoluteDiv, SmallSup, TopLeftDiv } from '../common/common-style';
 import { Card, CardContent, CardLink, CardTitleLink, DateCard, ExtLink, ExtNoLink, Img,/* RateCard, */ StatusCard, TitleCard } from './grid-card-style';
 
 
@@ -37,6 +37,7 @@ export function GridCard({ card }: { card: GridCardType }) {
       second={rateCount}
       secondColor='#FFF'
       title='средняя оценка (количество оценок)'
+      type='rate'
     />
   ) : null;
 
@@ -44,7 +45,7 @@ export function GridCard({ card }: { card: GridCardType }) {
 
 
   const userRateBadge = userRate ? (
-    <BadgeSquireDiv title='моя оценка'>{userRate.rate}</BadgeSquireDiv>
+    <BadgeSquireDiv title='моя оценка'>{userRate.rate} <SmallSup>★</SmallSup></BadgeSquireDiv>
   ) : null;
 
   const viewsBadge = (totalViews && +totalViews) ? (

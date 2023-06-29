@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { BadgeSquireDiv } from '../badge/badge';
 
 export const Card = styled.li`
   position: relative;
@@ -112,6 +111,7 @@ export const ExtNoLink = styled.span`
     color: goldenrod;
   }
 `;
+
 
 
 

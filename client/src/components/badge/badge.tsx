@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { SmallSup } from "../common/common-style";
 
 const BadgeSpan = styled.span<{color?: string}>`
   color: ${({color}) => color || '#FFF'};
@@ -27,15 +28,19 @@ export type BadgeProps = {
   second?: string|number,
   firstColor?: string,
   secondColor?: string,
-  title?: string
+  title?: string,
+  type?: 'rate'|'view'
 }
 
 
-export function Badge({first, second, firstColor, secondColor, title}: BadgeProps) {
+export function Badge({first, second, firstColor, secondColor, title, type='view'}: BadgeProps) {
   const secondSpan = second ? <BadgeSecondSpan color={secondColor}>({second})</BadgeSecondSpan> : null;
+
+  const star = type === 'rate' ? '★' : ''
+  const eye = type === 'view' ?  '👁' : ''
   return (
     <BadgeDiv title={title}>
-        <BadgeSpan color={firstColor}>{first}</BadgeSpan>
+        <BadgeSpan color={firstColor}>{first}<SmallSup>{star}{eye}</SmallSup> </BadgeSpan>
         {secondSpan}
     </BadgeDiv>
 
