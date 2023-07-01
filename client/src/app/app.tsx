@@ -31,6 +31,7 @@ import { PlaceChange } from '../pages/change-panels/place-change';
 import { ComedianChange } from '../pages/change-panels/comedian-change';
 import { ShowChange } from '../pages/change-panels/show-change';
 import { EventChange } from '../pages/change-panels/event-change';
+import { Chat } from '../components/chat/chat';
 
 const AppRoute = {
   Main: '/',
@@ -130,8 +131,8 @@ export function App() {
             </MainContainer>
           </MainWrapper>
         </MainMain>
-
-        <Footer />
+        <Chat />
+        {/* <Footer /> */}
       </PageWrapper>
     </BrowserRouter>
   );

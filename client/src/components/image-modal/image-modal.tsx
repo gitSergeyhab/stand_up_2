@@ -1,17 +1,8 @@
 import { useState, useEffect, MouseEventHandler } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
-import {
-  CloseBtn,
-  Image,
-  ImageContainer,
-  ImageList,
-  ItemSlideLi,
-  Modal,
-  ModalContent,
-  SlideItemImg,
-} from './image-modal-style';
+import { CloseBtn, Image, ImageContainer, ImageList, ItemSlideLi, Modal, ModalContent, SlideItemImg } from './image-modal-style';
 import { KeyNext, KeyPrev, SERVER_URL } from '../../const/const';
-import { ImageCC } from '../../store/images-api';
+import { ImageCC } from '../../types/pic-types';
 
 // functions
 

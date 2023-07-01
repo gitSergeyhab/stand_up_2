@@ -149,3 +149,27 @@ export const hiddenStyle = css`
   opacity: 0;
 `
 export const SmallSup = styled.sup`font-size: 0.65rem;`;
+
+
+export const ActionButton = styled.button.attrs({type: 'button'})`
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid rgb(13, 1, 1);
+  background-color: goldenrod;
+  border-radius: 6px;
+  color: #000;
+  padding: 0;
+  &:hover {
+    color: #FFF;
+    box-shadow: 2px 2px 2px #00000066;
+  }
+
+  &:active {
+    color: goldenrod;
+    background-color: #4d0d0d;
+    box-shadow: inset 2px 2px 2px #00000066;
+  }
+
+  transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
+
+`
