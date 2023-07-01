@@ -26,19 +26,38 @@ app.use(express.json());
 app.use('/images', express.static(path.join(__dirname, 'files', 'images')))
 
 
+
 app.use(cors({
     origin: ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:5500'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
 
+
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api', router);
 app.use(errorMiddleware);
 
+type Message = {
+    userId: string;
+    avatar?: string;
+    roles: string[];
+    text: string;
+    nik: string;
+}
+
 io.on('connection', (socket) => {
-    console.log({socket})
+    console.log( '____socket___ => connection <=', socket.id);
+    socket.on('message', (ioData: Message) => {
+        console.log({ioData});
+        // socket.emit('response', ioData);
+        io.emit('response', {...ioData, id: String(Date.now()) + ioData.userId})
+    })
+    socket.on('disconnect', () => {
+        console.log({socket}, '____socket___ => DISconnect <=');
+    })
+    
 })
 
 const start = async() => {

@@ -1,42 +1,54 @@
 import { useRef, useState, FormEventHandler } from 'react';
-import { ChatButton, ChatInputForm, ChatTextarea, ErrorMessage } from './chat-input-style';
+import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import { ChatButton, ChatInputForm, ChatTextarea, NoUserDiv } from './chat-input-style';
+import { getUser } from '../../store/user-reducer/user-selectors';
+import socket from '../../socket-io';
 
 
 
 
 export function ChatInput() {
 
-  const [err, setErr] = useState('')
+  const user = useSelector(getUser);
+
+
   const [focus, setFocus] = useState(false);
   const textRef = useRef<null|HTMLTextAreaElement>(null);
+  const formRef = useRef<null|HTMLFormElement>(null);
+
+  if (!user) {
+    return <NoUserDiv>Отправлять сообщения могут только авторизованные пользователи</NoUserDiv>
+  }
 
   const handleFocus = () => setFocus(true)
   const handleBlur = () => setFocus(false)
 
   const handleSubmit: FormEventHandler = (evt) => {
     evt.preventDefault();
+
     const value = textRef.current?.value?.trim();
     if (!value || value?.length < 3) {
-      setErr('перед отправкой сообщения его придется написать. Миниму 3 символа')
+      toast.warning('перед отправкой сообщения его придется написать. Хотя бы 3 символа')
       return;
     }
-    setErr('')
 
-    console.log(value)
+    const {avatar, id, nik, roles} = user;
+    const data = {socketId: socket.id, userId: id, avatar, nik, roles, text: value}
+
+    // console.log(data);
+    socket.emit('message', data)
+    formRef.current?.reset()
+
+
   }
 
-  const errorBlock = err ? <ErrorMessage>{err}</ErrorMessage> : null
+  // const errorBlock = err ? <ErrorMessage>{err}</ErrorMessage> : null
   return (
-    <>
-      {errorBlock}
-      <ChatInputForm onSubmit={handleSubmit} focus={focus}>
-
-        <ChatTextarea ref={textRef} onFocus={handleFocus} onBlur={handleBlur} required />
-        <ChatButton>➤</ChatButton>
-      </ChatInputForm>
-    </>
-
-
+    <ChatInputForm ref={formRef} onSubmit={handleSubmit} focus={focus}>
+      <ChatTextarea ref={textRef} onFocus={handleFocus} onBlur={handleBlur} required />
+      <ChatButton>➤</ChatButton>
+    </ChatInputForm>
   )
 
 }

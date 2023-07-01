@@ -1,8 +1,15 @@
+import { useState, useEffect } from 'react';
+
 import { useSelector } from 'react-redux';
+
 import { ChartLink, ChatImg, ChatMessageLI, ChatMessageUL, MessageP, TextDiv } from './chat-message-block-style';
 import { getUser } from '../../store/user-reducer/user-selectors';
 import { Role } from '../../store/actions';
 import { DefaultPath, SERVER_URL } from '../../const/const';
+import { Message } from '../../types/socket-types';
+import socket from '../../socket-io';
+
+
 
 const UserColor = {
   ThisUser: 'goldenrod',
@@ -27,15 +34,6 @@ const getColorFromUserData = ({roles, userAuthId, userMessageId}: GetColorFromUs
     return UserColor.Moderator;
   }
   return UserColor.User;
-}
-
-type Message = {
-  id: string;
-  userId: string;
-  avatar?: string;
-  roles: Role[];
-  text: string;
-  nik: string;
 }
 
 
@@ -69,15 +67,25 @@ function ChatMessage({message}: {message: Message}) {
 
 type ChatMessageBlockProps = {
   color: string,
-  messages: Message[]
 }
 
-export function ChatMessageBlock({color, messages}: ChatMessageBlockProps) {
+export function ChatMessageBlock({color}: ChatMessageBlockProps) {
+  const [messages, setMessages]  = useState<Message[]>([]);
+
+
+  useEffect(() => {
+    socket.on('response', (message) => {
+      setMessages((prev) => [...prev, message] );
+    })
+  }, [socket])
 
 
   const messageElements = messages.map((item) => <ChatMessage key={item.id} message={item}/> )
+
+  // const x = essages.map(i => <div key={i}>{i}</div>)
   return (
     <ChatMessageUL color={color}>
+      {/* {x} */}
       {messageElements}
     </ChatMessageUL>
   )

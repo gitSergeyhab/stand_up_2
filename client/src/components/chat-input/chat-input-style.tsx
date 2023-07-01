@@ -15,6 +15,9 @@ export const ChatInputForm = styled.form<{focus?: boolean}>`
   background-color: rgba(13, 1, 1);
   scale: ${({focus}) => focus ? '1' : '0.35'} ;
   transition: scale 0.3s ease-in-out;
+  &:hover{
+    scale: 1;
+  }
 `;
 
 export const ChatTextarea = styled.textarea`
@@ -53,4 +56,21 @@ export const ErrorMessage = styled.div`
   color: #FFF;
   font-weight: 700;
   text-align: center;
+`;
+
+export const NoUserDiv = styled.div`
+  width: calc(100%) ;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 0.2rem;
+  padding: 0.5rem;
+  position: absolute;
+  bottom: 0;
+  height: max(10%, 4rem);
+  background-color: rgba(13, 1, 1);
+  color: goldenrod;
 `;
