@@ -4,7 +4,7 @@ import { ChatColor, ChatPosition } from "../../const/chat";
 import { ButtonsDiv, ChatSection, SettingsDiv } from "./chart-block-style";
 import { ChatColorBlock } from "../chat-color-block/chat-color-block";
 import { ChatPositionBlock } from "../chat-position-block/chat-position-block";
-import { CloseBtn, SettingBtn } from "../common/common";
+import { CloseBtn, HideBtn, SettingBtn } from "../common/common";
 import { ChatInput } from "../chat-input/chat-input";
 import { ChatMessageBlock } from "../chat-message-block/chat-message-block";
 
@@ -32,9 +32,11 @@ import { ChatMessageBlock } from "../chat-message-block/chat-message-block";
 
 type ChatBlockProps = {
   onClose: () => void;
+  onHide: () => void;
+  hide?: boolean
 }
 
-export function ChatBlock({onClose}: ChatBlockProps) {
+export function ChatBlock({onClose, onHide, hide}: ChatBlockProps) {
 
   const [color, setColor] = useState(ChatColor.Red);
   const [position, setPosition] = useState(ChatPosition.Center);
@@ -54,12 +56,14 @@ export function ChatBlock({onClose}: ChatBlockProps) {
     <ButtonsDiv>
       {settingsElement}
       <SettingBtn onClick={handleSettingsClick} />
+      <HideBtn onClick={onHide} disabled={setting}/>
       <CloseBtn onClick={onClose} disabled={setting}/>
+
     </ButtonsDiv>
   )
 
   return (
-    <ChatSection position={position}>
+    <ChatSection position={position} hide={hide}>
       {buttonsElement}
       <ChatMessageBlock color={color}  />
       <ChatInput />

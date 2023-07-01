@@ -12,3 +12,10 @@ export const ChatPosition = {
   Right: 'right',
   Bottom: 'bottom',
 }
+
+export const enum ChatState {
+  Open = 'Open',
+  Close = 'Close',
+  Hide = 'Hide',
+}
+

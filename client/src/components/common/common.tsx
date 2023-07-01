@@ -32,3 +32,7 @@ export function CloseBtn({onClick, disabled}: BtnProps) {
 export function SettingBtn({onClick, disabled}: BtnProps) {
   return <ActionBtn sign='⚙' disabled={disabled} onClick={onClick}/>
 }
+
+export function HideBtn({onClick, disabled}: BtnProps) {
+  return <ActionBtn sign='-' disabled={disabled} onClick={onClick}/>
+}

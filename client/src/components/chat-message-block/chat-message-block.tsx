@@ -77,7 +77,7 @@ export function ChatMessageBlock({color}: ChatMessageBlockProps) {
     socket.on('response', (message) => {
       setMessages((prev) => [...prev, message] );
     })
-  }, [socket])
+  }, [])
 
 
   const messageElements = messages.map((item) => <ChatMessage key={item.id} message={item}/> )

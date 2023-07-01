@@ -1,4 +1,5 @@
 import styled, {css} from "styled-components";
+import { hiddenStyle } from "../common/common-style";
 
 const left = css`
   height: auto;
@@ -31,11 +32,8 @@ const center = css`
 `;
 
 
-export type ChatSectionProps = {
-  position?: string,
-  bgc: string
-}
-export const ChatSection = styled.section<{position: string}>`
+
+export const ChatSection = styled.section<{position: string, hide?: boolean}>`
   border: 4px solid white;
   outline: 4px solid #130301;
   box-shadow: 8px -8px 8px #e6980685;
@@ -46,10 +44,8 @@ export const ChatSection = styled.section<{position: string}>`
   position: fixed;
   padding: 0.1rem;
   z-index: 6;
-  /* overflow-y: scroll; */
 
   width: 100%;
-  /* height: 30px; */
   bottom: 0;
   ${({position}) => position === 'bottom' ? bottom : ''};
   ${({position}) => position === 'left' ? left : ''};
@@ -57,6 +53,9 @@ export const ChatSection = styled.section<{position: string}>`
   ${({position}) => position === 'center' ? center : ''};
 
   transition: background-color 0.4s ease-in-out;
+
+
+  ${({hide}) => hide  ? hiddenStyle : ''};
 `;
 
 export const ChartCloseBtn = styled.button.attrs({ type: 'button' })`
