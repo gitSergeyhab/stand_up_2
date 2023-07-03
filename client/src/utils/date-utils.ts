@@ -48,7 +48,7 @@ export const getStartDate = () => {
 // const validateDate = ()
 const DEFAULT_DATE_FORMAT = 'DD.MM.YYYY';
 const DEFAULT_START_DATE = '01.01.1800';
-const DEFAULT_DATE_TIME_FORMAT = 'DD.MM.YYYY | HH:MM'
+const DEFAULT_DATE_TIME_FORMAT = 'DD.MM.YYYY | HH:mm'
 const today = dayjs();
 
 const DEFAULT_DATE_FORMAT_FROM_DB = 'YYYY-MM-DD'
@@ -56,15 +56,7 @@ const DEFAULT_DATE_FORMAT_FROM_DB = 'YYYY-MM-DD'
 export const checkDateCorrect = (date: string|dayjs.Dayjs, format = DEFAULT_DATE_FORMAT ) =>
   dayjs(date, format).isValid();;
 
-// export const validateDate = (date: string, startDate=DEFAULT_START_DATE, endDate=today, format=DEFAULT_DATE_FORMAT ) => {
-//   if ([date, startDate, endDate].some((item) => !checkDateCorrect(item))) {
-//     console.log('BAD DATES')
-//     return false;
-//   }
-//   const start = dayjs(startDate, format);
-//   const end = dayjs(endDate, format);
-//   return dayjs(date).isBetween(start, end, 'day')
-// }
+
 type ValidateDateTypes = {
   date: string|dayjs.Dayjs,
   startDate?: string|dayjs.Dayjs,
@@ -92,3 +84,4 @@ export const getDateFromString = (str: string|undefined) =>
   (str && (checkDateCorrect(str) || checkDateCorrect(str, DEFAULT_DATE_FORMAT_FROM_DB))) ? dayjs(str).toDate() : null
 
 
+export const formatDateFromTimeStamp = (timestamp: number) => dayjs(new Date(timestamp)).format(DEFAULT_DATE_TIME_FORMAT);

@@ -19,3 +19,13 @@ export const enum ChatState {
   Hide = 'Hide',
 }
 
+
+export const Room = {
+  Common: 'common',
+  Support: 'support'
+}
+
+export const RoomName = {
+  [Room.Common]: 'Болталка',
+  [Room.Support]: 'Поддержка'
+}

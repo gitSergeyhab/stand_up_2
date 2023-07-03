@@ -8,7 +8,7 @@ import socket from '../../socket-io';
 
 
 
-export function ChatInput() {
+export function ChatInput({room}: {room: string}) {
 
   const user = useSelector(getUser);
 
@@ -34,7 +34,7 @@ export function ChatInput() {
     }
 
     const {avatar, id, nik, roles} = user;
-    const data = {socketId: socket.id, userId: id, avatar, nik, roles, text: value}
+    const data = {socketId: socket.id, userId: id, avatar, nik, roles, text: value, room}
 
     // console.log(data);
     socket.emit('message', data)

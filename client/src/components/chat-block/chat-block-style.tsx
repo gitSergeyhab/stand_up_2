@@ -39,7 +39,7 @@ export const ChatSection = styled.section<{position: string, hide?: boolean}>`
   box-shadow: 8px -8px 8px #e6980685;
   background-color: #130301;
   display: grid;
-  grid-template-rows: auto 1rem;
+  grid-template-rows: 2rem auto 1rem;
 
   position: fixed;
   padding: 0.1rem;
@@ -51,11 +51,8 @@ export const ChatSection = styled.section<{position: string, hide?: boolean}>`
   ${({position}) => position === 'left' ? left : ''};
   ${({position}) => position === 'right' ? right : ''};
   ${({position}) => position === 'center' ? center : ''};
-
-  transition: background-color 0.4s ease-in-out;
-
-
   ${({hide}) => hide  ? hiddenStyle : ''};
+  transition: background-color 0.4s ease-in-out;
 `;
 
 export const ChartCloseBtn = styled.button.attrs({ type: 'button' })`
@@ -92,17 +89,27 @@ export const SettingsDiv = styled.div`
 
 export const ButtonsDiv = styled.div`
 position: absolute;
-top: .5rem;
-right: 1.5rem;
+top: 1.5rem;
+right: 1rem;
 display: flex;
 height: min-content;
 width: min-content;
-opacity: 0.75;
-scale: 0.75;
+opacity: 0.5;
+scale: 0.7;
 transition: opacity 0.3s ease-in-out, scale 0.3s ease-in-out;
 
 &:hover {
   opacity: 1;
-  scale: 1;
+  scale: 0.85;
 }
 `;
+
+export const ChatHeader = styled.h2`
+  background-color: #000;
+  color: goldenrod;
+  width: 100%;
+  text-align: center;
+  height: 2rem;
+  /* position: absolute; */
+  margin: 0;
+`

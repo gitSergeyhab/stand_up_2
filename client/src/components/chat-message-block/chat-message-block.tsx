@@ -1,55 +1,40 @@
-import { useState, useEffect } from 'react';
-
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-
-import { ChartLink, ChatImg, ChatMessageLI, ChatMessageUL, MessageP, TextDiv } from './chat-message-block-style';
+import socket from '../../socket-io';
+import { ChartLink, ChatImg, ChatMessageLI, ChatMessageUL, MessageP, TextDiv, UserDateWrapperDiv } from './chat-message-block-style';
 import { getUser } from '../../store/user-reducer/user-selectors';
-import { Role } from '../../store/actions';
 import { DefaultPath, SERVER_URL } from '../../const/const';
 import { Message } from '../../types/socket-types';
-import socket from '../../socket-io';
+import { getColorFromUserData } from '../../utils/chat-utils';
+import { formatDateFromTimeStamp, formatDateType } from '../../utils/date-utils';
 
 
 
-const UserColor = {
-  ThisUser: 'goldenrod',
-  User: '#FFF',
-  Admin: '#019f23',
-  Moderator: '#22b7f7',
-}
-
-type GetColorFromUserData = {
-  roles: Role[],
-  userAuthId?: string,
-  userMessageId?: string,
-}
-const getColorFromUserData = ({roles, userAuthId, userMessageId}: GetColorFromUserData) => {
-  if (userAuthId === userMessageId) {
-    return UserColor.ThisUser;
-  }
-  if (roles.includes(Role.Admin)) {
-    return UserColor.Admin;
-  }
-  if (roles.includes(Role.Moderator)) {
-    return UserColor.Moderator;
-  }
-  return UserColor.User;
-}
 
 
 function ChatMessage({message}: {message: Message}) {
 
   const user = useSelector(getUser);
   const id = user?.id;
-  const { avatar, roles, text, userId, nik } = message;
+  const { avatar, roles, text, userId, nik, date, isJoin } = message;
   const side = (id === userId) ? 'end' : 'start';
   const userColor = getColorFromUserData({roles, userAuthId: id, userMessageId: userId});
+  const formatDate =  formatDateFromTimeStamp(date);
+
+  if (isJoin) {
+    return <ChatMessageLI>{formatDate} / {nik} вошел в чат</ChatMessageLI>
+  }
 
 
   const textBlock = (
     <TextDiv color={userColor} side={side}>
-      <ChartLink color={userColor}  side={side} to={`/users/${userId}`}>{nik}</ChartLink>
-      <MessageP> {text} </MessageP>
+      <UserDateWrapperDiv>
+        {formatDate}
+        <ChartLink color={userColor}  side={side} to={`/users/${userId}`}>{nik}</ChartLink>
+
+      </UserDateWrapperDiv>
+
+      <MessageP>{text} </MessageP>
     </TextDiv>
   );
 
@@ -67,25 +52,36 @@ function ChatMessage({message}: {message: Message}) {
 
 type ChatMessageBlockProps = {
   color: string,
+  room: string
 }
 
-export function ChatMessageBlock({color}: ChatMessageBlockProps) {
+export function ChatMessageBlock({color, room}: ChatMessageBlockProps) {
   const [messages, setMessages]  = useState<Message[]>([]);
+  const ulRef = useRef<HTMLUListElement|null>(null)
 
 
   useEffect(() => {
     socket.on('response', (message) => {
+      console.log({message}, {messages})
       setMessages((prev) => [...prev, message] );
+      const ul = ulRef.current
+      if(ul) {
+        setTimeout(() => {
+          ul.scrollTop = ul.scrollHeight;
+        }, 100)
+
+      }
+
     })
   }, [])
 
 
-  const messageElements = messages.map((item) => <ChatMessage key={item.id} message={item}/> )
+  const messageElements = messages
+    // .filter((item) => item.room === room)
+    .map((item) => <ChatMessage key={item.id} message={item}/>)
 
-  // const x = essages.map(i => <div key={i}>{i}</div>)
   return (
-    <ChatMessageUL color={color}>
-      {/* {x} */}
+    <ChatMessageUL color={color} ref={ulRef}>
       {messageElements}
     </ChatMessageUL>
   )

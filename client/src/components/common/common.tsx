@@ -16,23 +16,28 @@ export function LogRegMessage({ offer, question, to }: LogRegMessageProps) {
 
 type BtnProps = {
   onClick: () => void;
-  disabled?: boolean
+  disabled?: boolean;
+  active?:boolean
 }
 
-type ProtoBtnProps = BtnProps & {sign: string}
+type ProtoBtnProps = BtnProps & {sign: string, width?: number}
 
-export function ActionBtn({onClick, sign, disabled=false}: ProtoBtnProps) {
-  return <ActionButton disabled={disabled} onClick={onClick}>{sign}</ActionButton>
+export function ActionBtn({onClick, sign, width, disabled, active }: ProtoBtnProps) {
+  return (
+    <ActionButton disabled={disabled} active={active} width={width} onClick={onClick}>
+      {sign}
+    </ActionButton>
+    )
 }
 
-export function CloseBtn({onClick, disabled}: BtnProps) {
-  return <ActionBtn sign='✘' disabled={disabled} onClick={onClick}/>
+export function CloseBtn({onClick, disabled, active}: BtnProps) {
+  return <ActionBtn sign='✘' disabled={disabled} active={active} onClick={onClick} />
 }
 
-export function SettingBtn({onClick, disabled}: BtnProps) {
-  return <ActionBtn sign='⚙' disabled={disabled} onClick={onClick}/>
+export function SettingBtn({onClick, disabled, active}: BtnProps) {
+  return <ActionBtn sign='⚙' disabled={disabled} active={active} onClick={onClick}/>
 }
 
-export function HideBtn({onClick, disabled}: BtnProps) {
-  return <ActionBtn sign='-' disabled={disabled} onClick={onClick}/>
+export function HideBtn({onClick, disabled, active}: BtnProps) {
+  return <ActionBtn sign='-' disabled={disabled} active={active} onClick={onClick}/>
 }

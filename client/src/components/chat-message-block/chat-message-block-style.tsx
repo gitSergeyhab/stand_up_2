@@ -15,15 +15,8 @@ export const ChatMessageUL = styled.ul<{color:string}>`
   flex-direction: column;
   row-gap: .25rem;
   overflow-y: scroll;
-  /* overflow: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-} */
-
+  scroll-behavior: smooth;
+  height: min(92%, calc(100% - 3rem)) ;
 
   @media (min-width: 900px) {
     padding: 2rem 1rem  4rem;
@@ -31,12 +24,13 @@ export const ChatMessageUL = styled.ul<{color:string}>`
   }
 `;
 
-export const ChatMessageLI = styled.li<{side:'start'|'end'}>`
+export const ChatMessageLI = styled.li<{side?:'start'|'end'}>`
   width: 100%;
   column-gap: .5rem;
   color: #000;
   display: flex;
-  justify-content: ${({side}) => side};
+  justify-content: ${({side}) => side || 'center'};
+  ${({side}) => side ?  '' : 'background-color: #FFF'};
   @media (min-width: 900px) {
   }
 `;
@@ -64,6 +58,7 @@ export const ChartLink = styled(Link)<{side:'start'|'end', color: string}>`
   background-color: #000000ab;
   color: ${({color}) => color};
   font-weight: 700;
+  font-size: 1rem;
 
   transition:
     0.3s scale ease-in-out,
@@ -96,3 +91,12 @@ export const TextDiv = styled.div<{side:'start'|'end', color: string}>`
   border: 2px #000 solid;
   border-color: ${({color}) => color};
 `;
+
+export const UserDateWrapperDiv = styled.div`
+  display: flex;
+  row-gap: 0.4rem;
+  color: #FFF;
+  font-size: 0.8rem;
+  align-items: center;
+  padding: 0 1rem;
+`

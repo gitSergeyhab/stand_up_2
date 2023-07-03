@@ -13,10 +13,14 @@ export const ChatInputForm = styled.form<{focus?: boolean}>`
   bottom: 0;
   height: max(10%, 4rem);
   background-color: rgba(13, 1, 1);
-  scale: ${({focus}) => focus ? '1' : '0.35'} ;
-  transition: scale 0.3s ease-in-out;
+  scale: ${({focus}) => focus ? '1' : '0.65'} ;
+  opacity: ${({focus}) => focus ? '1' : '0.65'} ;
+  transition:
+    scale 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
   &:hover{
     scale: 1;
+    opacity: 1;
   }
 `;
 

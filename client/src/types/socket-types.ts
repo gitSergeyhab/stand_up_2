@@ -7,4 +7,7 @@ export type Message = {
   roles: Role[];
   text: string;
   nik: string;
+  date: number;
+  room: string;
+  isJoin?: boolean
 }

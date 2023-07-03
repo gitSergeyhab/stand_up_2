@@ -11,6 +11,7 @@ import { sequelize } from './sequelize';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { errorMiddleware } from './middlewares/error-middleware';
+import { addUserHandler, messageHandler } from './web-socket/handlers';
 
 const app = express();
 const server = new http.Server(app);
@@ -48,12 +49,9 @@ type Message = {
 }
 
 io.on('connection', (socket) => {
-    console.log( '____socket___ => connection <=', socket.id);
-    socket.on('message', (ioData: Message) => {
-        console.log({ioData});
-        // socket.emit('response', ioData);
-        io.emit('response', {...ioData, id: String(Date.now()) + ioData.userId})
-    })
+    socket.on('message', (data) => messageHandler(io, data));
+    socket.on('room:add-user', (data) => addUserHandler(io, socket, data));
+    // socket.on('add-user', (data) => addUserHandler(io, data))
     socket.on('disconnect', () => {
         console.log({socket}, '____socket___ => DISconnect <=');
     })
