@@ -6,21 +6,23 @@ const rooms = Object.values(Room);
 
 type ChatRoomListProps = {
   room: string;
-  setRoom: Dispatch<SetStateAction<string>>
+  setRoom: Dispatch<SetStateAction<string>>;
+  onClose: ()=>void
 }
 
 type ChatRoomProps = ChatRoomListProps & {active: string}
 
 
-export function ChatRoom({room, setRoom, active} : ChatRoomProps) {
+export function ChatRoom({room, setRoom, active, onClose} : ChatRoomProps) {
 
   const color = room === active ? 'goldenrod' : '#FFF';
   const roomName = RoomName[room];
 
 
   const handleRoomClick: MouseEventHandler<HTMLAnchorElement> = (evt) => {
-    evt.preventDefault()
-    setRoom(room)
+    evt.preventDefault();
+    setRoom(room);
+    onClose()
   }
   return (
     <li>
@@ -33,8 +35,8 @@ export function ChatRoom({room, setRoom, active} : ChatRoomProps) {
 
 
 
-export function ChatRoomList({room, setRoom} : ChatRoomListProps) {
-  const roomElements = rooms.map((item) => <ChatRoom room={item} active={room} setRoom={setRoom}/>)
+export function ChatRoomList({room, setRoom, onClose} : ChatRoomListProps) {
+  const roomElements = rooms.map((item) => <ChatRoom room={item} active={room} setRoom={setRoom} onClose={onClose}/>)
   return (
     <ChatOptionUL>
       {roomElements}

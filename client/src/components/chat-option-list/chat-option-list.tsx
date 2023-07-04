@@ -14,16 +14,17 @@ type User = {
   roles: Role[]
 }
 
-export function ChatOption({user}: {user: User}) {
+export function ChatOption({user, onClose}: {user: User, onClose: ()=>void}) {
 
   const authUser = useSelector(getUser)
   const {nik, roles, userId} = user;
 
   const userColor = getColorFromUserData({roles, userAuthId: authUser?.id, userMessageId: userId});
-  return <li><ChatOptionLink color={userColor} to={`/users/${userId}`}>{nik}</ChatOptionLink></li>
+
+  return <li><ChatOptionLink color={userColor} to={`/users/${userId}`} onClick={onClose}>{nik}</ChatOptionLink></li>
 }
 
-export function ChatOptionList() {
+export function ChatOptionList({onClose}: {onClose: ()=>void}) {
 
   const [users, setUsers]  = useState<User[]>([]);
 
@@ -33,7 +34,7 @@ export function ChatOptionList() {
       setUsers((prev) => [...prev, user] );
     })
   }, [])
-  const optionElements = users.map((item) => <ChatOption key={item.userId} user={item}/>)
+  const optionElements = users.map((item) => <ChatOption key={item.userId} user={item} onClose={onClose}/>)
 
   return (
     <ChatOptionUL>
