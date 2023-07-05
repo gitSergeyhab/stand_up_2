@@ -610,3 +610,12 @@ INSERT INTO images(show_id, user_added_id, filename, destination, mimetype, size
 (3, 1, 'show (1).png', 'images/shows/', 'image/png', 400000),
 (4, 2, 'show (1).png', 'images/shows/', 'image/png', 400000),
 (1, 2, 'show (1).png', 'images/shows/', 'image/png', 400000);
+
+INSERT INTO rooms(room_name, room_name_en) VALUES
+('Болталка', 'chat'),
+('Техподдержка', 'support');
+
+INSERT INTO users_rooms(user_id, room_id) VALUES (1,1);
+
+INSERT INTO chat_messages(user_id, room_id, message_text, message_auto) 
+VALUES (1,1, 'first test message', FALSE);

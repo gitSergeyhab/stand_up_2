@@ -256,3 +256,25 @@ CREATE TABLE images (
     event_id BIGINT REFERENCES events(event_id)
 );
 
+CREATE TABLE rooms (
+    room_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    room_name VARCHAR(32) NOT NULL,
+    room_name_en VARCHAR(32) NOT NULL
+);
+
+CREATE TABLE users_rooms (
+    user_id BIGINT REFERENCES users(user_id),
+    room_id BIGINT REFERENCES rooms(room_id),
+
+    CONSTRAINT users_rooms_pkey PRIMARY KEY (user_id, room_id)
+);
+
+CREATE TABLE chat_messages (
+    message_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT REFERENCES users(user_id),
+    room_id INTEGER REFERENCES rooms(room_id),
+
+    message_text VARCHAR(512) NOT NULL,
+    message_auto BOOLEAN DEFAULT FALSE,
+    message_added TIMESTAMP with time zone DEFAULT CURRENT_TIMESTAMP
+);
