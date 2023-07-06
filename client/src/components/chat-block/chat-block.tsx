@@ -1,6 +1,6 @@
 
 import { useState, Dispatch, SetStateAction } from "react";
-import { ChatColor, ChatPosition, Room, RoomName } from "../../const/chat";
+import { ChatColor, ChatPosition, RoomName } from "../../const/chat";
 import { ButtonsDiv, ChatHeader, ChatSection, SettingsDiv } from "./chat-block-style";
 import { ChatColorBlock } from "../chat-color-block/chat-color-block";
 import { ChatPositionBlock } from "../chat-position-block/chat-position-block";
@@ -13,20 +13,20 @@ import { ChatRoomList } from "../chat-option-list/chat-room-list";
 
 
 
-const psesdo = [
-  {userId: '1', nik: 'user 1', roles: ['USER', 'ADMIN']},
-  {userId: '2', nik: 'user 22', roles: ['USER' ]},
-  {userId: '3', nik: 'user 333', roles: [ 'ADMIN', 'MODERATOR']},
-  {userId: '4', nik: 'user 4444', roles: ['USER', ]},
-  {userId: '5', nik: 'user 1', roles: ['MODERATOR']},
-  {userId: '6', nik: 'user 22', roles: ['USER',  'MODERATOR']},
-  {userId: '7', nik: 'user 333', roles: ['USER']},
-  {userId: '8', nik: 'user44445655885hfhfhhhhodk j', roles: ['USER',  'MODERATOR']},
-  {userId: '9', nik: 'user 1', roles: ['USER']},
-  {userId: '10', nik: 'user 22', roles: ['USER', ]},
-  {userId: '11', nik: 'user 333', roles: ['MODERATOR']},
-  {userId: '12', nik: 'user 4444', roles: [ 'ADMIN']},
-]
+// const psesdo = [
+//   {userId: '1', nik: 'user 1', roles: ['USER', 'ADMIN']},
+//   {userId: '2', nik: 'user 22', roles: ['USER' ]},
+//   {userId: '3', nik: 'user 333', roles: [ 'ADMIN', 'MODERATOR']},
+//   {userId: '4', nik: 'user 4444', roles: ['USER', ]},
+//   {userId: '5', nik: 'user 1', roles: ['MODERATOR']},
+//   {userId: '6', nik: 'user 22', roles: ['USER',  'MODERATOR']},
+//   {userId: '7', nik: 'user 333', roles: ['USER']},
+//   {userId: '8', nik: 'user44445655885hfhfhhhhodk j', roles: ['USER',  'MODERATOR']},
+//   {userId: '9', nik: 'user 1', roles: ['USER']},
+//   {userId: '10', nik: 'user 22', roles: ['USER', ]},
+//   {userId: '11', nik: 'user 333', roles: ['MODERATOR']},
+//   {userId: '12', nik: 'user 4444', roles: [ 'ADMIN']},
+// ]
 
 
 type ChatBlockProps = {
@@ -46,6 +46,8 @@ export function ChatBlock({onClose, onHide, hide, room, setRoom}: ChatBlockProps
   const [users, setUsers] = useState(false);
   const [rooms, setRooms] = useState(false);
 
+  const handleCloseUserList = () => setUsers(false);
+  const handleCloseRoomList = () => setRooms(false);
 
   const handleSettingsClick = () => {
     setUsers(false);
@@ -72,9 +74,9 @@ export function ChatBlock({onClose, onHide, hide, room, setRoom}: ChatBlockProps
     </SettingsDiv>
   ) : null;
 
-  const usersElement = users ?  <ChatOptionList/> : null;
+  const usersElement = users ?  <ChatOptionList onClose={handleCloseUserList}/> : null;
 
-  const roomElement = rooms ?  <ChatRoomList room={room} setRoom ={setRoom}/> : null;
+  const roomElement = rooms ?  <ChatRoomList room={room} setRoom ={setRoom} onClose={handleCloseRoomList}/> : null;
   const roomName = RoomName[room]
 
   const buttonsElement =  (

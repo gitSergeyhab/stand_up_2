@@ -77,27 +77,27 @@ $$ LANGUAGE SQL;
 
 
 
-CREATE OR REPLACE FUNCTION get_reviews_by_type_id_user(_col TEXT, idx BIGINT, user_idx BIGINT) RETURNS TABLE(
-	review_id BIGINT, 
-	user_id BIGINT,
-	show_id BIGINT, 
-	event_id BIGINT, 
-	place_id BIGINT, 
-	review_title VARCHAR, 
-	review_text TEXT, 
-	review_date_added TIMESTAMP with time zone,
-	review_date_updated TIMESTAMP with time zone
-) AS $$
-BEGIN
-	RETURN QUERY EXECUTE '
-	SELECT 
-	review_id, user_id, show_id, event_id, place_id, review_title, review_text, review_date_added, review_date_updated
-	FROM reviews
-	WHERE ' || quote_ident(_col) || ' = ' || idx ||'
-	AND user_id = ' || user_idx ||'
-	';
-END     
-$$ LANGUAGE plpgsql;
+-- CREATE OR REPLACE FUNCTION get_reviews_by_type_id_user(_col TEXT, idx BIGINT, user_idx BIGINT) RETURNS TABLE(
+-- 	review_id BIGINT, 
+-- 	user_id BIGINT,
+-- 	show_id BIGINT, 
+-- 	event_id BIGINT, 
+-- 	place_id BIGINT, 
+-- 	review_title VARCHAR, 
+-- 	review_text TEXT, 
+-- 	review_date_added TIMESTAMP with time zone,
+-- 	review_date_updated TIMESTAMP with time zone
+-- ) AS $$
+-- BEGIN
+-- 	RETURN QUERY EXECUTE '
+-- 	SELECT 
+-- 	review_id, user_id, show_id, event_id, place_id, review_title, review_text, review_date_added, review_date_updated
+-- 	FROM reviews
+-- 	WHERE ' || quote_ident(_col) || ' = ' || idx ||'
+-- 	AND user_id = ' || user_idx ||'
+-- 	';
+-- END     
+-- $$ LANGUAGE plpgsql;
 
 
 CREATE OR REPLACE FUNCTION get_reviews_by_type_id_user(_col TEXT, idx BIGINT, user_idx BIGINT)

@@ -12,8 +12,8 @@ export const SocketUsersOfRoom = new Map([
 ]);
 
 
-const DEFAULT_DATE_TIME_FORMAT = 'DD.MM.YYYY | HH:mm:ss'
-export const formatDateFromTimeStamp = (timestamp: number) => dayjs(new Date(timestamp).toLocaleString()).format(DEFAULT_DATE_TIME_FORMAT);
+// const DEFAULT_DATE_TIME_FORMAT = 'DD.MM.YYYY | HH:mm:ss'
+// export const formatDateFromTimeStamp = (timestamp: number) => dayjs(new Date(timestamp).toLocaleString()).format(DEFAULT_DATE_TIME_FORMAT);
 type Message = {
     userId: string;
     avatar?: string;
@@ -32,16 +32,16 @@ type User = {
 
 export const messageHandler = (io: Server, data: Message) => {
     const date = Date.now();
-    const {room} = data;
+    const {room, nik, text} = data;
     // io.to(room).emit('response', {...data, id: String(date) + data.userId, date });
-    console.log(new Date(), new Date(date), date, formatDateFromTimeStamp(date))
+    console.log({room, nik, text}, 'messageHandler')
     io.emit('response', {...data, id: String(date) + data.userId, date });
 
 
 }
 
 export const addUserHandler = (io: Server, socket: Socket, data: User) => {
-    console.log({data});
+    // console.log({data});
 
     const room = SocketUsersOfRoom.get(data.room);
     if (!room) return;
@@ -53,5 +53,8 @@ export const addUserHandler = (io: Server, socket: Socket, data: User) => {
     
     room.set(data.userId, data);
     console.log({SocketUsersOfRoom})
+    console.log({data}, 'addUserHandler')
     io.emit('response', {...data, id: String(date) + data.userId, date, text: '', isJoin: true})
 }
+
+
