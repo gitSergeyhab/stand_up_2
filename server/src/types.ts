@@ -65,3 +65,18 @@ export type SimpleDict = {[key: string]:string}
 
 
 export type UserRequest = Request & {user: UserPseudoType}
+
+
+export type EmptyMessageFromClient = {
+    userId: string;
+    roomId: string;
+}
+
+export type MessageFromClient = EmptyMessageFromClient & {text: string};
+
+// type User = {
+//     userId: string;
+//     nik: string;
+//     roles: string[];
+//     room: string
+// }
