@@ -23,7 +23,15 @@ export const joinHandler = async (io: Server, socket: Socket, data: EmptyMessage
         // переслать всем кроме отправителя(СОКЕТ) 
         socket.to(roomId).emit(SocketEvent.ResponseOneMessage, messageDataForClient);
         // добавить юзера в комнату (БД)
-        await chatService.addUserToRoom(userId, roomId);
+        await chatService.insertUserToRoom(userId, roomId, socket.id);
+
+        // const socketIndexes = chatService.getUserSocketIndexesOfRoom(io, roomId);
+        // const usersInRoom = await chatService.getUsersBySocketIndexes(socketIndexes);
+        // console.log({usersInRoom})
     }
+
+    const socketIndexes = chatService.getUserSocketIndexesOfRoom(io, roomId);
+    const usersInRoom = await chatService.getUsersBySocketIndexes(socketIndexes);
+    console.log({usersInRoom}, '_____________!______________')
     
 }

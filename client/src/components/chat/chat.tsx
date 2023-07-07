@@ -28,7 +28,8 @@ export function Chat() {
   const handleChatClose = () => {
     if(!user || !activeRoom) return;
     dispatch(setChatState(ChatState.Close));
-    socket.emit(SocketEvent.Leave, {userId: user.id,  roomId: activeRoom.roomId})
+    socket.disconnect();
+    // socket.emit(SocketEvent.Leave, {userId: user.id,  roomId: activeRoom.roomId})
   }
   const handleChatHide = () => dispatch(setChatState(ChatState.Hide));
 

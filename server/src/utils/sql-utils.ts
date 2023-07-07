@@ -209,3 +209,4 @@ export const getTitles = (table: string) => {
 }
 
 
+export const getSQLRangeFromArray = (data: (string|number)[]) => `( ${data.join(', ') } )`;

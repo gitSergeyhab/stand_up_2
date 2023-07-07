@@ -1,4 +1,6 @@
+import { Server } from "socket.io";
 import { sequelize } from "../sequelize";
+import { getSQLRangeFromArray } from "../utils/sql-utils";
 
 class ChatService {
     async getMessageDataById (id: number) {
@@ -105,14 +107,15 @@ class ChatService {
         }
     }
 
-    async joinUserToRoom (userId: string, roomId: string) {
+    async insertUserToRoom (userId: string, roomId: string, socketId: string) {
         try {
-            const result = await sequelize.query(
+            await sequelize.query(
                 `
-                    INSERT INTO users_rooms(user_id, room_id) VALUES (:userId, :roomId)
+                    INSERT INTO users_rooms(user_id, room_id, socket_id) 
+                    VALUES (:userId, :roomId, :socketId)
                 `,
                 {
-                    replacements: {userId, roomId},
+                    replacements: {userId, roomId, socketId},
                     type: 'INSERT'
                 }
             )
@@ -143,16 +146,16 @@ class ChatService {
         }
     }
 
-    async addUserToRoom (userId: string, roomId: string) {
+    async deleteUserFromRoomBySocket (socketId: string) {
         try {
             await sequelize.query(
                 `
-                INSERT INTO users_rooms(user_id, room_id) 
-                VALUES (:userId, :roomId);
+                DELETE FROM users_rooms
+                WHERE socket_id = :socketId;
                 `,
                 {
-                    replacements: { userId, roomId },
-                    type: 'INSERT'
+                    replacements: {socketId },
+                    type: 'DELETE'
                 }
             )
             return true;
@@ -160,6 +163,25 @@ class ChatService {
             return false;
         }
     }
+
+    // async addUserToRoom (userId: string, roomId: string) {
+    //     try {
+    //         await sequelize.query(
+    //             `
+    //             INSERT INTO users_rooms(user_id, room_id) 
+    //             VALUES (:userId, :roomId);
+  
+    //             `,
+    //             {
+    //                 replacements: { userId, roomId },
+    //                 type: 'INSERT'
+    //             }
+    //         )
+    //         return true;
+    //     } catch {
+    //         return false;
+    //     }
+    // }
 
     async checkUserInRoom (userId: string, roomId: string) {
         try {
@@ -183,6 +205,43 @@ class ChatService {
         }
     }
 
+    getUserSocketIndexesOfRoom (io: Server, roomId: string) {
+        const clients = io.sockets.adapter.rooms.get(roomId);
+        return [...clients]
+    }
+
+    async getUsersBySocketIndexes(indexes: string[]) {
+
+        console.log({indexes}, '_______________ ? __________')
+        
+        try {
+            const sqlIndexes = getSQLRangeFromArray(indexes);
+            console.log({sqlIndexes}, 'sqlIndexes ? __________')
+            const result = await sequelize.query(
+                `
+                SELECT 
+                users.user_id,
+                user_nik,
+                socket_id,
+                ARRAY_AGG(role_name) as user_roles
+                FROM users_rooms
+                LEFT JOIN users ON users.user_id = users_rooms.user_id
+                LEFT JOIN users_roles ON users.user_id = users_roles.user_id
+                LEFT JOIN roles ON roles.role_id = users_roles.role_id
+                WHERE socket_id IN (:indexes)
+                GROUP BY users.user_id, socket_id;
+                `,
+                {
+                    replacements: {indexes},
+                    type: 'SELECT'
+                }
+            )
+
+            return result;
+        } catch {
+            return null;
+        }
+    }
 }
 
 export const chatService = new ChatService()

@@ -615,7 +615,9 @@ INSERT INTO rooms(room_name, room_name_en) VALUES
 ('Болталка', 'chat'),
 ('Техподдержка', 'support');
 
-INSERT INTO users_rooms(user_id, room_id) VALUES (1,1);
+-- INSERT INTO users_rooms(user_id, room_id) VALUES (1,1);
+INSERT INTO users_rooms(user_id, room_id, socket_id)
+VALUES (1,1, 'FAKE:cnrTw4cQ5Hr9riCnAAAJ');
 
 INSERT INTO chat_messages(user_id, room_id, message_text, message_auto) 
 VALUES (1,1, 'first test message', FALSE);
