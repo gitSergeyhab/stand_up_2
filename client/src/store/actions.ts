@@ -3,6 +3,7 @@ import { ContentName } from '../const/const';
 import { OptionType, Titles } from '../types/types';
 import { AuthUserTypeCC } from '../types/user-types';
 import { InitialPreloadState } from './preload-reducer/preload-reducer';
+import { Room } from '../types/chat-types';
 
 export const enum Role {
   Super = 'SUPER',
@@ -62,6 +63,9 @@ export const enum Action {
   SetPreloadCountries = 'preload/SetPreloadCountries',
   SetPreloadLanguages = 'preload/SetPreloadLanguages',
   SetPreloadData = 'preload/SetPreloadData',
+  SetRooms = 'chat/SetRooms',
+  SetActiveRoom = 'chat/SetActiveRoom',
+  SetChatState = 'chat/SetChatState',
 }
 
 export const setType = createAction(Action.SetType,(type: null | ContentName) => ({ payload: type }),);
@@ -80,3 +84,6 @@ export const setPreloadEvents = createAction(Action.SetPreloadEvents, (payload: 
 export const setPreloadCountries = createAction(Action.SetPreloadCountries, (payload: OptionType[]) => ({ payload }));
 export const setPreloadLanguages = createAction(Action.SetPreloadLanguages, (payload: OptionType[]) => ({ payload }));
 
+export const setRooms = createAction(Action.SetRooms, (payload: Room[]) => ({ payload }))
+export const setActiveRoom = createAction(Action.SetActiveRoom, (payload: Room) => ({ payload }))
+export const setChatState = createAction(Action.SetChatState, (payload: string) => ({ payload }))

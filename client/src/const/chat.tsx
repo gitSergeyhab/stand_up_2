@@ -20,12 +20,10 @@ export const enum ChatState {
 }
 
 
-export const Room = {
-  Common: 'common',
-  Support: 'support'
-}
-
-export const RoomName = {
-  [Room.Common]: 'Болталка',
-  [Room.Support]: 'Поддержка'
+export const SocketEvent = {
+  Join: 'join',
+  Leave: 'leave',
+  ResponseOneMessage: 'response:one',
+  ResponseAllMessages: 'response:all',
+  MessageFromClient: 'message',
 }

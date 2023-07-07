@@ -15,10 +15,12 @@ import { postFormApi } from './post-form-api';
 import { placesApi } from './places-api';
 import { preloadReducer } from './preload-reducer/preload-reducer';
 import { api } from './api';
+import { chatReducer } from './chat-reducer/chat-reducer';
 
 export const enum ReducerName {
   User = 'User',
-  Preload = 'Preload'
+  Preload = 'Preload',
+  Chat = 'Chat'
 }
 
 export const reducer = combineReducers({
@@ -28,6 +30,7 @@ export const reducer = combineReducers({
   [userApi.reducerPath]: userApi.reducer,
   [ReducerName.Preload]: preloadReducer,
   [ReducerName.User]: userReducer,
+  [ReducerName.Chat]: chatReducer,
   [testSlice.name]: testSlice.reducer,
   [showsApi.reducerPath]: showsApi.reducer,
   [placesApi.reducerPath]: placesApi.reducer,

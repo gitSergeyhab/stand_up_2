@@ -1,11 +1,13 @@
 import { toast } from 'react-toastify';
 import { adaptLoginUserDataToClient } from '../utils/adapters/user-adapters';
 import { storageUtils } from '../utils/storage-utils';
-import { setPreloadData, setUser } from './actions';
+import { setPreloadData, setRooms, setUser } from './actions';
 import { getRefresh } from './refresh-api';
 import { ThunkActionResult } from './store';
 import { FormDataSC } from '../types/preload-type';
 import { adaptFormDataToClient } from '../utils/adapters/preload-adapters';
+import { RoomSC } from '../types/chat-types';
+import { adaptRooms } from '../utils/adapters/chat-adapters';
 
 
 export const authAction = (): ThunkActionResult =>
@@ -32,6 +34,20 @@ export const fetchPreloadData = (): ThunkActionResult =>
       const adaptedData = adaptFormDataToClient(data);
       dispatch(setPreloadData(adaptedData));
       console.log({adaptedData})
+    } catch (err) {
+      console.log({err})
+      toast.error('Данные не загрузились. Попробуте позже')
+    }
+  }
+
+
+  export const fetchRooms = (): ThunkActionResult =>
+  async(dispatch, _getState, api) => {
+    try {
+      const {data} = await api.get<RoomSC[]>('chat/rooms');
+      const rooms = adaptRooms(data);
+      dispatch(setRooms(rooms));
+      console.log({rooms})
     } catch (err) {
       console.log({err})
       toast.error('Данные не загрузились. Попробуте позже')

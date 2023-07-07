@@ -10,7 +10,7 @@ import { setUser } from './store/actions';
 import 'react-toastify/dist/ReactToastify.css';
 import 'normalize.css';
 import './index.css';
-import { fetchPreloadData } from './store/api-actions';
+import { fetchPreloadData, fetchRooms } from './store/api-actions';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -20,6 +20,7 @@ const user = storageUtils.getUser();
 
 store.dispatch(setUser(user));
 store.dispatch(fetchPreloadData());
+store.dispatch(fetchRooms());
 root.render(
   <Provider store={store}>
     <ToastContainer />

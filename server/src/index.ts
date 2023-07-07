@@ -11,7 +11,10 @@ import { sequelize } from './sequelize';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import { errorMiddleware } from './middlewares/error-middleware';
-import { addUserHandler, messageHandler } from './web-socket/handlers';
+import { joinHandler } from './web-socket/handlers/join-handler';
+import { SocketEvent } from './const/socket-const';
+import { messageHandler } from './web-socket/handlers/message-handler';
+import { leaveHandler } from './web-socket/handlers/leave-handler';
 
 const app = express();
 const server = new http.Server(app);
@@ -49,11 +52,11 @@ type Message = {
 }
 
 io.on('connection', (socket) => {
-    socket.on('message', (data) => messageHandler(io, data));
-    socket.on('room:add-user', (data) => addUserHandler(io, socket, data));
-    // socket.on('add-user', (data) => addUserHandler(io, data))
-    socket.on('disconnect', () => {
-        console.log({socket}, '____socket___ => DISconnect <=');
+    socket.on(SocketEvent.Join, (data) => joinHandler(io, socket, data));
+    socket.on(SocketEvent.MessageFromClient, (data) => messageHandler(io, socket, data))
+    socket.on(SocketEvent.Leave, (data) => leaveHandler(io, socket, data))
+    socket.on('disconnect', (data) => {
+        console.log({data}, '____socket___ => DISconnect <=');
     })
     
 })

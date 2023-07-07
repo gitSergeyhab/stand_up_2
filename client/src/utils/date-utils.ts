@@ -84,4 +84,4 @@ export const getDateFromString = (str: string|undefined) =>
   (str && (checkDateCorrect(str) || checkDateCorrect(str, DEFAULT_DATE_FORMAT_FROM_DB))) ? dayjs(str).toDate() : null
 
 
-export const formatDateFromTimeStamp = (timestamp: number) => dayjs(new Date(timestamp)).format(DEFAULT_DATE_TIME_FORMAT);
+export const formatDateFromTimeStamp = (timestamp: number|Date) => dayjs(new Date(timestamp)).format(DEFAULT_DATE_TIME_FORMAT);

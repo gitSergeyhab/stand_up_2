@@ -1,3 +1,5 @@
+import { SocketEvent } from "../const/chat";
+import socket from "../socket-io";
 import { Role } from "../store/actions";
 
 const UserColor = {
@@ -23,4 +25,17 @@ export const getColorFromUserData = ({roles, userAuthId, userMessageId}: GetColo
     return UserColor.Moderator;
   }
   return UserColor.User;
+}
+
+
+type JoinRoom = {
+  userId: string;
+  joinRoomId: number;
+  leaveRoomId?: number;
+}
+export const joinRoom = ({ userId, leaveRoomId, joinRoomId }: JoinRoom) => {
+  if (leaveRoomId) {
+    socket.emit(SocketEvent.Leave, {userId,  roomId: leaveRoomId})
+  }
+  socket.emit(SocketEvent.Join, {userId,  roomId: joinRoomId})
 }

@@ -1,42 +1,50 @@
-import { Dispatch, SetStateAction, MouseEventHandler } from "react";
+import { MouseEventHandler } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { ChatOptionLink, ChatOptionUL } from "./chat-option-list-style";
-import { Room, RoomName } from "../../const/chat";
+import { getActiveRoom, getRooms } from "../../store/chat-reducer/chat-selectors";
+import { Room } from "../../types/chat-types";
+import { setActiveRoom, } from "../../store/actions";
+import { joinRoom } from "../../utils/chat-utils";
+import { getUser } from "../../store/user-reducer/user-selectors";
 
-const rooms = Object.values(Room);
 
 type ChatRoomListProps = {
-  room: string;
-  setRoom: Dispatch<SetStateAction<string>>;
-  onClose: ()=>void
+  onClose: () => void
 }
 
-type ChatRoomProps = ChatRoomListProps & {active: string}
+type ChatRoomProps = ChatRoomListProps & {room: Room}
 
 
-export function ChatRoom({room, setRoom, active, onClose} : ChatRoomProps) {
+export function ChatRoom({room,  onClose} : ChatRoomProps) {
 
-  const color = room === active ? 'goldenrod' : '#FFF';
-  const roomName = RoomName[room];
+  const user = useSelector(getUser);
+  const dispatch = useDispatch()
+  const activeRoom = useSelector(getActiveRoom);
 
+  console.log({activeRoom, room})
+
+  const color = room.roomId === activeRoom?.roomId ? 'goldenrod' : '#FFF';
 
   const handleRoomClick: MouseEventHandler<HTMLAnchorElement> = (evt) => {
     evt.preventDefault();
-    setRoom(room);
-    onClose()
+    if (!user) return;
+    joinRoom({userId: user.id, leaveRoomId: activeRoom?.roomId, joinRoomId: room.roomId});
+    dispatch(setActiveRoom(room));
+    onClose();
   }
   return (
     <li>
       <ChatOptionLink color={color} to="/" onClick={handleRoomClick}>
-        {roomName}
+        {room.roomName}
       </ChatOptionLink>
     </li>
     )
 }
 
 
-
-export function ChatRoomList({room, setRoom, onClose} : ChatRoomListProps) {
-  const roomElements = rooms.map((item) => <ChatRoom room={item} active={room} setRoom={setRoom} onClose={onClose}/>)
+export function ChatRoomList({onClose} : ChatRoomListProps) {
+  const rooms = useSelector(getRooms);
+  const roomElements = rooms.map((item) => <ChatRoom room={item} key={item.roomId} onClose={onClose}/>);
   return (
     <ChatOptionUL>
       {roomElements}

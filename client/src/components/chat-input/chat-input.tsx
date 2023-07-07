@@ -4,14 +4,14 @@ import { useSelector } from 'react-redux';
 import { ChatButton, ChatInputForm, ChatTextarea, NoUserDiv } from './chat-input-style';
 import { getUser } from '../../store/user-reducer/user-selectors';
 import socket from '../../socket-io';
+import { getActiveRoom } from '../../store/chat-reducer/chat-selectors';
+import { SocketEvent } from '../../const/chat';
 
 
-
-
-export function ChatInput({room}: {room: string}) {
+export function ChatInput() {
 
   const user = useSelector(getUser);
-
+  const activeRoom = useSelector(getActiveRoom)
 
   const [focus, setFocus] = useState(false);
   const textRef = useRef<null|HTMLTextAreaElement>(null);
@@ -27,17 +27,17 @@ export function ChatInput({room}: {room: string}) {
   const handleSubmit: FormEventHandler = (evt) => {
     evt.preventDefault();
 
-    const value = textRef.current?.value?.trim();
-    if (!value || value?.length < 3) {
-      toast.warning('перед отправкой сообщения его придется написать. Хотя бы 3 символа')
+    const text = textRef.current?.value?.trim();
+    if (!text) {
+      toast.warning('перед отправкой сообщения его придется написать')
       return;
     }
 
-    const {avatar, id, nik, roles} = user;
-    const data = {socketId: socket.id, userId: id, avatar, nik, roles, text: value, room}
+    const {id} = user;
+    const data = { userId: id, text, roomId: activeRoom?.roomId }
 
-    // console.log(data);
-    socket.emit('message', data)
+    console.log(data);
+    socket.emit(SocketEvent.MessageFromClient, data)
     formRef.current?.reset()
 
 

@@ -74,9 +74,14 @@ export type EmptyMessageFromClient = {
 
 export type MessageFromClient = EmptyMessageFromClient & {text: string};
 
-// type User = {
-//     userId: string;
-//     nik: string;
-//     roles: string[];
-//     room: string
-// }
+export type MessageToClient = {
+    message_id: string, 
+    avatar?: string,
+    user_id: string, 
+    user_nik: string, 
+    room_id: string, 
+    message_text?: string, 
+    message_auto: boolean, 
+    message_added: Date,
+    user_roles: string[]
+}

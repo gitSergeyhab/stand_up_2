@@ -46,6 +46,8 @@ export const ChatSection = styled.section<{position: string, hide?: boolean}>`
   z-index: 6;
 
   width: 100%;
+  min-width: 20rem;
+
   bottom: 0;
   ${({position}) => position === 'bottom' ? bottom : ''};
   ${({position}) => position === 'left' ? left : ''};
@@ -53,6 +55,8 @@ export const ChatSection = styled.section<{position: string, hide?: boolean}>`
   ${({position}) => position === 'center' ? center : ''};
   ${({hide}) => hide  ? hiddenStyle : ''};
   transition: background-color 0.4s ease-in-out;
+
+
 `;
 
 export const ChartCloseBtn = styled.button.attrs({ type: 'button' })`

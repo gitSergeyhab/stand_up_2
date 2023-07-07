@@ -4,25 +4,27 @@ import socket from '../../socket-io';
 import { ChartLink, ChatImg, ChatMessageLI, ChatMessageUL, MessageP, TextDiv, UserDateWrapperDiv } from './chat-message-block-style';
 import { getUser } from '../../store/user-reducer/user-selectors';
 import { DefaultPath, SERVER_URL } from '../../const/const';
-import { Message } from '../../types/socket-types';
 import { getColorFromUserData } from '../../utils/chat-utils';
-import { formatDateFromTimeStamp, formatDateType } from '../../utils/date-utils';
+import { formatDateFromTimeStamp } from '../../utils/date-utils';
+import { SocketEvent } from '../../const/chat';
+import { adaptMessage, adaptMessages } from '../../utils/adapters/chat-adapters';
+import { MessageCC, MessageSC } from '../../types/chat-types';
+import { Role } from '../../store/actions';
 
 
 
 
-
-function ChatMessage({message}: {message: Message}) {
+function ChatMessage({message}: {message: MessageCC}) {
 
   const user = useSelector(getUser);
   const id = user?.id;
-  const { avatar, roles, text, userId, nik, date, isJoin } = message;
+  const { messageAdded, messageAuto, userId, userNik, userRoles, avatar, messageText } = message;
   const side = (id === userId) ? 'end' : 'start';
-  const userColor = getColorFromUserData({roles, userAuthId: id, userMessageId: userId});
-  const formatDate =  formatDateFromTimeStamp(date);
+  const userColor = getColorFromUserData({roles: userRoles as Role[], userAuthId: id, userMessageId: userId});
+  const formatDate =  formatDateFromTimeStamp(messageAdded);
 
-  if (isJoin) {
-    return <ChatMessageLI>{formatDate} / {nik} вошел в чат</ChatMessageLI>
+  if (messageAuto) {
+    return <ChatMessageLI>{formatDate} / {userNik} {messageText}</ChatMessageLI>
   }
 
 
@@ -30,11 +32,11 @@ function ChatMessage({message}: {message: Message}) {
     <TextDiv color={userColor} side={side}>
       <UserDateWrapperDiv>
         {formatDate}
-        <ChartLink color={userColor}  side={side} to={`/users/${userId}`}>{nik}</ChartLink>
+        <ChartLink color={userColor}  side={side} to={`/users/${userId}`}>{userNik}</ChartLink>
 
       </UserDateWrapperDiv>
 
-      <MessageP>{text} </MessageP>
+      <MessageP>{messageText} </MessageP>
     </TextDiv>
   );
 
@@ -52,33 +54,40 @@ function ChatMessage({message}: {message: Message}) {
 
 type ChatMessageBlockProps = {
   color: string,
-  room: string
+  // room: string
 }
 
-export function ChatMessageBlock({color, room}: ChatMessageBlockProps) {
-  const [messages, setMessages]  = useState<Message[]>([]);
+export function ChatMessageBlock({color}: ChatMessageBlockProps) {
+  const [messages, setMessages]  = useState<MessageCC[]>([]);
   const ulRef = useRef<HTMLUListElement|null>(null)
 
 
   useEffect(() => {
-    socket.on('response', (message) => {
-      console.log({message}, {messages})
-      setMessages((prev) => [...prev, message] );
-      const ul = ulRef.current
+    const ul = ulRef.current
+    const scrollDown = () => {
       if(ul) {
         setTimeout(() => {
           ul.scrollTop = ul.scrollHeight;
         }, 100)
-
       }
+    }
 
+    socket.on(SocketEvent.ResponseOneMessage, (message: MessageSC) => {
+      console.log({message}, {messages})
+      setMessages((prev) => [...prev, adaptMessage(message)]);
+      scrollDown()
+    });
+
+    socket.on(SocketEvent.ResponseAllMessages, (allMessages: MessageSC[]) => {
+      const adaptedMessages = adaptMessages(allMessages)
+      console.log({allMessages}, {adaptedMessages})
+      setMessages(adaptedMessages);
+      scrollDown()
     })
   }, [])
 
 
-  const messageElements = messages
-    // .filter((item) => item.room === room)
-    .map((item) => <ChatMessage key={item.id} message={item}/>)
+  const messageElements = messages.map((item) => <ChatMessage key={item.messageId} message={item}/>)
 
   return (
     <ChatMessageUL color={color} ref={ulRef}>
