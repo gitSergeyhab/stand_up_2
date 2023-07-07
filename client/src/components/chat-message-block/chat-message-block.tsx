@@ -65,25 +65,28 @@ export function ChatMessageBlock({color}: ChatMessageBlockProps) {
   useEffect(() => {
     const ul = ulRef.current
     const scrollDown = () => {
-      if(ul) {
-        setTimeout(() => {
-          ul.scrollTop = ul.scrollHeight;
-        }, 100)
-      }
+      if(!ul) return;
+      setTimeout(() => { ul.scrollTop = ul.scrollHeight }, 100);
     }
 
-    socket.on(SocketEvent.ResponseOneMessage, (message: MessageSC) => {
-      console.log({message}, {messages})
+    const getMessage = (message: MessageSC) => {
       setMessages((prev) => [...prev, adaptMessage(message)]);
-      scrollDown()
-    });
+      scrollDown();
+    }
 
-    socket.on(SocketEvent.ResponseAllMessages, (allMessages: MessageSC[]) => {
-      const adaptedMessages = adaptMessages(allMessages)
-      console.log({allMessages}, {adaptedMessages})
-      setMessages(adaptedMessages);
-      scrollDown()
-    })
+    const getMessages = (allMessages: MessageSC[]) => {
+      setMessages(adaptMessages(allMessages));
+      scrollDown();
+    }
+
+    socket.on(SocketEvent.ResponseOneMessage, getMessage);
+    socket.on(SocketEvent.ResponseAllMessages, getMessages);
+
+
+    return () => {
+      socket.off(SocketEvent.ResponseOneMessage, getMessage);
+      socket.off(SocketEvent.ResponseAllMessages, getMessages);
+    }
   }, [])
 
 

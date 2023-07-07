@@ -104,7 +104,7 @@ transition: opacity 0.3s ease-in-out, scale 0.3s ease-in-out;
 
 &:hover {
   opacity: 1;
-  scale: 0.85;
+  scale: 1;
 }
 `;
 
@@ -116,4 +116,19 @@ export const ChatHeader = styled.h2`
   height: 2rem;
   /* position: absolute; */
   margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  column-gap: 1rem;
+`
+
+export const SocketConnectedDetector = styled.div<{isConnected?: boolean}>`
+  width: 1rem;
+  height: 1rem;
+  border: 4px solid #0c000068;
+  /* box-shadow: 2px -2px 2px #e7d3ae85; */
+  border-radius: 50%;
+
+background-color: ${({isConnected}) => isConnected ? '#3fd802' : '#f70606'};
+
 `

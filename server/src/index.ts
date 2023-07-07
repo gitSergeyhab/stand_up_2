@@ -56,7 +56,7 @@ io.on('connection', (socket) => {
     socket.on(SocketEvent.MessageFromClient, (data) => messageHandler(io, socket, data))
     socket.on(SocketEvent.Leave, (data) => leaveHandler(io, socket, data))
     socket.on('disconnect', (data) => {
-        console.log({data}, '____socket___ => DISconnect <=');
+        console.log({data}, '____socket___ => DISconnect <=', socket.id);
     })
     
 })

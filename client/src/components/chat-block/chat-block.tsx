@@ -1,8 +1,8 @@
 
-import { useState, } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { ChatColor, ChatPosition } from "../../const/chat";
-import { ButtonsDiv, ChatHeader, ChatSection, SettingsDiv } from "./chat-block-style";
+import { ChatColor, ChatPosition, SocketEvent } from "../../const/chat";
+import { ButtonsDiv, ChatHeader, ChatSection, SettingsDiv, SocketConnectedDetector } from "./chat-block-style";
 import { ChatColorBlock } from "../chat-color-block/chat-color-block";
 import { ChatPositionBlock } from "../chat-position-block/chat-position-block";
 import { ActionBtn, CloseBtn, HideBtn, SettingBtn } from "../common/common";
@@ -11,6 +11,7 @@ import { ChatMessageBlock } from "../chat-message-block/chat-message-block";
 import { ChatOptionList } from "../chat-option-list/chat-option-list";
 import { ChatRoomList } from "../chat-option-list/chat-room-list";
 import { getActiveRoom } from "../../store/chat-reducer/chat-selectors";
+import socket from "../../socket-io";
 
 
 
@@ -27,11 +28,28 @@ export function ChatBlock({onClose, onHide, hide/* , room, setRoom */}: ChatBloc
   const [setting, setSetting] = useState(false);
   const [users, setUsers] = useState(false);
   const [rooms, setRooms] = useState(false);
+  const [isConnected, setIsConnected] = useState(socket.connected);
+
+  useEffect(() => {
+    const connect = () => setIsConnected(true);
+    const disconnect = () => setIsConnected(false);
+
+    socket.on(SocketEvent.Connect, connect);
+    socket.on(SocketEvent.Disconnect, disconnect);
+
+    return () => {
+      socket.off(SocketEvent.Connect, connect);
+      socket.off(SocketEvent.Disconnect, disconnect);
+    }
+  }, [])
 
   const activeRoom = useSelector(getActiveRoom);
 
   const handleCloseUserList = () => setUsers(false);
   const handleCloseRoomList = () => setRooms(false);
+
+
+
 
   const handleSettingsClick = () => {
     setUsers(false);
@@ -77,7 +95,7 @@ export function ChatBlock({onClose, onHide, hide/* , room, setRoom */}: ChatBloc
 
   return (
     <ChatSection position={position} hide={hide}>
-      <ChatHeader>{activeRoom?.roomName}</ChatHeader>
+      <ChatHeader>{activeRoom?.roomName}<SocketConnectedDetector isConnected={isConnected}/></ChatHeader>
       {buttonsElement}
       <ChatMessageBlock color={color}   />
       <ChatInput  />
