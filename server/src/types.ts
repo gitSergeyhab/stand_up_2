@@ -85,3 +85,8 @@ export type MessageToClient = {
     message_added: Date,
     user_roles: string[]
 }
+
+export type RoomUserId = {
+    room_id: string;
+    user_id: string
+}

@@ -149,6 +149,8 @@ export const hiddenStyle = css`
   opacity: 0;
   border: none;
   outline: none;
+  overflow: hidden;
+  scale: 0;
 `
 export const SmallSup = styled.sup`font-size: 0.65rem;`;
 

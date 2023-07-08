@@ -48,7 +48,6 @@ export const baseQueryWithReauth: BaseQueryFn<
           const userData = adaptLoginUserDataToClient(data as LoginUserDataSC);
           api.dispatch(setUser(userData.user));
           storageUtils.setData(userData);
-
           // retry the initial query
           result = await baseQuery(args, api, extraOptions);
         } else {

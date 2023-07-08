@@ -1,10 +1,8 @@
-import { useEffect } from 'react';
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { EventPageInfo } from '../pages/events/event-page-info/event-page-info';
 // import { MainPage } from '../pages/main-page/main-page';
 import { Header } from '../components/header/header';
-import Footer from '../components/footer/footer';
+// import Footer from '../components/footer/footer';
 
 import { MainContainer, MainMain, MainWrapper, PageWrapper } from './app-style';
 import { ComediansPage } from '../pages/comedians/comedians-page/comedians-page';
@@ -14,9 +12,7 @@ import { RegistrationPage } from '../pages/registration-page/registration-page';
 import { LoginPage } from '../pages/login-page/login-page';
 import { ErrorPage } from '../pages/error-page/error-page';
 import { UsersPage } from '../pages/users-page/users-page';
-import { storageUtils } from '../utils/storage-utils';
-import { useAppDispatch } from '../hooks/use-app-dispatch';
-import { authAction } from '../store/api-actions';
+
 import { TestPage } from '../pages/test-page/test-page';
 import { AdminPanel } from '../pages/admin-panel/admin-panel';
 import { ShowsOfComedian } from '../pages/comedians/sub-comedians/shows-of-comedian';
@@ -68,15 +64,15 @@ const AppRoute = {
 };
 
 export function App() {
-  const user = storageUtils.getUser();
 
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (user) {
-      dispatch(authAction());
-    }
-  }, [user, dispatch]);
+  // useEffect(() => {
+  //   const user = storageUtils.getUser();
+  //   if (user) {
+  //     dispatch(authAction());
+  //   }
+  // }, [dispatch]);
 
   return (
     <BrowserRouter>

@@ -1,51 +1,32 @@
 import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import { BottomButton } from "./chat-style";
 import { ChatBlock } from '../chat-block/chat-block';
-import { ChatState, SocketEvent } from '../../const/chat';
 import { getUser } from '../../store/user-reducer/user-selectors';
-import { getActiveRoom, getChartState } from '../../store/chat-reducer/chat-selectors';
+import {  getChartState } from '../../store/chat-reducer/chat-selectors';
 import { setChatState } from '../../store/actions';
-import { joinRoom } from '../../utils/chat-utils';
-import socket from '../../socket-io';
 
 
 
 export function Chat() {
   const user = useSelector(getUser);
-  const activeRoom = useSelector(getActiveRoom);
   const chatState = useSelector(getChartState)
-
   const dispatch = useDispatch()
 
+  const handleChatHide = () => dispatch(setChatState(false));
   const handleChatOpen = () => {
-    if (!user || !activeRoom) return;
-    if (chatState === ChatState.Close) {
-      joinRoom({userId: user.id, joinRoomId: activeRoom.roomId})
+    if (!user) {
+      toast.warning('Чат доступен только авторизованным пользователям')
+      return;
     }
-    dispatch(setChatState(ChatState.Open))
-
+    dispatch(setChatState(true))
   };
-  const handleChatClose = () => {
-    if(!user || !activeRoom) return;
-    dispatch(setChatState(ChatState.Close));
-    socket.disconnect();
-    // socket.emit(SocketEvent.Leave, {userId: user.id,  roomId: activeRoom.roomId})
-  }
-  const handleChatHide = () => dispatch(setChatState(ChatState.Hide));
 
-  const chatSection = (chatState === ChatState.Close) ? null :
-    <ChatBlock
-      onHide={handleChatHide}
-      onClose={handleChatClose}
-      hide={chatState === ChatState.Hide}
-    />
-
-  const buttonText = chatState === ChatState.Close ? 'открыть чат' : 'восстановить чат';
-  const chatButton = chatState === ChatState.Open ? null : <BottomButton onClick={handleChatOpen}>{buttonText}</BottomButton>;
+  const chatButton = chatState ? null : <BottomButton onClick={handleChatOpen}>Показать чат</BottomButton>;
 
   return (
     <>
-      {chatSection}
+      <ChatBlock onHide={handleChatHide} hide={!chatState} />
       {chatButton}
     </>
   )

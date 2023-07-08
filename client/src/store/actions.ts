@@ -86,4 +86,4 @@ export const setPreloadLanguages = createAction(Action.SetPreloadLanguages, (pay
 
 export const setRooms = createAction(Action.SetRooms, (payload: Room[]) => ({ payload }))
 export const setActiveRoom = createAction(Action.SetActiveRoom, (payload: Room) => ({ payload }))
-export const setChatState = createAction(Action.SetChatState, (payload: string) => ({ payload }))
+export const setChatState = createAction(Action.SetChatState, (payload: boolean) => ({ payload }))

@@ -29,11 +29,12 @@ export const getColorFromUserData = ({roles, userAuthId, userMessageId}: GetColo
 
 
 type JoinRoom = {
-  userId: string;
+  userId?: string;
   joinRoomId: number;
   leaveRoomId?: number;
 }
 export const joinRoom = ({ userId, leaveRoomId, joinRoomId }: JoinRoom) => {
+  if (!userId) return;
   if (leaveRoomId) {
     socket.emit(SocketEvent.Leave, {userId,  roomId: leaveRoomId})
   }

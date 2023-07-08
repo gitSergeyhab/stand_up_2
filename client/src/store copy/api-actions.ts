@@ -17,12 +17,7 @@ export const authAction = (): ThunkActionResult => async (dispatch) => {
     storageUtils.removeData();
     dispatch(setUser(null));
     toast.error('!!! - Auth Error - !!!');
-    // console.log(err);
   }
 };
 
 
-export const fetchPreloadData = (): ThunkActionResult =>
-  async(dispatch, _getState, api) => {
-    const {} = await api.get('form-data/preload')
-  }

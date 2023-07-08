@@ -1,3 +1,5 @@
+import { Role } from "../store/actions";
+
 export type ChatState = 'open' | 'close' | 'hide';
 
 export type MessageSC = {
@@ -36,4 +38,16 @@ export type Room = {
   roomId: number;
   roomName: string;
   roomNameEn: string;
+}
+
+export type UserSC = {
+  user_nik: string;
+  user_id: string;
+  user_roles: Role[]
+}
+
+export type User = {
+  userNik: string;
+  userId: string;
+  userRoles: Role[]
 }

@@ -266,6 +266,7 @@ CREATE TABLE users_rooms (
     user_id BIGINT REFERENCES users(user_id),
     room_id BIGINT REFERENCES rooms(room_id),
 	socket_id VARCHAR(32) NOT NULL,
+    date_added TIMESTAMP with time zone DEFAULT CURRENT_TIMESTAMP;
 
     CONSTRAINT users_rooms_pkey PRIMARY KEY (user_id, room_id)
 );

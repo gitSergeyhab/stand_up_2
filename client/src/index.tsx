@@ -18,6 +18,8 @@ const root = ReactDOM.createRoot(
 
 const user = storageUtils.getUser();
 
+console.log({user}, 'index')
+
 store.dispatch(setUser(user));
 store.dispatch(fetchPreloadData());
 store.dispatch(fetchRooms());

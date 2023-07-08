@@ -1,4 +1,4 @@
-import { MessageCC, MessageSC, Room, RoomSC } from "../../types/chat-types";
+import { MessageCC, MessageSC, Room, RoomSC, User, UserSC } from "../../types/chat-types";
 
 
 export const adaptMessage = (data: MessageSC): MessageCC => ({
@@ -23,3 +23,10 @@ const adaptRoom = (data: RoomSC): Room => ({
 
 export const adaptRooms = (data: RoomSC[]): Room[] => data.map(adaptRoom)
 
+export const adaptSocketUser = (data: UserSC): User => ({
+  userNik: data.user_nik,
+  userRoles: data.user_roles,
+  userId: data.user_id
+})
+
+export const adaptSocketUsers = (data: UserSC[]): User[] => data.map(adaptSocketUser)

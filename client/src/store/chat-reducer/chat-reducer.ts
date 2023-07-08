@@ -1,21 +1,20 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { Room } from '../../types/chat-types';
 import { setActiveRoom, setChatState, setRooms } from '../actions';
-import { ChatState } from '../../const/chat';
 
 
-const DefaultRoom = {roomId: 1, roomName: 'Болталка', roomNameEn: 'Support'}
+const DefaultRoom = {roomId: 1, roomName: 'Болталка', roomNameEn: 'chat'}
 
 export type InitialChatState = {
   rooms: Room[];
-  activeRoom: Room | null;
-  chatState: string
+  activeRoom: Room;
+  chatState: boolean
 };
 
 const initialState: InitialChatState = {
   rooms: [DefaultRoom],
   activeRoom: DefaultRoom,
-  chatState: ChatState.Close
+  chatState: false
 };
 
 export const chatReducer = createReducer(initialState, (builder) => {

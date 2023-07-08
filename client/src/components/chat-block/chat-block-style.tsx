@@ -1,6 +1,9 @@
 import styled, {css} from "styled-components";
 import { hiddenStyle } from "../common/common-style";
 
+
+
+
 const left = css`
   height: auto;
   top: 7%;
@@ -28,6 +31,7 @@ const center = css`
   height: 93%;
   bottom: 0;
   left: 19%;
+
   width: 62%;
 `;
 
@@ -53,10 +57,19 @@ export const ChatSection = styled.section<{position: string, hide?: boolean}>`
   ${({position}) => position === 'left' ? left : ''};
   ${({position}) => position === 'right' ? right : ''};
   ${({position}) => position === 'center' ? center : ''};
-  ${({hide}) => hide  ? hiddenStyle : ''};
+
+  /* transition: background-color 0.4s ease-in-out; */
+
   transition: background-color 0.4s ease-in-out;
 
 
+  @media (max-width: 500px) {
+    width: 100%;
+    right: 0;
+    left: 0;
+    bottom: 0;
+  }
+  ${({hide}) => hide  ? hiddenStyle : ''};
 `;
 
 export const ChartCloseBtn = styled.button.attrs({ type: 'button' })`

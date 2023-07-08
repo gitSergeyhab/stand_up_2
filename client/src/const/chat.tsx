@@ -27,5 +27,6 @@ export const SocketEvent = {
   ResponseAllMessages: 'response:all',
   MessageFromClient: 'message',
   Connect: 'connect',
-  Disconnect: 'disconnect'
+  Disconnect: 'disconnect',
+  ResponseUsers: 'response:users'
 }
