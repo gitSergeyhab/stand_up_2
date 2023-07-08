@@ -18,9 +18,12 @@ export const ChatInputForm = styled.form<{focus?: boolean}>`
   transition:
     scale 0.3s ease-in-out,
     opacity 0.3s ease-in-out;
+    transition-delay: 1s;
+
   &:hover{
     scale: 1;
     opacity: 1;
+    transition-delay: 0s;
   }
 `;
 
@@ -78,3 +81,34 @@ export const NoUserDiv = styled.div`
   background-color: rgba(13, 1, 1);
   color: goldenrod;
 `;
+
+export const EmojiWrapper = styled.div`
+  position: absolute;
+  bottom: 5rem;
+  left: 0;
+`;
+
+export const EmojiButton = styled.button.attrs({type: 'button'})`
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 4px solid transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    border-color: goldenrod;
+  }
+
+  &:active {
+    background-color: goldenrod;
+  }
+
+  transition:
+    0.3s border-color ease-in-out,
+    0.3s background-color ease-in-out
+  ;
+
+`
