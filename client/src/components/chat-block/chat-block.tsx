@@ -20,12 +20,11 @@ import { getUser } from "../../store/user-reducer/user-selectors";
 
 
 type ChatBlockProps = {
-  // onClose: () => void;
   onHide: () => void;
   hide?: boolean;
 }
 
-export function ChatBlock({/* onClose, */ onHide, hide/* , room, setRoom */}: ChatBlockProps) {
+export function ChatBlock({ onHide, hide }: ChatBlockProps) {
 
   const user = useSelector(getUser);
   const activeRoom = useSelector(getActiveRoom);
@@ -39,7 +38,6 @@ export function ChatBlock({/* onClose, */ onHide, hide/* , room, setRoom */}: Ch
 
   useEffect(() => {
     const setAdaptedUsers = (data: UserSC[]) => {
-      console.log(data)
       setUsers(adaptSocketUsers(data))
     };
     socket.on(SocketEvent.ResponseUsers, setAdaptedUsers);
@@ -60,10 +58,21 @@ export function ChatBlock({/* onClose, */ onHide, hide/* , room, setRoom */}: Ch
   useEffect(() => {
     if(user) {
       joinRoom({userId: user.id, joinRoomId: activeRoom.roomId});
-      console.log('useEffect - joinRoom', {user, activeRoom})
+    }
+  }, [user, activeRoom])
+
+  useEffect(() => {
+    const closeAllOptions= (evt: MouseEvent) => {
+      if (evt.target instanceof Element && !evt.target.closest('.ButtonsDiv')) {
+        setAreRooms(false);
+        setAreUsers(false);
+        setSetting(false);
+      }
     }
 
-  }, [user, activeRoom])
+    document.addEventListener('click', closeAllOptions);
+    return () => document.removeEventListener('click', closeAllOptions)
+  }, [])
 
   const handleCloseUserList = () => setAreUsers(false);
   const handleCloseRoomList = () => setAreRooms(false);
@@ -95,14 +104,14 @@ export function ChatBlock({/* onClose, */ onHide, hide/* , room, setRoom */}: Ch
   const roomElement = areRooms ?  <ChatRoomList  onClose={handleCloseRoomList}/> : null;
 
   const buttonsElement =  (
-    <ButtonsDiv>
+    <ButtonsDiv className="ButtonsDiv">
       {settingsElement}
       {usersElement}
       {roomElement}
       <ActionBtn onClick={handleRoomsClick} width={4} sign="чаты" active={areRooms}/>
       <ActionBtn onClick={handleUsersClick} width={5} sign="юзеры" active={areUsers}/>
       <SettingBtn onClick={handleSettingsClick} active={setting} />
-      <HideBtn onClick={onHide} disabled={setting}/>
+      <HideBtn onClick={onHide}/>
     </ButtonsDiv>
   )
 

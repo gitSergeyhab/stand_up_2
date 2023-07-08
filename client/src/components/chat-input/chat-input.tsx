@@ -1,4 +1,4 @@
-import { useState, FormEventHandler, ChangeEventHandler } from 'react';
+import { useState, FormEventHandler, ChangeEventHandler, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import EmojiPicker, {Emoji, EmojiClickData} from 'emoji-picker-react';
@@ -11,6 +11,7 @@ import { SocketEvent } from '../../const/chat';
 
 export function ChatInput() {
 
+  const inputRef = useRef<HTMLTextAreaElement|null>(null)
   const user = useSelector(getUser);
   const activeRoom = useSelector(getActiveRoom)
 
@@ -50,6 +51,7 @@ export function ChatInput() {
   const onEmojiClick = (emoji: EmojiClickData) => {
     setValue((prev) => prev + emoji.emoji);
     setEmojiPicker(false);
+    inputRef.current?.focus();
   }
 
   const emojiPicker = isEmojiPicker ? (
@@ -63,6 +65,7 @@ export function ChatInput() {
 
       <EmojiButton onClick={handleEmojiBtnClick}><Emoji unified='1f603'/></EmojiButton>
       <ChatTextarea
+        ref={inputRef}
         value={value}
         onFocus={handleFocus}
         onBlur={handleBlur}
