@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { EventPageInfo } from '../pages/events/event-page-info/event-page-info';
 // import { MainPage } from '../pages/main-page/main-page';
@@ -28,6 +29,9 @@ import { ComedianChange } from '../pages/change-panels/comedian-change';
 import { ShowChange } from '../pages/change-panels/show-change';
 import { EventChange } from '../pages/change-panels/event-change';
 import { Chat } from '../components/chat/chat';
+import { useAppDispatch } from '../hooks/use-app-dispatch';
+import { authAction } from '../store/api-actions';
+import { storageUtils } from '../utils/storage-utils';
 
 const AppRoute = {
   Main: '/',
@@ -65,14 +69,14 @@ const AppRoute = {
 
 export function App() {
 
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
-  // useEffect(() => {
-  //   const user = storageUtils.getUser();
-  //   if (user) {
-  //     dispatch(authAction());
-  //   }
-  // }, [dispatch]);
+  useEffect(() => {
+    const user = storageUtils.getUser();
+    if (user) {
+      dispatch(authAction());
+    }
+  }, [dispatch]);
 
   return (
     <BrowserRouter>

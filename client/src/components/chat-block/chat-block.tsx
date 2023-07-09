@@ -14,8 +14,6 @@ import socket from "../../socket-io";
 import { User, UserSC } from "../../types/chat-types";
 import { adaptSocketUsers } from "../../utils/adapters/chat-adapters";
 import { ChatUserList } from "../chat-option-list/chat-user-list";
-import { joinRoom } from "../../utils/chat-utils";
-import { getUser } from "../../store/user-reducer/user-selectors";
 
 
 
@@ -26,7 +24,6 @@ type ChatBlockProps = {
 
 export function ChatBlock({ onHide, hide }: ChatBlockProps) {
 
-  const user = useSelector(getUser);
   const activeRoom = useSelector(getActiveRoom);
   const [color, setColor] = useState(ChatColor.Red);
   const [position, setPosition] = useState(ChatPosition.Center);
@@ -53,13 +50,6 @@ export function ChatBlock({ onHide, hide }: ChatBlockProps) {
       socket.off(SocketEvent.ResponseUsers, setAdaptedUsers);
     }
   }, [])
-
-
-  useEffect(() => {
-    if(user) {
-      joinRoom({userId: user.id, joinRoomId: activeRoom.roomId});
-    }
-  }, [user, activeRoom])
 
   useEffect(() => {
     const closeAllOptions= (evt: MouseEvent) => {

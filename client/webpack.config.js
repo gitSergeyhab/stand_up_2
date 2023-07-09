@@ -77,9 +77,9 @@ const config = {
   devServer: {
     static: path.resolve(dirname, 'build'),
     open: true,
-    compress: true,
-    historyApiFallback: true,
-    hot: true,
+    // compress: true,
+    // historyApiFallback: true,
+    // hot: true,
   },
   devtool: isDev ? 'source-map' : false,
 };

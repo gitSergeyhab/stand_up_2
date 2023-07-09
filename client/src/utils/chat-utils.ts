@@ -36,7 +36,7 @@ type JoinRoom = {
 export const joinRoom = ({ userId, leaveRoomId, joinRoomId }: JoinRoom) => {
   if (!userId) return;
   if (leaveRoomId) {
-    socket.emit(SocketEvent.Leave, {userId,  roomId: leaveRoomId})
+    socket.emit(SocketEvent.Leave, {userId,  roomId: leaveRoomId});
   }
-  socket.emit(SocketEvent.Join, {userId,  roomId: joinRoomId})
+  socket.emit(SocketEvent.Join, {userId,  roomId: joinRoomId});
 }

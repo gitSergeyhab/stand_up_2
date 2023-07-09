@@ -3,15 +3,18 @@ import { toast } from 'react-toastify';
 import { BottomButton } from "./chat-style";
 import { ChatBlock } from '../chat-block/chat-block';
 import { getUser } from '../../store/user-reducer/user-selectors';
-import {  getChartState } from '../../store/chat-reducer/chat-selectors';
-import { setChatState } from '../../store/actions';
+import {  getActiveRoom, getChartState, getJoin } from '../../store/chat-reducer/chat-selectors';
+import { setChatState, setSocketJoin } from '../../store/actions';
+import { joinRoom } from '../../utils/chat-utils';
 
 
 
 export function Chat() {
   const user = useSelector(getUser);
-  const chatState = useSelector(getChartState)
-  const dispatch = useDispatch()
+  const activeRoom = useSelector(getActiveRoom);
+  const chatState = useSelector(getChartState);
+  const isJoin = useSelector(getJoin)
+  const dispatch = useDispatch();
 
   const handleChatHide = () => dispatch(setChatState(false));
   const handleChatOpen = () => {
@@ -19,6 +22,13 @@ export function Chat() {
       toast.warning('Чат доступен только авторизованным пользователям')
       return;
     }
+    // const setJoin = () => dispatch(setSocketJoin);
+    if(isJoin) {
+      dispatch(setSocketJoin)
+    } else {
+      joinRoom({userId: user.id, joinRoomId: activeRoom.roomId})
+    }
+
     dispatch(setChatState(true))
   };
 

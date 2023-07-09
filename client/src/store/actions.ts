@@ -66,6 +66,7 @@ export const enum Action {
   SetRooms = 'chat/SetRooms',
   SetActiveRoom = 'chat/SetActiveRoom',
   SetChatState = 'chat/SetChatState',
+  SetSocketJoin = 'chat/SetSocketJoin',
 }
 
 export const setType = createAction(Action.SetType,(type: null | ContentName) => ({ payload: type }),);
@@ -84,6 +85,7 @@ export const setPreloadEvents = createAction(Action.SetPreloadEvents, (payload: 
 export const setPreloadCountries = createAction(Action.SetPreloadCountries, (payload: OptionType[]) => ({ payload }));
 export const setPreloadLanguages = createAction(Action.SetPreloadLanguages, (payload: OptionType[]) => ({ payload }));
 
-export const setRooms = createAction(Action.SetRooms, (payload: Room[]) => ({ payload }))
-export const setActiveRoom = createAction(Action.SetActiveRoom, (payload: Room) => ({ payload }))
-export const setChatState = createAction(Action.SetChatState, (payload: boolean) => ({ payload }))
+export const setRooms = createAction(Action.SetRooms, (payload: Room[]) => ({ payload }));
+export const setActiveRoom = createAction(Action.SetActiveRoom, (payload: Room) => ({ payload }));
+export const setChatState = createAction(Action.SetChatState, (payload: boolean) => ({ payload }));
+export const setSocketJoin = createAction(Action.SetSocketJoin);
