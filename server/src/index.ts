@@ -20,7 +20,8 @@ const port = process.env.PORT || 4000;
 const app = express();
 const server = new http.Server(app);
 const io = new Server(server, { 
-    cors: { origin: ALLOWED_URLS }
+    cors: { origin: ALLOWED_URLS },
+    maxHttpBufferSize: 2 * 1024 * 1024 * 1.01
 });
 
 app.use(express.json());

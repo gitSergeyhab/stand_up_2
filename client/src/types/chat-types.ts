@@ -11,10 +11,9 @@ export type MessageSC = {
   message_text?: string,
   message_auto: boolean,
   message_added: Date,
-  user_roles: string[]
+  user_roles: string[],
+  image?: string
 }
-
-
 
 export type MessageCC = {
   messageId: string,
@@ -25,7 +24,9 @@ export type MessageCC = {
   messageText?: string,
   messageAuto: boolean,
   messageAdded: Date,
-  userRoles: string[]
+  userRoles: string[],
+  image?: string,
+   imgOpen?: boolean,
 }
 
 export type RoomSC = {

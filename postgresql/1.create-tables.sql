@@ -275,6 +275,7 @@ CREATE TABLE chat_messages (
     message_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id BIGINT REFERENCES users(user_id),
     room_id INTEGER REFERENCES rooms(room_id),
+    image_id BIGINT REFERENCES images(image_id),
 
     message_text VARCHAR(512) NOT NULL,
     message_auto BOOLEAN DEFAULT FALSE,

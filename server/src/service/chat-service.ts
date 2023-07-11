@@ -3,6 +3,7 @@ import { sequelize } from "../sequelize";
 import { getSQLRangeFromArray } from "../utils/sql-utils";
 import { RoomUserId } from "../types";
 import { Role } from "../const/const";
+import { SocketEvent } from "../const/socket-const";
 
 class ChatService {
 
@@ -10,22 +11,24 @@ class ChatService {
         return (
             `
             SELECT 
-                message_id, 
-                chat_messages.user_id, 
-                user_nik, 
-                room_id, 
-                message_text, 
-                message_auto, 
-                message_added,
-                destination || filename AS avatar,
-                ARRAY_AGG(role_name) as user_roles
-            FROM chat_messages
-            LEFT JOIN users ON users.user_id = chat_messages.user_id
-            LEFT JOIN users_roles ON users.user_id = users_roles.user_id
-            LEFT JOIN roles ON roles.role_id = users_roles.role_id
-            LEFT JOIN avatars ON users.user_avatar_id = avatars.avatar_id
-                ${where}
-                GROUP BY chat_messages.message_id, user_nik, destination, filename;
+            message_id, 
+            chat_messages.user_id, 
+            user_nik, 
+            room_id, 
+            message_text, 
+            message_auto, 
+            message_added,
+            avatars.destination || avatars.filename AS avatar,
+            images.destination || images.filename AS image,
+            ARRAY_AGG(role_name) as user_roles
+        FROM chat_messages
+        LEFT JOIN users ON users.user_id = chat_messages.user_id
+        LEFT JOIN users_roles ON users.user_id = users_roles.user_id
+        LEFT JOIN roles ON roles.role_id = users_roles.role_id
+        LEFT JOIN avatars ON users.user_avatar_id = avatars.avatar_id
+        LEFT JOIN images ON images.image_id = chat_messages.image_id
+        ${where}
+            GROUP BY chat_messages.message_id, user_nik, avatars.destination, avatars.filename, images.destination, images.filename;
             `
         )
     } 
@@ -95,28 +98,31 @@ class ChatService {
 
     async getMessagesByRoom (roomId: string) {
         try {
+
+            const query = this.getMessageQuery('WHERE room_id = :roomId');
             const result = await sequelize.query(
-                `
-                SELECT 
-                    message_id, 
-                    chat_messages.user_id, 
-                    user_nik, 
-                    room_id, 
-                    message_text, 
-                    message_auto, 
-                    message_added,
-                    destination || filename AS avatar,
-                    ARRAY_AGG(role_name) as user_roles
-                FROM chat_messages
-                LEFT JOIN users ON users.user_id = chat_messages.user_id
-                LEFT JOIN users_roles ON users.user_id = users_roles.user_id
-                LEFT JOIN roles ON roles.role_id = users_roles.role_id
-                LEFT JOIN avatars ON users.user_avatar_id = avatars.avatar_id
-                    WHERE room_id = :roomId
-                    GROUP BY chat_messages.message_id, user_nik, destination, filename
-                    ORDER BY message_added
-                    ;
-                `, 
+                // `
+                // SELECT 
+                //     message_id, 
+                //     chat_messages.user_id, 
+                //     user_nik, 
+                //     room_id, 
+                //     message_text, 
+                //     message_auto, 
+                //     message_added,
+                //     destination || filename AS avatar,
+                //     ARRAY_AGG(role_name) as user_roles
+                // FROM chat_messages
+                // LEFT JOIN users ON users.user_id = chat_messages.user_id
+                // LEFT JOIN users_roles ON users.user_id = users_roles.user_id
+                // LEFT JOIN roles ON roles.role_id = users_roles.role_id
+                // LEFT JOIN avatars ON users.user_avatar_id = avatars.avatar_id
+                //     WHERE room_id = :roomId
+                //     GROUP BY chat_messages.message_id, user_nik, destination, filename
+                //     ORDER BY message_added
+                //     ;
+                // `, 
+                query,
                 {
                     replacements: {roomId},
                     type: 'SELECT'
@@ -134,17 +140,18 @@ class ChatService {
 
     }
 
-    async addMessage (userId: string, roomId: string, text: string, isAuto=false) {
+    async addMessage (userId: string, roomId: string, text: string,  isAuto=false, imageId='') {
+        console.log({imageId}, 'addMessage______________')
         try {
             const result = await sequelize.query(
                 `
                 INSERT INTO chat_messages
-                (user_id, room_id, message_text, message_auto) VALUES
-                (:userId, :roomId, :text, :isAuto)
+                (user_id, room_id, message_text, message_auto, image_id) VALUES
+                (:userId, :roomId, :text, :isAuto, :imageId)
                 RETURNING message_id;
                 `,
                 {
-                    replacements: {userId, roomId, text, isAuto},
+                    replacements: {userId, roomId, text, isAuto, imageId: imageId || null},
                     type: 'SELECT'
                 }
             )
@@ -356,6 +363,15 @@ class ChatService {
         } catch {
             return null;
         }
+    }
+
+    async UpdateUsersInRoom(io: Server,  roomId: string) {
+    // получить список socket_id юзеров в этой комнате
+        const socketIndexesInRoom = this.getUserSocketIndexesOfRoom(io, roomId); 
+        // получить список user_id юзеров в этой комнате
+        const usersInRoom = await this.getUsersBySocketIndexes(socketIndexesInRoom);
+        // отправить всем в комнате список юзеров
+        io.in(roomId).emit(SocketEvent.ResponseUsers, usersInRoom);
     }
 }
 

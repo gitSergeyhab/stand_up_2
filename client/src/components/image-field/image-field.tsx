@@ -28,7 +28,7 @@ export function ImageField({setPic, isPic, statePicture, setPicChanged}: ImageFi
     }
   }
 
-  const handleBtnCleanPictureClock = () => {
+  const handleBtnCleanPictureClick = () => {
       setPic(false);
       setPicChanged(true);
       setFileName('');
@@ -41,9 +41,9 @@ export function ImageField({setPic, isPic, statePicture, setPicChanged}: ImageFi
     }
   }
 
-  const img = isPic ? <ImageDiv><img src={src} alt='chosen pic' height={100} width="auto" /></ImageDiv> : null
-  const clearPictureBtn = <button type="button" onClick={handleBtnCleanPictureClock}> ✘ </button>
-  const fileNameSpan = isPic ? <span>{fileName} {clearPictureBtn}</span> : null
+  const img = isPic ? <ImageDiv><img src={src} alt='chosen pic' height={100} width="auto" /></ImageDiv> : null;
+  const clearPictureBtn = <button type="button" onClick={handleBtnCleanPictureClick}> ✘ </button>;
+  const fileNameSpan = isPic ? <span>{fileName} {clearPictureBtn}</span> : null;
 
   return (
     <>

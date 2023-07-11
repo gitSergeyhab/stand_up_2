@@ -1,7 +1,10 @@
+import { writeFile } from "fs/promises"
 import { ImageType } from "../const/const";
 import { sequelize } from "../sequelize";
 import { ImageFile } from "../types";
 import { getIdFromTable } from "../utils/sql-utils";
+import path from "path";
+
 
 
 class ImageService {
@@ -26,6 +29,22 @@ class ImageService {
         console.log(result[0][0], 'result[0][0]')
 
         return result[0][0][mainId];
+    }
+
+    async saveFile( file: File, name: string, type: string, dir: string ) {
+
+        try {
+            const filePath = path.resolve(__dirname, `../files/images/${dir}/${name}`)
+            const pseudoString = file as unknown as string // !!! Почему-то только так...
+            await writeFile( filePath, pseudoString );
+
+            console.log('_______________saved______________________!')
+        } catch (err) {
+                console.log({err}, '_________________________saveFile')
+        }
+        // const response = await fetch('url');
+        // const buffer = await response.blob();
+
     }
 }
 

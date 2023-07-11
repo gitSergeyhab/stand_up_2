@@ -72,7 +72,17 @@ export type EmptyMessageFromClient = {
     roomId: string;
 }
 
-export type MessageFromClient = EmptyMessageFromClient & {text: string};
+type FileData = {
+    file: File,
+    type: string,
+    size: number,
+    name: string
+  }
+
+export type MessageFromClient = EmptyMessageFromClient & {
+    text: string;
+    fileData?: FileData;
+};
 
 export type MessageToClient = {
     message_id: string, 

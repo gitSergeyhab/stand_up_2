@@ -110,5 +110,28 @@ export const EmojiButton = styled.button.attrs({type: 'button'})`
     0.3s border-color ease-in-out,
     0.3s background-color ease-in-out
   ;
+`;
 
+export const SmileFileWrapperDiv = styled.div`
+  height: 100%;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+
+export const FileButton = styled.button.attrs({type: 'button'})<{delBtn?: boolean}>`
+  border: 4px solid rgb(13, 1, 1);
+  padding: 0 4px;
+  background-color: gold;
+  &:hover {
+    background-color: ${({delBtn}) => delBtn ? 'red' : 'orangered'};
+    border-color: ${({delBtn}) => delBtn ? 'red' : 'orangered'};
+  }
+  transition:
+    0.3s border-color ease-in-out,
+    0.3s background-color ease-in-out
+  ;
 `

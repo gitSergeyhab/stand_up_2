@@ -24,11 +24,12 @@ export const joinHandler = async (io: Server, socket: Socket, data: EmptyMessage
         // добавить юзера в комнату (БД)
         await chatService.insertUserToRoom(userId, roomId, socket.id);
     }
+    await chatService.UpdateUsersInRoom(io, roomId)
 
-    // получить список socket_id юзеров в этой комнате
-    const socketIndexesInRoom = chatService.getUserSocketIndexesOfRoom(io, roomId); 
-    // получить список user_id юзеров в этой комнате
-    const usersInRoom = await chatService.getUsersBySocketIndexes(socketIndexesInRoom);
-    // отправить всем в комнате список юзеров
-    io.in(roomId).emit(SocketEvent.ResponseUsers, usersInRoom);
+    // // получить список socket_id юзеров в этой комнате
+    // const socketIndexesInRoom = chatService.getUserSocketIndexesOfRoom(io, roomId); 
+    // // получить список user_id юзеров в этой комнате
+    // const usersInRoom = await chatService.getUsersBySocketIndexes(socketIndexesInRoom);
+    // // отправить всем в комнате список юзеров
+    // io.in(roomId).emit(SocketEvent.ResponseUsers, usersInRoom);
 }

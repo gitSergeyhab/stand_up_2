@@ -10,7 +10,10 @@ export const ImageContainer = styled.div`
 `;
 
 export const Image = styled.img`
-  height: 100%;
+  /* height: 100%; */
+  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
 `;
 
 export const ImageList = styled.ul`
