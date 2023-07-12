@@ -6,6 +6,8 @@ export const SocketEvent = {
     MessageFromClient: 'message',
     Connect: 'connect',
     Disconnect: 'disconnect',
+    Disconnecting: 'disconnecting',
     CloseChat: 'close-chat',
-    ResponseUsers: 'response:users'
+    ResponseUsers: 'response:users',
+    RequestUsers: 'request:users'
 }

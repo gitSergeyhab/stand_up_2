@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { EmptyMessageFromClient, MessageToClient } from "../../types";
+import { EmptyMessageFromClient } from "../../types";
 import { chatService } from "../../service/chat-service";
 import { getAutoMessage } from "../../utils/socket-utils";
 import { SocketEvent } from "../../const/socket-const";
@@ -11,7 +11,9 @@ export const joinHandler = async (io: Server, socket: Socket, data: EmptyMessage
     const allMessagesFromRoom = await chatService.getMessagesByRoom(roomId);
     socket.emit(SocketEvent.ResponseAllMessages, allMessagesFromRoom);
  
+    // если юзер-комнаты нет в БД
     const isUserInRoom = await chatService.checkUserInRoom(userId, roomId);
+    // добавить юзера, которы в чат не входил никогда
     if (!isUserInRoom) {
         // техт, который бойдет в бд, но на клиент выводится не должен
         const dbMessageText = getAutoMessage({isJoin: true})
@@ -24,12 +26,11 @@ export const joinHandler = async (io: Server, socket: Socket, data: EmptyMessage
         // добавить юзера в комнату (БД)
         await chatService.insertUserToRoom(userId, roomId, socket.id);
     }
-    await chatService.UpdateUsersInRoom(io, roomId)
-
-    // // получить список socket_id юзеров в этой комнате
-    // const socketIndexesInRoom = chatService.getUserSocketIndexesOfRoom(io, roomId); 
-    // // получить список user_id юзеров в этой комнате
-    // const usersInRoom = await chatService.getUsersBySocketIndexes(socketIndexesInRoom);
-    // // отправить всем в комнате список юзеров
-    // io.in(roomId).emit(SocketEvent.ResponseUsers, usersInRoom);
+    // если сокета нет в БД (зачит была-есть юзер-комната, но с другим сокетом)
+    const isSocketInRoom = await chatService.checkUserInRoomBySocket(socket.id);
+    // обновить сокет, что бы при выходе удалять юзера по сокету
+    if (!isSocketInRoom) {
+        await chatService.updateSocketInDB(socket.id, userId, roomId)
+    }
+    await chatService.UpdateUsersInRoom(io, roomId);
 }

@@ -16,6 +16,7 @@ import { adaptSocketUsers } from "../../utils/adapters/chat-adapters";
 import { ChatUserList } from "../chat-option-list/chat-user-list";
 
 
+const REQUEST_USERS_INTERVAL = 60000;
 
 type ChatBlockProps = {
   onHide: () => void;
@@ -50,6 +51,13 @@ export function ChatBlock({ onHide, hide }: ChatBlockProps) {
       socket.off(SocketEvent.ResponseUsers, setAdaptedUsers);
     }
   }, [])
+
+  useEffect(() => {
+    const timer = (hide || !isConnected) ? 0 : setInterval(() => socket.emit(SocketEvent.RequestUsers, activeRoom.roomId), REQUEST_USERS_INTERVAL);
+    return () => {
+      clearInterval(timer);
+    }
+  }, [activeRoom, hide, isConnected])
 
   useEffect(() => {
     const closeAllOptions= (evt: MouseEvent) => {

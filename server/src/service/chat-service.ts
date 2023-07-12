@@ -1,13 +1,15 @@
 import { Server } from "socket.io";
 import { sequelize } from "../sequelize";
 import { getSQLRangeFromArray } from "../utils/sql-utils";
-import { RoomUserId } from "../types";
+import { MessageFromDB, RoomUserId } from "../types";
 import { Role } from "../const/const";
 import { SocketEvent } from "../const/socket-const";
 
+
+
 class ChatService {
 
-    getMessageQuery (where: string) {
+    _getMessageQuery (where: string) {
         return (
             `
             SELECT 
@@ -32,12 +34,11 @@ class ChatService {
             `
         )
     } 
+
     async getMessageDataById (id: number) {
         try {
-
-            
             const where = 'WHERE message_id = :id';
-            const query = this.getMessageQuery(where);
+            const query = this._getMessageQuery(where);
             const result = await sequelize.query( 
                 query, 
                 {
@@ -48,7 +49,7 @@ class ChatService {
 
             // console.log(result);
 
-            return result[0];
+            return (result[0] as unknown as MessageFromDB);
 
         } catch (err) {
             console.log({err}, 'getMessageDataById');
@@ -56,72 +57,52 @@ class ChatService {
         }
 
     }
-/**
- * возвращает массив сообщений с доп юзер инфо по message_id[]
- * @param indexes message_id[]
- * @returns массив сообщений с доп изер инфо
- */
-    async getMessagesDataById (indexes: number[]) {
-        try {
-            const values = `(${indexes})`;
-            const where = `WHERE message_id IN ${values}`
-            const query = this.getMessageQuery(where);
-            console.log({query})
-            const result = await sequelize.query(
-                query, 
-                { type: 'SELECT' }
-            );
+// /**
+//  * возвращает массив сообщений с доп юзер инфо по message_id[]
+//  * @param indexes message_id[]
+//  * @returns массив сообщений с доп изер инфо
+//  */
+//     async getMessagesDataById (indexes: number[]) {
+//         try {
+//             const values = `(${indexes})`;
+//             const where = `WHERE message_id IN ${values}`
+//             const query = this.getMessageQuery(where);
+//             console.log({query})
+//             const result = await sequelize.query(
+//                 query, 
+//                 { type: 'SELECT' }
+//             );
 
-            console.log(result);
+//             console.log(result);
 
-            type Result = {
-                message_id: number, 
-                user_id: string, 
-                user_nik: string, 
-                room_id: string, 
-                message_text: string, 
-                message_auto?: boolean, 
-                message_added: Date,
-                avatar?: string,
-                user_roles: Role[]
-            }
+//             type Result = {
+//                 message_id: number, 
+//                 user_id: string, 
+//                 user_nik: string, 
+//                 room_id: string, 
+//                 message_text: string, 
+//                 message_auto?: boolean, 
+//                 message_added: Date,
+//                 avatar?: string,
+//                 user_roles: Role[]
+//             }
 
-            console.log({result});
-            return (result as Result[]);
+//             console.log({result});
+//             return (result as Result[]);
 
-        } catch (err) {
-            console.log({err}, 'getMessagesDataById');
-            return null;
-        }
+//         } catch (err) {
+//             console.log({err}, 'getMessagesDataById');
+//             return null;
+//         }
 
-    }
+//     }
 
     async getMessagesByRoom (roomId: string) {
         try {
 
-            const query = this.getMessageQuery('WHERE room_id = :roomId');
+            const query = this._getMessageQuery('WHERE room_id = :roomId');
             const result = await sequelize.query(
-                // `
-                // SELECT 
-                //     message_id, 
-                //     chat_messages.user_id, 
-                //     user_nik, 
-                //     room_id, 
-                //     message_text, 
-                //     message_auto, 
-                //     message_added,
-                //     destination || filename AS avatar,
-                //     ARRAY_AGG(role_name) as user_roles
-                // FROM chat_messages
-                // LEFT JOIN users ON users.user_id = chat_messages.user_id
-                // LEFT JOIN users_roles ON users.user_id = users_roles.user_id
-                // LEFT JOIN roles ON roles.role_id = users_roles.role_id
-                // LEFT JOIN avatars ON users.user_avatar_id = avatars.avatar_id
-                //     WHERE room_id = :roomId
-                //     GROUP BY chat_messages.message_id, user_nik, destination, filename
-                //     ORDER BY message_added
-                //     ;
-                // `, 
+
                 query,
                 {
                     replacements: {roomId},
@@ -164,38 +145,38 @@ class ChatService {
             return 0;
         }
     }
-/**
- * добавляет сообщения в БД - возвращает их индексы
- * @param roomUserList - {room_id: string;user_id: string}[] - массив объктов какой пользователь(хотя он 1) в какой комнате(пока тоже 1)
- * @param text техт сообщения
- * @param isAuto сгенерировать автоматически при входе/выходе
- * @returns - {message_id: number}[] / null-при ошибке
- */
-    async addMessages (roomUserList: RoomUserId[], text: string, isAuto=false) {
+// /**
+//  * добавляет сообщения в БД - возвращает их индексы
+//  * @param roomUserList - {room_id: string;user_id: string}[] - массив объктов какой пользователь(хотя он 1) в какой комнате(пока тоже 1)
+//  * @param text техт сообщения
+//  * @param isAuto сгенерировать автоматически при входе/выходе
+//  * @returns - {message_id: number}[] / null-при ошибке
+//  */
+//     async addMessages (roomUserList: RoomUserId[], text: string, isAuto=false) {
 
-        const values = roomUserList.map(({room_id, user_id}) => `(${user_id}, ${room_id}, :text, :isAuto)`).join(', ');
-        try {
-            const result = await sequelize.query(
-                `
-                INSERT INTO chat_messages
-                (user_id, room_id, message_text, message_auto) 
-                VALUES ${values}
-                RETURNING message_id;
-                `,
-                {
-                    replacements: {text, isAuto},
-                    type: 'SELECT'
-                }
-            )
+//         const values = roomUserList.map(({room_id, user_id}) => `(${user_id}, ${room_id}, :text, :isAuto)`).join(', ');
+//         try {
+//             const result = await sequelize.query(
+//                 `
+//                 INSERT INTO chat_messages
+//                 (user_id, room_id, message_text, message_auto) 
+//                 VALUES ${values}
+//                 RETURNING message_id;
+//                 `,
+//                 {
+//                     replacements: {text, isAuto},
+//                     type: 'SELECT'
+//                 }
+//             )
 
-            type Result = {message_id: number}[]
-            return (result as Result).map(item => item.message_id);
+//             type Result = {message_id: number}[]
+//             return (result as Result).map(item => item.message_id);
 
-        } catch (err) {
-            console.log({err})
-            return null;
-        }
-    }
+//         } catch (err) {
+//             console.log({err})
+//             return null;
+//         }
+//     }
 
     async insertUserToRoom (userId: string, roomId: string, socketId: string) {
         try {
@@ -253,6 +234,8 @@ class ChatService {
                     type: 'DELETE'
                 }
             )
+
+            console.log('deleteUserFromRoomBySocket        _________________            !')
             return true;
         } catch {
             return false;
@@ -262,7 +245,7 @@ class ChatService {
     /**
      * ищет в БД(users_rooms) строки с socketId
      * @param socketId 
-     * @returns массив {room_id, user_id}[], в комнатах, где есть юзер или FLSE при ошибке
+     * @returns  {room_id, user_id}, в комнатах, где есть юзер или FLSE при ошибке
      */
 
     async getRoomUserBySocket (socketId: string) {
@@ -280,7 +263,8 @@ class ChatService {
                     type: 'SELECT'
                 }
             )
-            return result;
+            // одна строка - юзер может находится толькл в 1 комнате (при входе во 2 - 1 выходит)
+            return (result[0] as unknown as {room_id: string, user_id: string});
         } catch {
             return false;
         }
@@ -327,9 +311,53 @@ class ChatService {
         }
     }
 
+    async checkUserInRoomBySocket (socketId: string) {
+        try {
+            const result = await sequelize.query(
+                `
+                SELECT 
+                user_id 
+                FROM users_rooms
+                WHERE socket_id = :socketId;
+                `,
+                {
+                    replacements: { socketId },
+                    type: 'SELECT'
+                }
+            )
+
+            return !!result.length;
+        } catch {
+            return false;
+        }
+    }
+
+
+    async updateSocketInDB (socketId: string, userId: string, roomId: string ) {
+        try {
+            const result = await sequelize.query(
+                `
+                UPDATE users_rooms
+                SET socket_id = :socketId
+                WHERE user_id = :userId 
+                AND room_id = :roomId;
+                `,
+                {
+                    replacements: { socketId, userId, roomId },
+                    type: 'UPDATE'
+                }
+            )
+
+            return true;
+        } catch (err) {
+            console.log({err});
+            return false;
+        }
+    }
+
     getUserSocketIndexesOfRoom (io: Server, roomId: string) {
         const clients = io.sockets.adapter.rooms.get(roomId);
-        return [...clients]
+        return clients ? [...clients] : null;
     }
 
     async getUsersBySocketIndexes(indexes: string[]) {
@@ -366,12 +394,30 @@ class ChatService {
     }
 
     async UpdateUsersInRoom(io: Server,  roomId: string) {
-    // получить список socket_id юзеров в этой комнате
+        // получить список socket_id юзеров в этой комнате
         const socketIndexesInRoom = this.getUserSocketIndexesOfRoom(io, roomId); 
+        console.log({socketIndexesInRoom})
+        if (!socketIndexesInRoom) return;
         // получить список user_id юзеров в этой комнате
         const usersInRoom = await this.getUsersBySocketIndexes(socketIndexesInRoom);
+
+        console.log({usersInRoom})
         // отправить всем в комнате список юзеров
         io.in(roomId).emit(SocketEvent.ResponseUsers, usersInRoom);
+    }
+
+    async GetRoomsId () {
+        try {
+            const result = await sequelize.query(
+                `SELECT room_id FROM rooms;`, 
+                { type: 'SELECT' }
+            )
+            return (result as {room_id: string}[]).map(({room_id}) => room_id );
+        } catch (err) {
+            console.log({err} , 'GetRoomsId')
+            return null;
+        }
+
     }
 }
 
