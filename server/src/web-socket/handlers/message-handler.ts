@@ -6,11 +6,12 @@ import { imageService } from "../../service/image-service";
 import { ImageType } from "../../const/const";
 import { getNewFileName } from "../../utils/utils";
 
-export const messageHandler = async (io: Server, socket: Socket, data: MessageFromClient) => {
-    const {roomId, userId, text, fileData} = data;
-    const rooms = [...io.sockets.adapter.rooms.keys()];
+const getTextByRows = (origin: string) => origin.split('\n')
 
-    console.log({rooms}, 'messageHandler', socket.id)
+export const messageHandler = async (io: Server, socket: Socket, data: MessageFromClient) => {
+    const {roomId, userId, text, fileData, quoteId} = data;
+
+    console.log({data}, 'messageHandler', {text});
 
     let imageId = '';
     if (fileData) {
@@ -21,7 +22,7 @@ export const messageHandler = async (io: Server, socket: Socket, data: MessageFr
         imageId = await imageService.createImage({file: fileInfo, dir: ImageType.chat, type: ImageType.images}) as string;
     }
     // добавить сообщение в БД
-    const messageId = await chatService.addMessage(userId, roomId, text, false, imageId);
+    const messageId = await chatService.addMessage(userId, roomId, text, false, imageId, quoteId);
     //  забрать новое сообщение из БД (с дополнительными данными: nik, avatar, image, date) и 
     const messageDataForClient = await chatService.getMessageDataById(messageId as number);
     // переслать всем отправителя(СОКЕТ) 

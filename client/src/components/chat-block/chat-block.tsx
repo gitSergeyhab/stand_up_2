@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { ChatColor, ChatPosition, SocketEvent } from "../../const/chat";
@@ -22,9 +21,7 @@ type ChatBlockProps = {
   onHide: () => void;
   hide?: boolean;
 }
-
 export function ChatBlock({ onHide, hide }: ChatBlockProps) {
-
   const activeRoom = useSelector(getActiveRoom);
   const [color, setColor] = useState(ChatColor.Red);
   const [position, setPosition] = useState(ChatPosition.Center);
@@ -67,7 +64,6 @@ export function ChatBlock({ onHide, hide }: ChatBlockProps) {
         setSetting(false);
       }
     }
-
     document.addEventListener('click', closeAllOptions);
     return () => document.removeEventListener('click', closeAllOptions)
   }, [])
@@ -96,11 +92,8 @@ export function ChatBlock({ onHide, hide }: ChatBlockProps) {
       <ChatPositionBlock selected={position} setPosition={setPosition} />
     </SettingsDiv>
   ) : null;
-
   const usersElement = areUsers ?  <ChatUserList users={users} onClose={handleCloseUserList}/> : null;
-
   const roomElement = areRooms ?  <ChatRoomList  onClose={handleCloseRoomList}/> : null;
-
   const buttonsElement =  (
     <ButtonsDiv className="ButtonsDiv">
       {settingsElement}
@@ -117,7 +110,7 @@ export function ChatBlock({ onHide, hide }: ChatBlockProps) {
     <ChatSection position={position} hide={hide}>
       <ChatHeader>{activeRoom?.roomName}<SocketConnectedDetector isConnected={isConnected}/></ChatHeader>
       {buttonsElement}
-      <ChatMessageBlock color={color}   />
+      <ChatMessageBlock color={color} />
       <ChatInput  />
     </ChatSection>
   )

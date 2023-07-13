@@ -8,13 +8,9 @@ export const disconnectingHandler = async (io: Server, socket: Socket) => {
   console.log('_____________disconnectingHandler__________');
   const roomIndexes = await chatService.GetRoomsId();
 
-
-
   const rooms = [...io.sockets.adapter.rooms.keys()];
 
   console.log({rooms})
 
-//   const roomsUsersId = await chatService.getRoomUserBySocket(socket.id);
-//   //если юзера с socket.id нет в комнате - завершить
-//   if (!roomsUsersId) return;
+
 }

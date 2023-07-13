@@ -6,9 +6,6 @@ import { ImageCC } from '../../types/pic-types';
 import { getCurrentList, getImg } from '../../utils/modal-utils';
 
 
-
-// elements
-
 function CloseButton({ onClose }: { onClose: () => void }) {
   return (
     <CloseBtn onClick={onClose}>
@@ -40,15 +37,8 @@ type ImageModalProps = {
   onClose: () => void;
 };
 
-export function ImageModal({
-  pictures,
-  currentImg,
-  setImg,
-  onClose,
-}: ImageModalProps) {
-  const [currentImgList, setImgList] = useState(
-    getCurrentList(currentImg, pictures),
-  );
+export function ImageModal({ pictures, currentImg, setImg, onClose }: ImageModalProps) {
+  const [currentImgList, setImgList] = useState(getCurrentList(currentImg, pictures));
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';

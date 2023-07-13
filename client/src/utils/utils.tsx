@@ -1,3 +1,4 @@
+import Linkify from 'react-linkify'
 import { ContentName, statusOptions } from '../const/const';
 
 
@@ -13,7 +14,7 @@ export const getTypes = (pathname: string) => {
 
 export const round1 = (num: number) => Math.round(num * 10) / 10;
 
-export const trim = (str: string, len = 30) => `${str.slice(0, len)  }${str.length > len ? '...' : ''}`
+export const cutText = (str: string, len = 30) => `${str.slice(0, len)  }${str.length > len ? '...' : ''}`
 
 /**
  * для переноса пропса "state" в useState в Form => возвращает {id, name} или null
@@ -30,4 +31,23 @@ export const getOption = (id?: string|number, name?: string) => id && name ? {id
  * @returns
  */
 export const getStatusOption = (id?: string) => id ? statusOptions.find((item) => item.id === id) || null : null;
+
+
+const getDivWithLinks = (text: string) =>  (
+  <div>
+    <Linkify
+      componentDecorator={(decoratedHref, decoratedText, key) => (
+          <a target="_blank" href={decoratedHref} key={key} rel="noreferrer">{decoratedText}</a>
+      )} >
+      {text}
+    </Linkify>
+  </div>
+);
+/**
+ * возвращает текст поделеный на строки (в DIV'ах) с выделенными ссылками
+ * @param text
+ * @returns
+ */
+export const getRowLinkedText = (text: string) => text.split('\n').map(getDivWithLinks);
+
 

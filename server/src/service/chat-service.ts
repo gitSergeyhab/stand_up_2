@@ -22,15 +22,37 @@ class ChatService {
             message_added,
             avatars.destination || avatars.filename AS avatar,
             images.destination || images.filename AS image,
-            ARRAY_AGG(role_name) as user_roles
+            ARRAY_AGG(role_name) as user_roles,
+            
+            quotes.quote_id,
+            quote_user_id,
+            quote_user_nik,
+            quote_text,
+            quote_added,
+            quote_image
         FROM chat_messages
         LEFT JOIN users ON users.user_id = chat_messages.user_id
         LEFT JOIN users_roles ON users.user_id = users_roles.user_id
         LEFT JOIN roles ON roles.role_id = users_roles.role_id
         LEFT JOIN avatars ON users.user_avatar_id = avatars.avatar_id
         LEFT JOIN images ON images.image_id = chat_messages.image_id
+        LEFT JOIN (
+            SELECT 
+                message_id AS quote_id, 
+                chat_messages.user_id AS quote_user_id, 
+                user_nik AS quote_user_nik, 
+                message_text AS quote_text, 
+                message_added AS quote_added,
+                images.destination || images.filename AS quote_image
+            FROM chat_messages
+            LEFT JOIN users ON users.user_id = chat_messages.user_id
+            LEFT JOIN images ON images.image_id = chat_messages.image_id
+                
+        ) AS quotes on chat_messages.quote_id = quotes.quote_id
         ${where}
-            GROUP BY chat_messages.message_id, user_nik, avatars.destination, avatars.filename, images.destination, images.filename;
+            GROUP BY chat_messages.message_id, user_nik, avatars.destination, avatars.filename, images.destination, images.filename, 
+            quotes.quote_id, quote_user_id, quote_user_nik, quote_text, quote_added, quote_image
+        ORDER BY message_id;
             `
         )
     } 
@@ -57,45 +79,7 @@ class ChatService {
         }
 
     }
-// /**
-//  * возвращает массив сообщений с доп юзер инфо по message_id[]
-//  * @param indexes message_id[]
-//  * @returns массив сообщений с доп изер инфо
-//  */
-//     async getMessagesDataById (indexes: number[]) {
-//         try {
-//             const values = `(${indexes})`;
-//             const where = `WHERE message_id IN ${values}`
-//             const query = this.getMessageQuery(where);
-//             console.log({query})
-//             const result = await sequelize.query(
-//                 query, 
-//                 { type: 'SELECT' }
-//             );
 
-//             console.log(result);
-
-//             type Result = {
-//                 message_id: number, 
-//                 user_id: string, 
-//                 user_nik: string, 
-//                 room_id: string, 
-//                 message_text: string, 
-//                 message_auto?: boolean, 
-//                 message_added: Date,
-//                 avatar?: string,
-//                 user_roles: Role[]
-//             }
-
-//             console.log({result});
-//             return (result as Result[]);
-
-//         } catch (err) {
-//             console.log({err}, 'getMessagesDataById');
-//             return null;
-//         }
-
-//     }
 
     async getMessagesByRoom (roomId: string) {
         try {
@@ -112,7 +96,7 @@ class ChatService {
 
             // console.log(result);
 
-            return result;
+            return result as MessageFromDB[];
 
         } catch (err) {
             console.log({err}, 'getMessageDataById');
@@ -121,18 +105,18 @@ class ChatService {
 
     }
 
-    async addMessage (userId: string, roomId: string, text: string,  isAuto=false, imageId='') {
+    async addMessage (userId: string, roomId: string, text: string,  isAuto=false, imageId='', quoteId='') {
         console.log({imageId}, 'addMessage______________')
         try {
             const result = await sequelize.query(
                 `
                 INSERT INTO chat_messages
-                (user_id, room_id, message_text, message_auto, image_id) VALUES
-                (:userId, :roomId, :text, :isAuto, :imageId)
+                (user_id, room_id, message_text, message_auto, image_id, quote_id) VALUES
+                (:userId, :roomId, :text, :isAuto, :imageId, :quoteId)
                 RETURNING message_id;
                 `,
                 {
-                    replacements: {userId, roomId, text, isAuto, imageId: imageId || null},
+                    replacements: {userId, roomId, text, isAuto, imageId: imageId || null, quoteId: quoteId || null},
                     type: 'SELECT'
                 }
             )

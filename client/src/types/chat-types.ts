@@ -12,7 +12,34 @@ export type MessageSC = {
   message_auto: boolean,
   message_added: Date,
   user_roles: string[],
-  image?: string
+  image?: string,
+
+  quote_id?: string,
+  quote_user_id?: string,
+  quote_user_nik?: string,
+  quote_text?: string,
+  quote_added?: Date,
+  quote_image?: string;
+}
+
+export type MessageFromDB = {
+  message_id: string,
+  user_id: string,
+  user_nik: string,
+  room_id: string,
+  message_text?: string,
+  message_auto?: boolean,
+  message_added: Date,
+  avatar?: string,
+  image?: string,
+  user_roles: Role[];
+
+  quote_id?: string,
+  quote_user_id?: string,
+  quote_user_nik?: string,
+  quote_text?: string,
+  quote_added?: Date,
+  quote_image?: string;
 }
 
 export type MessageCC = {
@@ -26,7 +53,14 @@ export type MessageCC = {
   messageAdded: Date,
   userRoles: string[],
   image?: string,
-   imgOpen?: boolean,
+  imgOpen?: boolean,
+
+  quoteId?: string,
+  quoteUserId?: string,
+  quoteUserNik?: string,
+  quoteText?: string,
+  quoteAdded?: Date,
+  quoteImage?: string;
 }
 
 export type RoomSC = {

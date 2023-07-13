@@ -82,7 +82,9 @@ type FileData = {
 export type MessageFromClient = EmptyMessageFromClient & {
     text: string;
     fileData?: FileData;
+    quoteId?: string; 
 };
+
 
 export type MessageFromDB = {
     message_id: string, 
@@ -94,7 +96,14 @@ export type MessageFromDB = {
     message_added: Date,
     avatar?: string,
     image?: string,
-    user_roles: Role[]
+    user_roles: Role[];
+
+    quote_id?: string,
+    quote_user_id?: string,
+    quote_user_nik?: string,
+    quote_text?: string,
+    quote_added?: Date,
+    quote_image?: string;
 }
 
 
@@ -102,3 +111,4 @@ export type RoomUserId = {
     room_id: string;
     user_id: string
 }
+

@@ -11,7 +11,14 @@ export const adaptMessage = (data: MessageSC): MessageCC => ({
   userRoles: data.user_roles ,
   messageText: data.message_text ,
   avatar: data.avatar,
-  image: data.image
+  image: data.image,
+
+  quoteAdded: data.quote_added,
+  quoteId: data.quote_id,
+  quoteImage: data.quote_image,
+  quoteText: data.quote_text,
+  quoteUserId: data.quote_user_id,
+  quoteUserNik: data.quote_user_nik
 })
 
 export const adaptMessages = (data: MessageSC[]): MessageCC[] => data.map(adaptMessage)

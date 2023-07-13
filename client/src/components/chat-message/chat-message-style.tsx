@@ -7,8 +7,15 @@ export const ChatMessageLI = styled.li<{side?:'start'|'end'}>`
   column-gap: .5rem;
   color: #000;
   display: flex;
+  flex-direction: column;
   justify-content: ${({side}) => side || 'center'};
   ${({side}) => side ?  '' : 'background-color: #FFF'};
+`;
+
+export const MainMessage = styled.div<{side?:'start'|'end'}>`
+  width: 100%;
+  display: flex;
+  justify-content: ${({side}) => side || 'center'};
 `;
 
 export const ChatImg = styled.img<{color: string}>`
@@ -25,7 +32,7 @@ export const ChatImg = styled.img<{color: string}>`
 `;
 
 export const ChartLink = styled(Link)<{side:'start'|'end', color: string}>`
-  padding: .1rem 1rem ;
+  padding: 0 ;
   display: flex;
   align-items: center;
   justify-content: ${({side}) => side};
@@ -45,13 +52,12 @@ export const ChartLink = styled(Link)<{side:'start'|'end', color: string}>`
 `
 
 
-export const MessageP = styled.p`
+export const MessageTextDiv = styled.div`
   background-color: #FFF;
   border-radius: 4px;
   padding: .5rem;
-  display: flex;
-  align-items: center;
   margin: 0;
+  width: 100%;
 
   @media (max-width: 900px) {
     padding: 0.25rem;
@@ -65,14 +71,52 @@ export const TextDiv = styled.div<{side:'start'|'end', color: string}>`
   border: 2px #000 solid;
   border-color: ${({color}) => color};
   box-shadow: 4px -4px 4px #e08f0463;
+  position: relative;
+  align-items: center;
 `;
 
 export const UserDateWrapperDiv = styled.div`
   display: flex;
-  column-gap: 0.5rem;
+  width: 100%;
+  column-gap: 1rem;
   color: #FFF;
   font-size: 0.8rem;
   align-items: center;
-  padding: 0 1.5rem;
+  justify-content: center;
+  padding: 0.15rem 1.5rem;
   background-color: #000;
+  border-radius: 4px;
+  position: relative;
+`;
+
+
+export const QuoteButton = styled.button.attrs({type: 'button'})`
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: #FFF;
+  padding: 0 1px;
+  border-radius: 2px;
+  opacity: 0.75;
+  border: none;
+  transition: opacity 0.2s ease-in-out;
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+export const ImageBtn = styled.button.attrs({type: 'button'})`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: min-content;
+  height: 18px;
+  padding: 0;
+  border: 2px transparent solid;
+  border-radius: 2px;
+  overflow: hidden;
+  transition: opacity 0.25s ease-in-out;
+  &:hover {
+    opacity: 0.75;
+  }
 `;

@@ -3,7 +3,7 @@ import { ContentName } from '../const/const';
 import { OptionType, Titles } from '../types/types';
 import { AuthUserTypeCC } from '../types/user-types';
 import { InitialPreloadState } from './preload-reducer/preload-reducer';
-import { Room } from '../types/chat-types';
+import { MessageCC, Room } from '../types/chat-types';
 
 export const enum Role {
   Super = 'SUPER',
@@ -53,7 +53,6 @@ export const enum Action {
   SetType = 'main/SetType',
   SetTitles = 'main/SetTitles',
   SetUser = 'main/SetUser',
-  // SetUserInfo = 'user/SetUserInfo',
   SetUsers = 'users/SetUsers',
 
   SetPreloadComedians = 'preload/SetPreloadComedians',
@@ -67,14 +66,13 @@ export const enum Action {
   SetActiveRoom = 'chat/SetActiveRoom',
   SetChatState = 'chat/SetChatState',
   SetSocketJoin = 'chat/SetSocketJoin',
+  SetQuoteMessage = 'chat/SetQuoteMessage'
 }
 
 export const setType = createAction(Action.SetType,(type: null | ContentName) => ({ payload: type }),);
 export const setTitles = createAction(Action.SetTitles, (type: Titles) => ({payload: type}));
 export const setUser = createAction(Action.SetUser,(user: AuthUserTypeCC | null) => ({ payload: user }));
 export const setUsers = createAction(Action.SetUsers,(users: UsersTypeCC[]) => ({ payload: users }));
-
-// export const setUserInfo = createAction(Action.SetUserInfo, (info: UserInfo | null) => ({ payload: info }));
 
 export const setPreloadData = createAction(Action.SetPreloadData, (payload: InitialPreloadState) => ({ payload }));
 export const setPreloadComedians = createAction(Action.SetPreloadComedians, (payload: OptionType[]) => ({ payload }));
@@ -89,3 +87,4 @@ export const setRooms = createAction(Action.SetRooms, (payload: Room[]) => ({ pa
 export const setActiveRoom = createAction(Action.SetActiveRoom, (payload: Room) => ({ payload }));
 export const setChatState = createAction(Action.SetChatState, (payload: boolean) => ({ payload }));
 export const setSocketJoin = createAction(Action.SetSocketJoin);
+export const setQuoteMessage = createAction(Action.SetQuoteMessage, (payload: MessageCC|null) => ({ payload }));
