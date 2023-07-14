@@ -86,3 +86,5 @@ export type User = {
   userId: string;
   userRoles: Role[]
 }
+
+// export type ChatSideType = Record<ChatSide, string>;

@@ -6,12 +6,12 @@ export const ChatColor = {
   Yellow: '#f9de9b'
 }
 
-export const ChatPosition = {
-  Center: 'center',
-  Left: 'left',
-  Right: 'right',
-  Bottom: 'bottom',
-}
+// export const ChatPosition = {
+//   Center: 'center',
+//   Left: 'left',
+//   Right: 'right',
+//   Bottom: 'bottom',
+// }
 
 export const enum ChatState {
   Open = 'Open',
@@ -30,4 +30,11 @@ export const SocketEvent = {
   Disconnect: 'disconnect',
   ResponseUsers: 'response:users',
   RequestUsers: 'request:users'
+}
+
+export const enum ChatPosition {
+  Center = 'center',
+  Left = 'left',
+  Right = 'right',
+  Bottom = 'bottom'
 }

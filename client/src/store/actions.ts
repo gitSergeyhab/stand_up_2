@@ -4,6 +4,7 @@ import { OptionType, Titles } from '../types/types';
 import { AuthUserTypeCC } from '../types/user-types';
 import { InitialPreloadState } from './preload-reducer/preload-reducer';
 import { MessageCC, Room } from '../types/chat-types';
+import { ChatPosition } from '../const/chat';
 
 export const enum Role {
   Super = 'SUPER',
@@ -66,7 +67,8 @@ export const enum Action {
   SetActiveRoom = 'chat/SetActiveRoom',
   SetChatState = 'chat/SetChatState',
   SetSocketJoin = 'chat/SetSocketJoin',
-  SetQuoteMessage = 'chat/SetQuoteMessage'
+  SetQuoteMessage = 'chat/SetQuoteMessage',
+  SetChatPosition = 'chat/SetChatPosition'
 }
 
 export const setType = createAction(Action.SetType,(type: null | ContentName) => ({ payload: type }),);
@@ -88,3 +90,4 @@ export const setActiveRoom = createAction(Action.SetActiveRoom, (payload: Room) 
 export const setChatState = createAction(Action.SetChatState, (payload: boolean) => ({ payload }));
 export const setSocketJoin = createAction(Action.SetSocketJoin);
 export const setQuoteMessage = createAction(Action.SetQuoteMessage, (payload: MessageCC|null) => ({ payload }));
+export const setChatPosition = createAction(Action.SetChatPosition, (payload: ChatPosition) => ({ payload }));

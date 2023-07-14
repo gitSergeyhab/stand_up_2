@@ -13,6 +13,8 @@ import { ChatAttachedImage } from '../chat-attached-image/chat-attached-image';
 import { ChartLink, ChatImg, ChatMessageLI, ImageBtn, MainMessage, MessageTextDiv, QuoteButton, TextDiv, UserDateWrapperDiv } from './chat-message-style';
 import { ChatQuoteMessage } from '../chat-quote-message/chat-quote-message';
 import { getRowLinkedText } from '../../utils/utils';
+import { getChatPosition } from '../../store/chat-reducer/chat-selectors';
+import { ChatPosition } from '../../const/chat';
 
 
 type ChatMessageProps = {
@@ -33,13 +35,16 @@ export function ChatMessage({message, setCurrentImg}: ChatMessageProps) {
   const side = (id === userId) ? 'end' : 'start';
 
   const [isOpen, setIsOpen] = useState(imgOpen);
+  const position = useSelector(getChatPosition);
+
+  const isBreak = [ChatPosition.Left, ChatPosition.Right].includes(position);
 
   const handleSetQuote = () => dispatch(setQuoteMessage(message));
   const handleOpenClick = () => setIsOpen((prev) => !prev)
   const showPicImg = imgOpen ? <AiTwotonePicture/> : <AiOutlinePicture/>;
   const userColor = getColorFromUserData({roles: userRoles as Role[], userAuthId: id, userMessageId: userId});
   const formatDate =  formatDateFromTimeStamp(messageAdded);
-  const messageP = messageText ? <MessageTextDiv>{getRowLinkedText(messageText)} </MessageTextDiv> : null;
+  const messageP = messageText ? <MessageTextDiv isBreak={isBreak}>{getRowLinkedText(messageText)} </MessageTextDiv> : null;
 
   if (messageAuto) {
     return <ChatMessageLI>{formatDate} / {userNik} {messageText}</ChatMessageLI>
@@ -58,13 +63,18 @@ export function ChatMessage({message, setCurrentImg}: ChatMessageProps) {
     <TextDiv color={userColor} side={side} >
       {quoteMessage}
       {attachedImg}
-      <UserDateWrapperDiv>
+      <UserDateWrapperDiv position={position}>
         <QuoteButton onClick={handleSetQuote}>
           <BsChatQuoteFill/>
         </QuoteButton>
         {showPicBtn}
         {formatDate}
-        <ChartLink color={userColor} id={messageId} side={side} to={`/users/${userId}`}>{userNik}</ChartLink>
+        <ChartLink
+          color={userColor}
+          id={messageId}
+          side={side}
+          to={`/users/${userId}`}
+        >{userNik}</ChartLink>
       </UserDateWrapperDiv>
       {messageP}
     </TextDiv>

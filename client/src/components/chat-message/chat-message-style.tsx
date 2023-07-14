@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import styled from "styled-components"
+import styled, { css } from "styled-components"
+import { ChatPosition } from "../../const/chat";
 
 
 export const ChatMessageLI = styled.li<{side?:'start'|'end'}>`
@@ -13,6 +14,7 @@ export const ChatMessageLI = styled.li<{side?:'start'|'end'}>`
 `;
 
 export const MainMessage = styled.div<{side?:'start'|'end'}>`
+column-gap: .5rem;
   width: 100%;
   display: flex;
   justify-content: ${({side}) => side || 'center'};
@@ -31,9 +33,12 @@ export const ChatImg = styled.img<{color: string}>`
   }
 `;
 
+
+
 export const ChartLink = styled(Link)<{side:'start'|'end', color: string}>`
   padding: 0 ;
   display: flex;
+
   align-items: center;
   justify-content: ${({side}) => side};
   text-decoration: none;
@@ -52,15 +57,19 @@ export const ChartLink = styled(Link)<{side:'start'|'end', color: string}>`
 `
 
 
-export const MessageTextDiv = styled.div`
+export const MessageTextDiv = styled.div<{isBreak?: boolean}>`
   background-color: #FFF;
   border-radius: 4px;
   padding: .5rem;
   margin: 0;
   width: 100%;
 
+  ${({isBreak}) => isBreak ? 'word-break: break-all' : ''};
+
+
   @media (max-width: 900px) {
     padding: 0.25rem;
+    word-break: break-all;
   }
 `;
 
@@ -75,7 +84,11 @@ export const TextDiv = styled.div<{side:'start'|'end', color: string}>`
   align-items: center;
 `;
 
-export const UserDateWrapperDiv = styled.div`
+const sidePositionStyle = css`
+  flex-direction: column;
+`;
+export const UserDateWrapperDiv = styled.div<{position?: ChatPosition}>`
+ ${({position}) => position === ChatPosition.Left || position === ChatPosition.Right ? sidePositionStyle : ''};
   display: flex;
   width: 100%;
   column-gap: 1rem;
@@ -87,6 +100,8 @@ export const UserDateWrapperDiv = styled.div`
   background-color: #000;
   border-radius: 4px;
   position: relative;
+
+
 `;
 
 

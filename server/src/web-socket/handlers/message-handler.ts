@@ -6,7 +6,6 @@ import { imageService } from "../../service/image-service";
 import { ImageType } from "../../const/const";
 import { getNewFileName } from "../../utils/utils";
 
-const getTextByRows = (origin: string) => origin.split('\n')
 
 export const messageHandler = async (io: Server, socket: Socket, data: MessageFromClient) => {
     const {roomId, userId, text, fileData, quoteId} = data;

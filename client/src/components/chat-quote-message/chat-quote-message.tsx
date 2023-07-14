@@ -6,8 +6,8 @@ import { cutText } from "../../utils/utils";
 
 const QuoteLink = styled.a`
   width: 100%;
-  height: 1.75rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
   column-gap: 1rem;
   background-color: #FFF;
@@ -20,10 +20,13 @@ const QuoteLink = styled.a`
   color: inherit;
 `;
 
-const QuoteText = styled.span``;
+const QuoteText = styled.div`
+width: 100%;
+`;
 
 const QuoteUser = styled.div`
-  height: 100%;
+  /* height: 100%; */
+  height: 1rem;
   color: #FFF;
   background-color: #000;
   display: flex;
@@ -50,6 +53,14 @@ const QuoteImg = styled.img`
 export const BtnWrapperDiv = styled.div`
   position: absolute;
   right: 1rem;
+`;
+
+export const ImgNikWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  column-gap: 0.5rem;
+  align-items: center;
+  /* justify-content: start; */
 `
 
 type ChatQuoteMessageProps = {
@@ -70,9 +81,13 @@ export function ChatQuoteMessage({quoteId, quoteImage, quoteText, quoteUserNik}:
 
   return (
     <QuoteLink href={href}>
-      <BsFillChatRightQuoteFill/>
-      {quoteImg}
-      {quoteUser}
+
+      <ImgNikWrapper>
+        <BsFillChatRightQuoteFill/>
+        {quoteImg}
+        {quoteUser}
+      </ImgNikWrapper>
+
       {messageText}
     </QuoteLink>
   )

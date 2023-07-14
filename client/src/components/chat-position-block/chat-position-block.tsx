@@ -1,6 +1,8 @@
-import { Dispatch, SetStateAction} from 'react';
 import styled from "styled-components"
+import { useDispatch, useSelector } from 'react-redux';
 import { ChatPosition } from "../../const/chat";
+import { getChatPosition } from '../../store/chat-reducer/chat-selectors';
+import { setChatPosition } from '../../store/actions';
 
 type ChartPositionItemDivProps = {
   position: string,
@@ -38,35 +40,24 @@ const ChartPositionItemWrapper = styled.div`
 `;
 
 
+function ChartPositionItem({position}: {position: ChatPosition}) {
+  const selected = useSelector(getChatPosition);
+  const dispatch = useDispatch();
+  const handleClick = () => dispatch(setChatPosition(position));
 
-type ChartPositionItemProps = ChartPositionItemDivProps & {
-  setPosition: Dispatch<SetStateAction<string>>
-}
-
-function ChartPositionItem({position, selected, setPosition}: ChartPositionItemProps) {
-  const handleClick = () => setPosition(position);
-  console.log(position)
   return (
     <ChartPositionItemDiv  props={{position, selected}} onClick={handleClick}/>
   )
 }
 
 
-
-type ChatPositionBlockProps = {
-  selected: string;
-  setPosition: Dispatch<SetStateAction<string>>
-}
-
-export function ChatPositionBlock({selected, setPosition}: ChatPositionBlockProps) {
-  const colorElements =  Object.values(ChatPosition).map((item) =>
-    <ChartPositionItem key={item} position={item} selected={selected} setPosition={setPosition} />
-  )
+export function ChatPositionBlock() {
+  const colorElements = [ChatPosition.Center, ChatPosition.Right, ChatPosition.Left, ChatPosition.Bottom]
+    .map((item) => <ChartPositionItem key={item} position={item} />)
 
   return (
     <ChartPositionItemWrapper>
       {colorElements}
     </ChartPositionItemWrapper>
   )
-
 }

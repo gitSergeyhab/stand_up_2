@@ -10,7 +10,7 @@ export const QuoteSection = styled.section`
   position: absolute;
   top: -2rem;
   background-color: #FFF;
-  padding: 4px 1rem;
+  padding: 4px .3%;
   box-shadow: inset 8px 0 8px 0 #00000089;
 `;
 export const QuoteText = styled.span`
@@ -43,3 +43,11 @@ export const BtnWrapperDiv = styled.div`
   position: absolute;
   right: 1rem;
 `;
+
+export const ImgNikQuoteDiv = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  column-gap: 0.5rem;
+`

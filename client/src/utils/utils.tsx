@@ -1,4 +1,5 @@
 import Linkify from 'react-linkify'
+import styled from 'styled-components';
 import { ContentName, statusOptions } from '../const/const';
 
 
@@ -33,15 +34,21 @@ export const getOption = (id?: string|number, name?: string) => id && name ? {id
 export const getStatusOption = (id?: string) => id ? statusOptions.find((item) => item.id === id) || null : null;
 
 
+
+const Div = styled.div`
+  overflow-wrap: break-word;  /* не поддерживает IE, Firefox; является копией word-wrap */
+  word-wrap: break-word;
+`;
+
 const getDivWithLinks = (text: string) =>  (
-  <div>
+  <Div>
     <Linkify
       componentDecorator={(decoratedHref, decoratedText, key) => (
           <a target="_blank" href={decoratedHref} key={key} rel="noreferrer">{decoratedText}</a>
       )} >
       {text}
     </Linkify>
-  </div>
+  </Div>
 );
 /**
  * возвращает текст поделеный на строки (в DIV'ах) с выделенными ссылками

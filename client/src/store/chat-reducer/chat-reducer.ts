@@ -1,6 +1,7 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { MessageCC, Room } from '../../types/chat-types';
-import { setActiveRoom, setChatState, setQuoteMessage, setRooms, setSocketJoin } from '../actions';
+import {  MessageCC, Room } from '../../types/chat-types';
+import { setActiveRoom, setChatPosition, setChatState, setQuoteMessage, setRooms, setSocketJoin } from '../actions';
+import { ChatPosition } from '../../const/chat';
 
 
 const DefaultRoom = {roomId: 1, roomName: 'Болталка', roomNameEn: 'chat'}
@@ -11,6 +12,7 @@ export type InitialChatState = {
   chatState: boolean;
   isJoin: boolean;
   quoteMessage: MessageCC|null;
+  chatPosition: ChatPosition
 };
 
 const initialState: InitialChatState = {
@@ -18,7 +20,8 @@ const initialState: InitialChatState = {
   activeRoom: DefaultRoom,
   chatState: false,
   isJoin: false,
-  quoteMessage: null
+  quoteMessage: null,
+  chatPosition: ChatPosition.Center
 };
 
 export const chatReducer = createReducer(initialState, (builder) => {
@@ -28,4 +31,5 @@ export const chatReducer = createReducer(initialState, (builder) => {
     .addCase(setChatState, (state, action) => { state.chatState = action.payload })
     .addCase(setSocketJoin, (state) => { state.isJoin = true })
     .addCase(setQuoteMessage, (state, action) => { state.quoteMessage = action.payload })
+    .addCase(setChatPosition, (state, action) => { state.chatPosition = action.payload })
 });

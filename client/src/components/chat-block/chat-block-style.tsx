@@ -114,6 +114,7 @@ width: min-content;
 opacity: 0.5;
 scale: 0.7;
 transition: opacity 0.3s ease-in-out, scale 0.3s ease-in-out;
+z-index: 10;
 
 &:hover {
   opacity: 1;

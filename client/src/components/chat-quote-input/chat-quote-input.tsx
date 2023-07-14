@@ -5,7 +5,7 @@ import { getQuoteMessage } from "../../store/chat-reducer/chat-selectors";
 import { setQuoteMessage } from "../../store/actions";
 import { SERVER_URL } from "../../const/const";
 import { cutText } from "../../utils/utils";
-import { BtnWrapperDiv, QuoteImg, QuoteSection, QuoteText, QuoteUser } from "./chat-quote-input-style";
+import { BtnWrapperDiv, ImgNikQuoteDiv, QuoteImg, QuoteSection, QuoteText, QuoteUser } from "./chat-quote-input-style";
 
 
 export function ChatQuoteInput() {
@@ -27,9 +27,11 @@ export function ChatQuoteInput() {
 
   return (
     <QuoteSection>
-      <BsFillChatRightQuoteFill/>
-      {quoteImg}
-      {quoteUser}
+      <ImgNikQuoteDiv>
+        <BsFillChatRightQuoteFill/>
+        {quoteImg}
+        {quoteUser}
+      </ImgNikQuoteDiv>
       {quoteText}
       {cancelBtn}
     </QuoteSection>

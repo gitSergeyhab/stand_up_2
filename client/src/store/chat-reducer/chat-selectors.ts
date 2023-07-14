@@ -5,3 +5,5 @@ export const getActiveRoom = (state: ReducerType) => state[ReducerName.Chat].act
 export const getChartState = (state: ReducerType) => state[ReducerName.Chat].chatState;
 export const getJoin = (state: ReducerType) => state[ReducerName.Chat].isJoin;
 export const getQuoteMessage = (state: ReducerType) => state[ReducerName.Chat].quoteMessage;
+export const getChatPosition = (state: ReducerType) => state[ReducerName.Chat].chatPosition;
+
