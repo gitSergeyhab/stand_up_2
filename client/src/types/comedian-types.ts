@@ -75,19 +75,20 @@ export type ComedianCardSC = {
   comedian_city?: string;
   weekly_views: string;
   total_views: string;
-};
-
-export type ComedianCardCC = {
-  comedianId: string;
-  comedianNik: string;
-  mainPicture?: string;
-  countryId?: string;
-  countryName?: string;
-  comedianCity?: string;
-  weeklyViews: string;
-  totalViews: string;
 
 };
+
+// export type ComedianCardCC = {
+//   comedianId: string;
+//   comedianNik: string;
+//   mainPicture?: string;
+//   countryId?: string;
+//   countryName?: string;
+//   comedianCity?: string;
+//   weeklyViews: string;
+//   totalViews: string;
+
+// };
 
 
 

@@ -163,7 +163,8 @@ export type ShowCardSC = {
   number_of_rate: string,
   avg_rate: number,
   show_date?: string,
-  user_rating: RatingSC
+  user_rating: RatingSC,
+
 }
 
 

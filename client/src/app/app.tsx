@@ -32,6 +32,7 @@ import { Chat } from '../components/chat/chat';
 import { useAppDispatch } from '../hooks/use-app-dispatch';
 import { authAction } from '../store/api-actions';
 import { storageUtils } from '../utils/storage-utils';
+import { MainPage } from '../pages/main-page/main-page';
 
 const AppRoute = {
   Main: '/',
@@ -124,7 +125,7 @@ export function App() {
 
 
 
-                <Route path="/" element={<TestPage />} />
+                <Route path="/" element={<MainPage />} />
 
                 <Route path="*" element={<ErrorPage />} />
               </Routes>

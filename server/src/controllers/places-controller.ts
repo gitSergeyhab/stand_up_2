@@ -8,6 +8,7 @@ import { ApiError } from "../custom-errors/api-error";
 import { getDefaultFromToYears } from "../utils/date-utils";
 import { getBetweenYearsWhereStr } from '../utils/sql-where-utils'
 import { getNullObj, getValueOrNull } from "../utils/utils";
+import { sqlQueryCardService } from "../service/query-card-service";
 
 
 const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
@@ -227,27 +228,12 @@ class PlacesController {
 
 
 
+            const placesQuery = sqlQueryCardService.getPlaces()
         const countQuery = `SELECT COUNT(place_id) FROM places ${where};`;
 
             const result = await sequelize.query(
                 `
-                SELECT
-                    place_id,
-                    place_name,
-                    place_city, 
-                    place_city_en,
-                    place_date_founded, 
-                    COALESCE(place_date_founded, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS place_date_founded_sort, 
-                    place_date_closed,
-                    place_date_added,
-                    place_description,
-                    countries.country_id, country_name, 
-                    destination || filename AS main_picture,
-                    get_views_count('place_id', place_id, 7) AS weekly_views,
-                    get_views_count('place_id', place_id, 1000000) AS total_views
-                FROM places
-                LEFT JOIN countries ON countries.country_id = places.country_id
-                LEFT JOIN main_pictures ON place_main_picture_id = main_pictures.main_picture_id
+                ${placesQuery}
                 ${where}
                 ORDER BY ${sqlType} ${sqlDirection}
                 LIMIT :limit
@@ -272,6 +258,75 @@ class PlacesController {
             return res.status(StatusCode.ServerError).json({message: 'error getShows'})
         }
     }
+
+    // async getPlaces(req: Request, res: Response) {
+    //     try {
+    //         const { yearFrom, yearTo } = getDefaultFromToYears()
+    //         const { id } = req.params;
+    //         const { 
+    //             country_id, year_from=yearFrom, year_to=yearTo, limit = Limit, offset = Offset,
+    //             direction, sort_type
+    //          } = req.query;
+
+    //          console.log(req.query, '+++++++++++ ______ req.query ________ ++++++++++++')
+
+    //         const sqlDirection = direction === SortDirection.ASC ? direction : SortDirection.DESC;
+    //         const sqlType = SortTypeName[sort_type as string] || SortTypeName[SortType.WeeklyViews];
+
+    //         console.log( SortTypeName[sort_type as string], 'SortTypeName[sort_type as string]' )
+
+    //         const where = `
+    //             WHERE (places.country_id ${country_id ? ' = :country_id' : ' = places.country_id OR 1 = 1'})
+    //             ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('place_date_founded')}` : '' }
+    //         `;
+
+
+
+    //     const countQuery = `SELECT COUNT(place_id) FROM places ${where};`;
+
+    //         const result = await sequelize.query(
+    //             `
+    //             SELECT
+    //                 place_id,
+    //                 place_name,
+    //                 place_city, 
+    //                 place_city_en,
+    //                 place_date_founded, 
+    //                 COALESCE(place_date_founded, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS place_date_founded_sort, 
+    //                 place_date_closed,
+    //                 place_date_added,
+    //                 place_description,
+    //                 countries.country_id, country_name, 
+    //                 destination || filename AS main_picture,
+    //                 get_views_count('place_id', place_id, 7) AS weekly_views,
+    //                 get_views_count('place_id', place_id, 1000000) AS total_views
+    //             FROM places
+    //             LEFT JOIN countries ON countries.country_id = places.country_id
+    //             LEFT JOIN main_pictures ON place_main_picture_id = main_pictures.main_picture_id
+    //             ${where}
+    //             ORDER BY ${sqlType} ${sqlDirection}
+    //             LIMIT :limit
+    //             OFFSET :offset;
+    //             ;
+
+    //             ${countQuery}
+    //             ;`,
+    //             {
+    //                 replacements: { id, limit, offset, year_from, year_to, country_id },
+    //                 type: 'SELECT'
+    //             }
+
+    //         )
+    //         console.log({result}, 'result___________________________', 'getShows +++')
+
+    //         const data = getDataFromSQL(result)
+    //         return res.status(200).json(data);
+    
+    //     } catch(err) {
+    //         console.log(err)
+    //         return res.status(StatusCode.ServerError).json({message: 'error getShows'})
+    //     }
+    // }
 }
 
 

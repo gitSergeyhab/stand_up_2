@@ -10,6 +10,7 @@ import { getBetweenYearsWhereStr } from '../utils/sql-where-utils'
 import { getDataFromSQLWithTitles } from "../utils/sql-utils";
 import { getNullObj, getValueOrNull } from "../utils/utils";
 import { contentService } from "../service/content-service";
+import { sqlQueryCardService } from "../service/query-card-service";
 
 
 const SortTypeName = {
@@ -20,6 +21,8 @@ const SortTypeName = {
     [SortType.TotalViews]: 'total_views',//=
     [SortType.Rate]: 'avg_rate', //=
     [SortType.RateCount]: 'number_of_rate', //=
+
+
   }
 
 const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
@@ -352,6 +355,7 @@ class ShowsController {
             const titlesSqlQuery = getTitles(type);
             console.log({titlesSqlQuery}, '+ ================= +')
 
+           
             const where = `
                 WHERE (language_id ${(language_id && language_id !== '-1') ? ' = :language_id' : ' = language_id OR 1 = 1'})
                 ${columnId ? `AND shows.${columnId} = :id`: '' } 
@@ -359,45 +363,16 @@ class ShowsController {
             `;
 
 
+            const showsQuery = sqlQueryCardService.getShows()
+            console.log({showsQuery})
 
         const countQuery = `SELECT COUNT(show_id) FROM shows ${where};`;
 
             const result = await sequelize.query(
                 `
-                SELECT
-                    shows.show_id, 
-                    show_name, 
-                    show_date,
-                    COALESCE(show_date, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS show_date_sort, 
-                    show_date_added,
-                    destination || filename AS main_picture,
-                    comedians.comedian_id, 
-                    comedian_nik,
-                    count (DISTINCT  show_rating_id) AS number_of_rate,
-                    COALESCE(AVG(show_rate)::real, 0)  AS avg_rate,
-                    get_reviews_by_type_id_user('show_id', shows.show_id, :user_id) AS user_reviews,
-                    get_user_show_rating(shows.show_id, :user_id) AS user_rating,
-                    get_views_count('show_id', shows.show_id, 7) AS weekly_views,
-                    get_views_count('show_id', shows.show_id, 1000000) AS total_views
-                FROM shows
-                LEFT JOIN comedians ON comedians.comedian_id = shows.comedian_id
-                LEFT JOIN show_ratings ON show_ratings.show_id = shows.show_id
-                LEFT JOIN main_pictures ON show_main_picture_id = main_picture_id
-				LEFT JOIN views ON views.show_id = shows.show_id
-
-
+                ${showsQuery}
                 ${where}
 
-                GROUP BY 
-                    shows.show_id, 
-                    comedians.comedian_id, 
-                    comedian_first_name, 
-                    comedian_last_name, 
-                    comedian_first_name_en, 
-                    comedian_last_name_en, 
-                    destination, 
-                    filename, 
-                    comedian_nik
                 ORDER BY ${sqlType} ${sqlDirection} 
                 LIMIT :limit
                 OFFSET :offset
@@ -421,6 +396,7 @@ class ShowsController {
             return res.status(StatusCode.ServerError).json({message: 'error getShows'})
         }
     }
+
 
     async rateShow(req: Request & {user: UserPseudoType}, res: Response) {
         try {

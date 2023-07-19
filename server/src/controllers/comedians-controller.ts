@@ -9,6 +9,7 @@ import { ApiError } from "../custom-errors/api-error";
 import { getDefaultFromToYears } from "../utils/date-utils";
 import { getBetweenYearsWhereStr } from "../utils/sql-where-utils";
 import { getNullObj, getValueOrNull } from "../utils/utils";
+import { sqlQueryCardService } from "../service/query-card-service";
 
 const {Limit, Offset } = DefaultQueryParams;
 
@@ -24,6 +25,7 @@ const SortTypeName = {
 
 
 class ComedianController {
+
     async getComedians(req: Request, res: Response) {
         console.log('_________===================__________________________')
         try {
@@ -37,40 +39,20 @@ class ComedianController {
 
             const sqlDirection = direction === SortDirection.ASC ? direction : SortDirection.DESC;
             const sqlType = SortTypeName[sort_type as string] || SortTypeName[SortType.WeeklyViews];
-
+//comedian_date_birth => comedian_date_sort
             const where = `
                 WHERE (country_id ${(country_id && country_id !== '-1')? ' = :country_id' : ' = country_id OR 1 = 1'})
                 ${ city ?  'AND (LOWER(comedian_city) = LOWER(:city)) OR (LOWER(comedian_city_en) = LOWER(:city))' : ''}
                 ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
             `;
 
-    // NO RATE !!!
+            const comedianQuery = sqlQueryCardService.getComedians()
+
                 const result = await sequelize.query(
                     `
-                    SELECT 
-                        comedian_id, 
-                        comedian_nik,
-                        destination || filename AS main_picture,
-                        COALESCE(comedian_date_birth, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS comedian_date_birth, 
-                        country_id, 
-                        country_name, 
-                        comedian_city,
-                        AVG(comedian_rate)::real AS avg_rate, 
-                        COUNT (comedian_id) AS number_of_rate,
-                        get_views_count('comedian_id', comedian_id, 7) AS weekly_views,
-                        get_views_count('comedian_id', comedian_id, 1000000) AS total_views
-                    FROM comedians
-
-                    LEFT JOIN countries USING(country_id)
-                    LEFT JOIN comedian_ratings USING(comedian_id)
-                    LEFT JOIN main_pictures ON comedian_main_picture_id = main_picture_id
-                    
+                    ${comedianQuery}
                     ${where}
-
-                    GROUP BY comedian_id, country_id, country_name, country_name_en, destination, filename
-
                     ORDER BY ${sqlType} ${sqlDirection}
-
                     LIMIT :limit
                     OFFSET :offset
                     ;
@@ -96,6 +78,78 @@ class ComedianController {
             return res.status(500).json({message: 'error get comedians'})
         }
     }
+//     async getComedians(req: Request, res: Response) {
+//         console.log('_________===================__________________________')
+//         try {
+//             const {yearFrom, yearTo} = getDefaultFromToYears()
+
+//             const {
+//                 country_id, city, year_from=yearFrom, year_to=yearTo,
+//                 limit = Limit, offset = Offset, 
+//                 direction, sort_type
+//             } = req.query;
+
+//             const sqlDirection = direction === SortDirection.ASC ? direction : SortDirection.DESC;
+//             const sqlType = SortTypeName[sort_type as string] || SortTypeName[SortType.WeeklyViews];
+// //comedian_date_birth => comedian_date_sort
+//             const where = `
+//                 WHERE (country_id ${(country_id && country_id !== '-1')? ' = :country_id' : ' = country_id OR 1 = 1'})
+//                 ${ city ?  'AND (LOWER(comedian_city) = LOWER(:city)) OR (LOWER(comedian_city_en) = LOWER(:city))' : ''}
+//                 ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('comedian_date_birth')}` : '' }
+//             `;
+
+//     // NO RATE !!!
+//                 const result = await sequelize.query(
+//                     `
+//                     SELECT 
+//                         comedian_id, 
+//                         comedian_nik,
+//                         destination || filename AS main_picture,
+//                         COALESCE(comedian_date_birth, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS comedian_date_birth, 
+//                         country_id, 
+//                         country_name, 
+//                         comedian_city,
+//                         AVG(comedian_rate)::real AS avg_rate, 
+//                         COUNT (comedian_id) AS number_of_rate,
+//                         get_views_count('comedian_id', comedian_id, 7) AS weekly_views,
+//                         get_views_count('comedian_id', comedian_id, 1000000) AS total_views
+//                     FROM comedians
+
+//                     LEFT JOIN countries USING(country_id)
+//                     LEFT JOIN comedian_ratings USING(comedian_id)
+//                     LEFT JOIN main_pictures ON comedian_main_picture_id = main_picture_id
+                    
+//                     ${where}
+
+//                     GROUP BY comedian_id, country_id, country_name, country_name_en, destination, filename
+
+//                     ORDER BY ${sqlType} ${sqlDirection}
+
+//                     LIMIT :limit
+//                     OFFSET :offset
+//                     ;
+
+//                     SELECT COUNT(comedian_id) FROM comedians
+//                     ${where}
+//                     ;
+//                     `,
+//                     { 
+//                         replacements: {offset, limit, country_id, city, year_from, year_to},
+//                         type: 'SELECT'
+//                     }
+//                 );
+
+//                 const data = getDataFromSQL(result)
+//                 console.log({data})
+        
+//                 return res.status(200).json({...data})
+                
+
+//         } catch(e) {
+//             console.log(e)
+//             return res.status(500).json({message: 'error get comedians'})
+//         }
+//     }
 
     async getComedianById(req: Request, res: Response) {
         try {

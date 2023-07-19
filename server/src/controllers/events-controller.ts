@@ -8,6 +8,7 @@ import { ApiError } from "../custom-errors/api-error";
 import { getDefaultFromToYears } from "../utils/date-utils";
 import {getBetweenYearsWhereStr} from '../utils/sql-where-utils'
 import { getNullObj, getValueOrNull } from "../utils/utils";
+import { sqlQueryCardService } from "../service/query-card-service";
 
 const SortTypeName = {
     [SortType.Added]: 'event_date_added', //=
@@ -189,31 +190,12 @@ class EventsController {
                 ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('event_date')}` : '' }
             `;
 
+            const eventsQuery = sqlQueryCardService.getEvents()
+
             const result = await sequelize.query(
                 `
-				SELECT 
-                    event_id, 
-                    event_name,
-                    event_name_en, 
-                    event_date, 
-                    COALESCE(event_date, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS event_date_sort,
-                    event_date_added,
-                    event_status,
-                    places.place_id, 
-                    place_name,
-                    destination || filename AS main_picture,
-                    count (DISTINCT view_id) AS views_count,
-                    get_views_count('event_id', event_id, 7) AS weekly_views,
-                    get_views_count('event_id', event_id, 1000000) AS total_views
-	
-				FROM events
-                LEFT JOIN main_pictures ON event_main_picture_id = main_picture_id
-				LEFT JOIN views USING (event_id)
-                LEFT JOIN comedians_events USING(event_id)
-				LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id
-                LEFT JOIN places ON events.place_id = places.place_id
+                ${eventsQuery}
                 ${where}
-                GROUP BY event_id, destination, filename, places.place_id
                 ORDER BY ${sqlType} ${sqlDirection}
                 LIMIT :limit
                 OFFSET :offset
@@ -244,6 +226,85 @@ class EventsController {
             return res.status(StatusCode.ServerError).json({message: 'error getShowsByComedianId'})
         }
     }
+
+    // async getEvents(req: Request, res: Response) {
+    //     try {
+    //         const { yearFrom, yearTo } = getDefaultFromToYears()
+    //         const { type, id } = req.params;
+    //         const { 
+    //             country_id, year_from=yearFrom, year_to=yearTo, status=EventStatusAll, limit=Limit, offset=Offset,
+    //             direction, sort_type
+    //          } = req.query;
+
+    //         const columnId = ColumnId[type];
+    //         const titlesSqlQuery = getTitles(type);
+    //         console.log({titlesSqlQuery}, '+=================+');
+
+    //         const sqlDirection = direction === SortDirection.ASC ? direction : SortDirection.DESC;
+    //         const sqlType = SortTypeName[sort_type as string] || SortTypeName[SortType.WeeklyViews];
+
+    //         const where = `
+    //             WHERE (places.country_id ${country_id ? ' = :country_id' : ' = places.country_id OR 1 = 1'})
+    //             ${columnId ? `AND ${columnId} = :id`: '' } 
+    //             ${status && status !== EventStatusAll ? 'AND event_status = :status' : '' }  
+    //             ${ req.query.year_from || req.query.year_to ? `AND ${getBetweenYearsWhereStr('event_date')}` : '' }
+    //         `;
+
+    //         const result = await sequelize.query(
+    //             `
+	// 			SELECT 
+    //                 event_id, 
+    //                 event_name,
+    //                 event_name_en, 
+    //                 event_date, 
+    //                 COALESCE(event_date, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS event_date_sort,
+    //                 event_date_added,
+    //                 event_status,
+    //                 places.place_id, 
+    //                 place_name,
+    //                 destination || filename AS main_picture,
+    //                 count (DISTINCT view_id) AS views_count,
+    //                 get_views_count('event_id', event_id, 7) AS weekly_views,
+    //                 get_views_count('event_id', event_id, 1000000) AS total_views
+	
+	// 			FROM events
+    //             LEFT JOIN main_pictures ON event_main_picture_id = main_picture_id
+	// 			LEFT JOIN views USING (event_id)
+    //             LEFT JOIN comedians_events USING(event_id)
+	// 			LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id
+    //             LEFT JOIN places ON events.place_id = places.place_id
+    //             ${where}
+    //             GROUP BY event_id, destination, filename, places.place_id
+    //             ORDER BY ${sqlType} ${sqlDirection}
+    //             LIMIT :limit
+    //             OFFSET :offset
+    //             ;
+
+    //             ${titlesSqlQuery}
+
+    //             SELECT COUNT (DISTINCT event_id) 
+    //             FROM events
+    //             LEFT JOIN comedians_events USING(event_id)
+	// 			LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id
+    //             LEFT JOIN places ON events.place_id = places.place_id
+    //             ${where}
+    //             ;
+    //             `,
+    //             {
+    //                 replacements: { id, limit, offset, status, year_from, year_to, country_id },
+    //                 type: 'SELECT'
+    //             }
+    //         )
+    //         console.log({result}, 'result___________________________', 'getEvents+++')
+
+    //         const data = type ? getDataFromSQLWithTitles(result) : getDataFromSQL(result)
+    //         return res.status(200).json(data);
+    
+    //     } catch(err) {
+    //         console.log(err)
+    //         return res.status(StatusCode.ServerError).json({message: 'error getShowsByComedianId'})
+    //     }
+    // }
 }
 
 

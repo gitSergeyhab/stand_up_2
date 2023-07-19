@@ -22,7 +22,7 @@ export type GridCardType = {
   extType?: ContentName,
   avgRate?: number,
   userRate?: RatingCC,
-  rateCount?: string,
+  rateCount?: string|number,
   weeklyViews?: string,
   totalViews?: string,
   date?: string,

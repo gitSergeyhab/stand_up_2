@@ -11,11 +11,12 @@ import { imagesRouter } from './images-router';
 import { formDataRouter } from './form-data-router';
 import { testRouter } from './test-router';
 import { chatRouter } from './chat-router';
+import { mainRouter } from './main-router';
 
 const router =  Router();
 
 router.use('/users', userRouter);
-
+router.use('/main', mainRouter)
 router.use('/comedians', comedianRouter);
 router.use('/countries', countriesRouter);
 router.use('/shows', showsRouter);
