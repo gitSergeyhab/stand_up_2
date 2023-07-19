@@ -131,3 +131,16 @@ RETURNS JSON AS $$
 	WHERE user_id = user_idx 
 	AND show_id = show_idx;  
 $$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION get_show_avg_rate (idx BIGINT) RETURNS numeric AS $$
+	SELECT 
+	COALESCE(AVG(show_rate), 0) 
+	FROM show_ratings
+	WHERE show_id = idx
+$$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION get_show_count_rate (idx BIGINT) RETURNS bigint AS $$
+	SELECT COUNT(show_rating_id)
+	FROM show_ratings
+	WHERE show_id = idx
+$$ LANGUAGE SQL;
