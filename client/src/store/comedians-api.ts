@@ -1,9 +1,10 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { ComedianCardDataCC, OneComedianTypeCC } from '../types/comedian-types';
+import {  OneComedianTypeCC } from '../types/comedian-types';
 import { adaptComedianDataToClient, adaptOneComedianToClient } from '../utils/adapters/comedian-adapters';
 import { baseQueryWithReauth } from './auth-api';
 import { adaptComedianShowRatingCountToClient } from '../utils/adapters/rating-adapters';
 import { ComedianShowRatingCountCC } from '../types/rating-types';
+import { CardDataCC } from '../types/common-types';
 
 type ShowComedianRateReq = {id: string, digit: number, offset: number, limit: number};
 
@@ -12,7 +13,7 @@ export const comediansApi = createApi({
   baseQuery: baseQueryWithReauth,
 
   endpoints: (build) => ({
-    getComedians: build.query<ComedianCardDataCC, string>({
+    getComedians: build.query<CardDataCC, string>({
       query: (search) => `/comedians${search}`,
       transformResponse: adaptComedianDataToClient
     }),

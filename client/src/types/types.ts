@@ -1,6 +1,9 @@
 import { AnyAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { ContentName } from '../const/const';
 import { RatingCC } from './user-types';
+import { EventCardSC } from './event-types';
+import { ShowCardSC } from './show-types';
+import { ComedianCardSC } from './comedian-types';
 
 export type ResourceType = {
   id: number;
@@ -107,4 +110,20 @@ export type FieldValueType = string | undefined;
 export type ErrorDataFieldType = {
   errorMessages: string[],
   errorIndexes: string[]
+}
+
+export type MainContentSC = {
+  shows: ShowCardSC[];
+  comedians: ComedianCardSC[];
+  eventsByDate: EventCardSC[];
+  eventsByViews: EventCardSC[];
+  places: EventCardSC[];
+}
+
+export type MainContentCC = {
+  shows: GridCardType[];
+  comedians: GridCardType[];
+  eventsByDate: GridCardType[];
+  eventsByViews: GridCardType[];
+  places: GridCardType[];
 }

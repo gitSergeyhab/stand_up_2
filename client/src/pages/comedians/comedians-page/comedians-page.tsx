@@ -4,26 +4,10 @@ import { Filter } from "../../../components/filters/filter";
 import { GridCard } from "../../../components/grid-card/grid-card";
 import { Pagination } from "../../../components/pagination/pagination";
 import { Titles } from "../../../components/titles/titles";
-import { ContentName, DefaultPageParam, FilterName, SortType } from "../../../const/const";
+import { DefaultPageParam, FilterName, SortType } from "../../../const/const";
 import { useGetComediansQuery } from "../../../store/comedians-api";
-import { ComedianCardCC } from "../../../types/comedian-types";
-import { GridCardType } from "../../../types/types";
 import { CommonAsideContainer } from "../../../components/common/common-style";
 import { Sorter } from "../../../components/sorters/sorter";
-
-
-const getComedianCard = (data: ComedianCardCC): GridCardType=> ({
-  extId: '',
-  extName: data.countryName ? `${data.countryName} ${data.comedianCity ? `(${  data.comedianCity  })` : ''}` : '',
-  id: data.comedianId,
-  name: data.comedianNik,
-  picture: data.mainPicture,
-  type: ContentName.Comedians,
-  extType: ContentName.Countries,
-  totalViews: data.totalViews,
-  weeklyViews: data.weeklyViews
-})
-
 
 
 export function ComediansPage() {
@@ -42,10 +26,7 @@ export function ComediansPage() {
 
   const {count, list } = data;
 
-  const cards = list.map((item) => {
-    const card = getComedianCard(item)
-    return <GridCard key={item.comedianId} card={card} />
-  })
+  const cards = list.map((item) =>  <GridCard key={item.id} card={item} />)
 
 
   const filters = [{name: FilterName.Year, title: 'Год рождения'}, {name: FilterName.Country}]

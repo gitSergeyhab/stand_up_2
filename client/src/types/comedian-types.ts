@@ -1,4 +1,4 @@
-import { CommonListDataType } from './common-types';
+import { CommonListDataType, CommonListDataWithTitlesType } from './common-types';
 import { ImageCC, ImageSC } from './pic-types';
 import { ResourceType } from './types';
 
@@ -92,8 +92,7 @@ export type ComedianCardCC = {
 
 
 export type ComedianCardDataSC = CommonListDataType<ComedianCardSC>
-
-export type ComedianCardDataCC = CommonListDataType<ComedianCardCC>
+export type ComedianCardDataWithTitlesSC = CommonListDataWithTitlesType<ComedianCardSC>
 
 export type ComedianState = {
   comedianId: string,

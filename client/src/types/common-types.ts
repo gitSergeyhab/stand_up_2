@@ -1,3 +1,5 @@
+import { GridCardType } from "./types"
+
 export type ServerTitles = {
   titles: {
     native: string,
@@ -12,3 +14,5 @@ export type CommonListDataType<ListType> = {
 }
 
 export type CommonListDataWithTitlesType<ListType> = CommonListDataType<ListType> & ServerTitles;
+export type CardDataCC = CommonListDataType<GridCardType>
+export type CardDataWithTitlesCC = CommonListDataWithTitlesType<GridCardType>
