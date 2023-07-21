@@ -4,6 +4,7 @@ import { RatingCC } from './user-types';
 import { EventCardSC } from './event-types';
 import { ShowCardSC } from './show-types';
 import { ComedianCardSC } from './comedian-types';
+import { PlaceCardSC } from './place-types';
 
 export type ResourceType = {
   id: number;
@@ -117,7 +118,7 @@ export type MainContentSC = {
   comedians: ComedianCardSC[];
   eventsByDate: EventCardSC[];
   eventsByViews: EventCardSC[];
-  places: EventCardSC[];
+  places: PlaceCardSC[];
 }
 
 export type MainContentCC = {

@@ -12,6 +12,9 @@ export const CardContainerUl = styled.ul`
   grid-template-columns: repeat(3, 30%);
   margin: 0;
   padding: 1rem;
+  box-shadow: inset 2px 2px 2px #00000081;
+  background-color: #ffaf041d;
+  /* box-shadow: 2px 2px 2px #15040418; */
   @media (max-width: 1200px) {
     grid-template-columns: repeat(2, 47%);
   }

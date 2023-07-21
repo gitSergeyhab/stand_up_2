@@ -4,7 +4,7 @@ import { GridCardType } from '../../types/types';
 import { adaptRatingToClient } from './user-adapters';
 
 
-const adaptServerShowToClientCard = (data: ShowCardSC): GridCardType => ({
+export const adaptServerShowToClientCard = (data: ShowCardSC): GridCardType => ({
   avgRate: data.avg_rate,
   extId: data.comedian_id,
   extName: data.comedian_nik,

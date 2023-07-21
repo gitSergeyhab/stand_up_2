@@ -5,7 +5,7 @@ import { getCountryCityStr } from './common-adapter-utils';
 import { adaptImageToClient } from './pic-adapter';
 
 
-const adaptServerPlaceToClientCard = (data: PlaceCardSC): GridCardType => ({
+export const adaptServerPlaceToClientCard = (data: PlaceCardSC): GridCardType => ({
   // extId: data.country_id,
   extName: getCountryCityStr(data.country_name, data.place_city || data.place_city_en ),
   id: data.place_id,

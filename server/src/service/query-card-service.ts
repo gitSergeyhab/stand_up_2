@@ -1,7 +1,8 @@
 class SQLQueryCardService {
-    getShows() {
+    getShows(type='show') {
         return `
             SELECT 
+                '${type}' AS type,
                 shows.show_id, 
                 show_name, 
                 show_date,
@@ -21,9 +22,10 @@ class SQLQueryCardService {
         `
     }
 
-    getComedians() {
+    getComedians(type='comedian') {
         return `
             SELECT 
+                '${type}' AS type,
                 comedian_id, 
                 comedian_nik,
                 destination || filename AS main_picture,
@@ -39,9 +41,10 @@ class SQLQueryCardService {
         `
     }
 
-    getEvents () {
+    getEvents (type='event') {
         return `
             SELECT 
+                '${type}' AS type,
                 event_id, 
                 event_name,
                 event_name_en, 
@@ -60,9 +63,10 @@ class SQLQueryCardService {
         `
     }
 
-    getPlaces() {
+    getPlaces(type='place') {
         return `
             SELECT
+                '${type}' AS type,
                 place_id,
                 place_name,
                 place_city, 

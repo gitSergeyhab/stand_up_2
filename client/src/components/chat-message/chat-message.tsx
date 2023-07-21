@@ -12,9 +12,9 @@ import { ImageCC } from '../../types/pic-types';
 import { ChatAttachedImage } from '../chat-attached-image/chat-attached-image';
 import { ChartLink, ChatImg, ChatMessageLI, ImageBtn, MainMessage, MessageTextDiv, QuoteButton, TextDiv, UserDateWrapperDiv } from './chat-message-style';
 import { ChatQuoteMessage } from '../chat-quote-message/chat-quote-message';
-import { getRowLinkedText } from '../../utils/utils';
 import { getChatPosition } from '../../store/chat-reducer/chat-selectors';
 import { ChatPosition } from '../../const/chat';
+import { getRowLinkedText } from '../../utils/format-text';
 
 
 type ChatMessageProps = {

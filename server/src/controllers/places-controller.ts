@@ -19,8 +19,7 @@ const SortTypeName = {
     [SortType.Name]: 'place_name', //=
     [SortType.WeeklyViews]: 'weekly_views', //=
     [SortType.TotalViews]: 'total_views',//=
-    // [SortType.Rate]: 'avg_rate', //=
-    // [SortType.RateCount]: 'number_of_rate', //=
+
   }
 
 

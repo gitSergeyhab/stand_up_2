@@ -6,7 +6,14 @@ import { sqlQueryCardService } from "../service/query-card-service";
 
 const LIMIT = 9;
 
+const Type = {
+    EventDate: 'event_date',
+    EventView: 'event_view',
+    Show: 'show',
+    Place: 'place',
+    Comedian: 'comedian'
 
+} as const;
 class MainController {
 
 
@@ -16,10 +23,11 @@ class MainController {
         try {
             const user_id = req.user?.user_id || '0';
 
-            const showsQuery = sqlQueryCardService.getShows();
-            const comediansQuery = sqlQueryCardService.getComedians();
-            const eventsQuery = sqlQueryCardService.getEvents();
-            const placesQuery = sqlQueryCardService.getPlaces();
+            const showsQuery = sqlQueryCardService.getShows(Type.Show);
+            const comediansQuery = sqlQueryCardService.getComedians(Type.Comedian);
+            const eventsQueryDate = sqlQueryCardService.getEvents(Type.EventDate);
+            const eventsQueryViews = sqlQueryCardService.getEvents(Type.EventView);
+            const placesQuery = sqlQueryCardService.getPlaces(Type.Place);
 
             const orderLimitQuery = `
                 ORDER BY weekly_views DESC
@@ -27,37 +35,40 @@ class MainController {
             `;
 
             const eventDateOrderLimitQuery = `
-                ORDER BY event_date_sort DESC
+                where event_date >= CURRENT_DATE 
+                ORDER BY event_date_sort
                 LIMIT :LIMIT;
             `;
+
 
 
             const result = await sequelize.query(
                 `
                     ${showsQuery} ${orderLimitQuery};
                     ${comediansQuery} ${orderLimitQuery};
-                    ${eventsQuery} ${orderLimitQuery};
-                    ${eventsQuery} ${eventDateOrderLimitQuery};
+                    ${eventsQueryViews} ${orderLimitQuery};
+                    ${eventsQueryDate} ${eventDateOrderLimitQuery};
                     ${placesQuery} ${orderLimitQuery};
                 `,
                 {
                     type: 'SELECT',
                     replacements: {LIMIT, user_id}
                 }
-            ) as [][];
+            ) as {type: string}[];
 
 
             console.log({result}, 'result___________________________', 'getShows +++')
 
-            const data = {
-                shows: result[0],
-                comedians: result[1],
-                eventsByViews: result[2],
-                eventsByDate: result[3],
-                places: result[4]
-            }
 
-            return res.status(StatusCode.Ok).json(data);
+            const shows = result.filter((item) => item.type === Type.Show);
+            const comedians = result.filter((item) => item.type === Type.Comedian);
+            const eventsByViews = result.filter((item) => item.type === Type.EventView);
+            const eventsByDate = result.filter((item) => item.type === Type.EventDate);
+            const places = result.filter((item) => item.type === Type.Place);
+
+            return res.status(StatusCode.Ok).json({ 
+                shows, comedians, eventsByViews, eventsByDate, places 
+            });
     
         } catch(err) {
             console.log(err)

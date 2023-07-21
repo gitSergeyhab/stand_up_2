@@ -16,6 +16,8 @@ import { placesApi } from './places-api';
 import { preloadReducer } from './preload-reducer/preload-reducer';
 import { api } from './api';
 import { chatReducer } from './chat-reducer/chat-reducer';
+import { mainApi } from './main-api';
+
 
 export const enum ReducerName {
   User = 'User',
@@ -24,24 +26,26 @@ export const enum ReducerName {
 }
 
 export const reducer = combineReducers({
+  [mainApi.reducerPath]: mainApi.reducer,
   [comediansApi.reducerPath]: comediansApi.reducer,
   [eventsApi.reducerPath]: eventsApi.reducer,
   [subApi.reducerPath]: subApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
-  [ReducerName.Preload]: preloadReducer,
-  [ReducerName.User]: userReducer,
-  [ReducerName.Chat]: chatReducer,
   [testSlice.name]: testSlice.reducer,
   [showsApi.reducerPath]: showsApi.reducer,
   [placesApi.reducerPath]: placesApi.reducer,
   [imagesApi.reducerPath]: imagesApi.reducer,
   [formDataApi.reducerPath]: formDataApi.reducer,
   [postFormApi.reducerPath]: postFormApi.reducer,
+  [ReducerName.Preload]: preloadReducer,
+  [ReducerName.User]: userReducer,
+  [ReducerName.Chat]: chatReducer,
 });
 
 export const store = configureStore({
   reducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware( { thunk: { extraArgument: api } } )
+    .concat(mainApi.middleware)
     .concat(comediansApi.middleware)
     .concat(userApi.middleware)
     .concat(subApi.middleware)

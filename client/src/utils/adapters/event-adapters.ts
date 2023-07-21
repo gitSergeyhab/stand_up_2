@@ -13,7 +13,8 @@ export const adaptServerEventToClientCard = (data: EventCardSC): GridCardType=> 
   type: ContentName.Events,
   extType: ContentName.Places,
   totalViews: data.total_views,
-  weeklyViews: data.weekly_views
+  weeklyViews: data.weekly_views,
+  date: data.event_date
 })
 
 
