@@ -4,7 +4,6 @@ import { useParams, useLocation } from 'react-router-dom';
 import { AboutBlock } from '../../../components/about-block/about-block';
 import { ImageModal } from '../../../components/image-modal/image-modal';
 import { MainPic } from '../../../components/main-pic/main-pic';
-import { Rating } from '../../../components/rating/rating';
 import { ResourceBlock } from '../../../components/resource-block/resource-block';
 import { Titles } from '../../../components/titles/titles';
 import { TopTabs } from '../../../components/top-tabs/top-tabs';
@@ -17,6 +16,7 @@ import { BigSpinner } from '../../../components/spinner/big-spinner';
 import { ImageCC } from '../../../types/pic-types';
 import { ImgListInfo } from '../../../components/img-list-info/img-list-info';
 import { LongLink } from '../../../components/common/common-style';
+import { linkifyText } from '../../../utils/format-text';
 
 export function ComedianPageInfo() {
   const { id } = useParams();
@@ -44,8 +44,8 @@ export function ComedianPageInfo() {
   }
 
   const {
-    avgRate,
-    numberOfRate,
+    // avgRate,
+    // numberOfRate,
     views,
     totalViews,
     comedianCity,
@@ -109,6 +109,17 @@ export function ComedianPageInfo() {
     />
   ) : null;
 
+
+
+  const testText  = `
+  По словам женщины, поначалу зрители не вызвали особых подозрений. Были дерзкими, {& Комисаренко #> /comedians/1/info &} но трезвыми и опрятными. «Они просидели практически все мероприятие.{& comedian-test@> http://localhost:5000/images/comedians/olnii-koncert-komika-Slavi-Komissarenko-sostoitsya-vBreste-22-aprelya_1685558128836.jpg&}
+  Пять комиков выступили, все шло в штатном режиме, и они ни с того ни с сего посреди выступления молодого комика просто встали и разделись. {&Денис Чужо #>/comedians/4/info&} После того как они разделись, они оделись и ушли», — поделилась Колокол.
+   Все это длилось около полутора минут, персонал даже не успел никак отреагировать, отметила она.
+
+  `
+  const split = linkifyText(testText);
+
+
   return (
     <>
       <Titles
@@ -146,13 +157,16 @@ export function ComedianPageInfo() {
         alt={`${comedianFirstName} ${comedianLastName || ''}`}
       />
 
-      <Rating avgRate={avgRate} votes={numberOfRate} checkedValue={8} />
+      {/* <Rating avgRate={avgRate} votes={numberOfRate} showId={sh} /> */}
 
       <ViewsBlock totalViews={totalViews} views={views} />
 
       <AboutBlock about={goodAbout} />
       <p>{comedianDescription}</p>
 
+
+
+{split}
       <ResourceBlock resources={resources} />
 
       {imageListElement}
