@@ -41,3 +41,4 @@ export function SettingBtn({onClick, disabled, active}: BtnProps) {
 export function HideBtn({onClick, disabled, active}: BtnProps) {
   return <ActionBtn sign='-' disabled={disabled} active={active} onClick={onClick}/>
 }
+

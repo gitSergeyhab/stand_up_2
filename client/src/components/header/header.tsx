@@ -20,11 +20,13 @@ import { UserHeaderAvatar } from '../user-header-avatar/user-header-avatar';
 
 const MENU_DATA = [
   'main',
-  'users',
+  // 'users',
+  ContentName.News,
+  ContentName.Shows,
   ContentName.Comedians,
   ContentName.Events,
   ContentName.Places,
-  ContentName.Shows,
+
 ];
 
 export const enum MediaType {

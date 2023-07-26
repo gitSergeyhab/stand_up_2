@@ -1,5 +1,6 @@
 import { Dispatch, MouseEventHandler, SetStateAction, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
+import { toast } from 'react-toastify';
 import { Gallery, GalleryImg, GalleryLi, GalleryLink, GalleryNotLoaded, MarkerButton, MarkerButtonLabel } from './img-list-style';
 import { SERVER_URL } from '../../const/const';
 import { ImageCC } from '../../types/pic-types';
@@ -41,10 +42,11 @@ type GalleryItemProps = {
   idList: string[];
   setIdList: Dispatch<SetStateAction<string[]>>;
   hidden?: boolean;
+  isPressed: boolean
 };
 
-function GalleryItem({onClick, picture, idList, setIdList, hidden}: GalleryItemProps) {
-  const [marker, setMarker] = useState(idList.includes(picture.imageId))
+function GalleryItem({onClick, picture, idList, setIdList, hidden, isPressed}: GalleryItemProps) {
+  const [marker, setMarker] = useState(idList.includes(picture.imageId));
 
   const {ref, inView} = useInView({
     threshold: 0.5,
@@ -55,8 +57,13 @@ function GalleryItem({onClick, picture, idList, setIdList, hidden}: GalleryItemP
   const src = `${SERVER_URL}${imagePath}`;
 
   const handleLinkClick: MouseEventHandler<HTMLAnchorElement> = (evt) => {
-    evt.preventDefault()
-    onClick();
+    evt.preventDefault();
+    if (isPressed) {
+      navigator.clipboard.writeText(imagePath);
+      toast.info(`путь скопирован: ${imagePath}`)
+    } else {
+      onClick();
+    }
   }
 
   const imageElement = inView ? (
@@ -87,9 +94,10 @@ type ImgListProps = {
   idList: string[];
   setIdList: Dispatch<SetStateAction<string[]>>;
   hidden?: boolean;
+  isPressed: boolean
 };
 
-export function ImgList({ pictures, handleImgClick, idList, setIdList,  hidden=true }: ImgListProps) {
+export function ImgList({ pictures, handleImgClick, idList, setIdList, isPressed, hidden=true }: ImgListProps) {
   const imageElements = pictures.map((item) => (
    <GalleryItem
       onClick={() => handleImgClick(item)}
@@ -98,6 +106,7 @@ export function ImgList({ pictures, handleImgClick, idList, setIdList,  hidden=t
       setIdList={setIdList}
       key={item.imageId}
       hidden={hidden}
+      isPressed={isPressed}
     />
   ));
 

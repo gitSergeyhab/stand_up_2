@@ -32,7 +32,12 @@ export const separateListCount = (result: [unknown[], unknown])  =>
 
 
 
-export const getIdFromTable = (table: string) => table.slice(0, -1) + '_id';
+export const getIdFromTable = (table: string) => {
+    if (table === 'news') {
+        return 'news_id'
+    }
+    return table.slice(0, -1) + '_id';
+} 
 
 
 export const insertView = async(id: string, user_id: string, column: string) => {
@@ -175,6 +180,21 @@ export const getDataUpdateQueryStr = (fields: SimpleDict[], dir: string) => {
     return sqlQuery
 }
 
+export const getDataUpdateQueryStrDateUpd = (fields: SimpleDict[], dir: string) => {
+    console.log({fields})
+    const fieldNames = getFieldNames(fields, true);
+    const columnId = getIdFromTable(dir);
+    const fieldsStr = fieldNames.join(', ') + ', date_updated';
+    // const valuesStr = prepareFields(fieldNames).join(', ')
+    const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ') + ', CURRENT_TIMESTAMP';
+    console.log({fieldsStr, valuesStr})
+    const sqlQuery = `
+        UPDATE ${dir} 
+        SET (${fieldsStr}) = (${valuesStr})
+        WHERE ${columnId} = :id
+    `
+    return sqlQuery
+}
 
 
 /**

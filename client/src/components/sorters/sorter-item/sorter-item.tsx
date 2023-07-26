@@ -1,19 +1,11 @@
 import styled from 'styled-components';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { hiddenStyle } from '../../common/common-style';
 import { createNewSearch } from '../../../utils/navigation-utils';
+import { HiddenInput } from '../../common/common-style';
 
 
 
-const HiddenInput = styled.input.attrs({type: 'radio'})`
-  ${hiddenStyle};
 
-  transition: 0.3s color ease-in-out;
-
-  &:checked ~ label {
-    color: goldenrod;
-  }
-`
 
 const SorterLabel = styled.label`
   color: #FFF;

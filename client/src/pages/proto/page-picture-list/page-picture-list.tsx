@@ -12,7 +12,8 @@ import { ImageCC} from '../../../types/pic-types';
 
 import { BigSpinner } from '../../../components/spinner/big-spinner';
 import { SideDeletingPanel } from '../../../components/side-deleting-panel/side-deleting-panel';
-import { CommonRightFormContainer } from '../../../components/common/common-style';
+import { CommonAsideContainer } from '../../../components/common/common-style';
+import { CopyPathBtn } from '../../../components/copy-path-btn/copy-path-btn';
 
 
 export function PagePictureList() {
@@ -22,6 +23,7 @@ export function PagePictureList() {
   const { data, isError, isLoading } = useGetImagesQuery({pathname})
   const [currentPic, setPic] = useState<ImageCC | null>(null);
   const [shownModal, setShownModal] = useState(false);
+  const [isPressed, setPressed] = useState(false);
 
   const [idList, setIdList] = useState<string[]>([]);
   const [areMarkersHidden, setMarkersHidden] = useState(true)
@@ -57,8 +59,7 @@ export function PagePictureList() {
     <>
       <Titles native={data.titles.native} en={data.titles.en} />
       <TopTabs tabProps={tabProps} />
-
-      <CommonRightFormContainer>
+      <CommonAsideContainer side="right">
         <ImageFieldMultiUpload/>
         <SideDeletingPanel
             idList={idList}
@@ -66,14 +67,18 @@ export function PagePictureList() {
             hidden={areMarkersHidden}
             setHidden={setMarkersHidden}
         />
-      </CommonRightFormContainer>
+        <CopyPathBtn isPressed={isPressed} setPressed={setPressed}/>
+      </CommonAsideContainer>
+
       <ImgList
         pictures={data.list}
         handleImgClick={handleClickImg}
         idList={idList}
         setIdList={setIdList}
         hidden={areMarkersHidden}
+        isPressed={isPressed}
       />
+
       {imageModal}
     </>
   );

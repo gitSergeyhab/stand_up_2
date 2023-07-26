@@ -14,7 +14,6 @@ import { LoginPage } from '../pages/login-page/login-page';
 import { ErrorPage } from '../pages/error-page/error-page';
 import { UsersPage } from '../pages/users-page/users-page';
 
-import { TestPage } from '../pages/test-page/test-page';
 import { AdminPanel } from '../pages/admin-panel/admin-panel';
 import { ShowsOfComedian } from '../pages/comedians/sub-comedians/shows-of-comedian';
 import { EventsOfComedian } from '../pages/comedians/sub-comedians/events-of-comedian';
@@ -33,6 +32,9 @@ import { useAppDispatch } from '../hooks/use-app-dispatch';
 import { authAction } from '../store/api-actions';
 import { storageUtils } from '../utils/storage-utils';
 import { MainPage } from '../pages/main-page/main-page';
+import { NewsPage } from '../pages/news/news-page/news-page';
+import { NewsPageInfo } from '../pages/news/news-info/news-info';
+import { NewsChange } from '../pages/change-panels/news-change';
 
 const AppRoute = {
   Main: '/',
@@ -59,6 +61,9 @@ const AppRoute = {
   Place: '/places/:id/info',
   PlaceChange: '/places/:id/change',
   Places: '/places',
+  News: 'news/:id',
+  NewsList: 'news',
+  NewsChange: '/news/:id/change',
   User: '/users/:id',
   Users: '/users',
 
@@ -111,6 +116,10 @@ export function App() {
                 <Route path={AppRoute.Places} element={<PlacesPage/>}/>
                 <Route path={AppRoute.Place} element={<PlacePageInfo />} />
                 <Route path={AppRoute.PlaceChange} element={<PlaceChange />} />
+
+                <Route path={AppRoute.NewsList} element={<NewsPage/>}/>
+                <Route path={AppRoute.News} element={<NewsPageInfo/>}/>
+                <Route path={AppRoute.NewsChange} element={<NewsChange />} />
 
                 <Route path={AppRoute.Users} element={<UsersPage />} />
 

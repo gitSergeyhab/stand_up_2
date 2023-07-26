@@ -5,7 +5,7 @@ import { ContentName } from '../../const/const'
 import { Tab, TabButton, TabList } from './admin-panel-tabs-style';
 
 const ADMIN_TABS = [
-  ContentName.Comedians, ContentName.Events, ContentName.Places, ContentName.Shows
+  ContentName.Comedians, ContentName.Events, ContentName.Places, ContentName.Shows, ContentName.News
 ]
 
 type AdminTabProps = {

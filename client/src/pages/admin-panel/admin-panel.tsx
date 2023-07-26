@@ -7,6 +7,7 @@ import { ComedianForm } from '../../components/forms/comedian-form';
 import { AdminPanelTabs } from '../../components/admin-panel-tabs/admin-panel-tabs';
 
 import "react-datepicker/dist/react-datepicker.css";
+import { NewsForm } from '../../components/forms/news-form';
 
 
 type AdminFormProps = {
@@ -19,6 +20,7 @@ function AdminForm({currentTab}: AdminFormProps) {
     case ContentName.Shows : return <ShowForm />
     case ContentName.Events : return <EventForm />
     case ContentName.Places : return  <PlaceForm />
+    case ContentName.News: return <NewsForm/>
     default : return <ComedianForm />
   }
 

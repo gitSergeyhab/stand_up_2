@@ -31,7 +31,8 @@ export const enum Column {
     Show = 'show_id',
     Place = 'place_id',
     Event = 'event_id',
-    User = 'user_id'
+    User = 'user_id',
+    News = 'news_id'
 }
 
 export const TableName = {

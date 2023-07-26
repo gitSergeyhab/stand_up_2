@@ -20,6 +20,7 @@ export const enum ContentName {
   Places = 'places',
   Countries = 'countries',
   Pictures = 'pictures',
+  News = 'news'
 }
 
 export const DefaultPath = {
@@ -64,6 +65,7 @@ export const FilterName = {
   Offset: 'offset',
   Order: 'order',
   Direction: 'direction',
+  Radio: 'radio'
 } as const;
 
 export const enum Language {
@@ -154,7 +156,12 @@ export const tableField = {
     showName: 'show_name',
     showNameEn: 'show_name_en',
     showDescription: 'show_description',
-    showDateAdded: 'show_date_added'
+    showDateAdded: 'show_date_added',
+  },
+  news: {
+    newsTitle: 'news_title',
+    newsText: 'news_text',
+    newsImgUrl: 'news_img_url',
   }
 }
 

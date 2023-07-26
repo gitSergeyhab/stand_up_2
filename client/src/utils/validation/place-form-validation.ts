@@ -1,6 +1,5 @@
 import { FormPattern, FormPatternMessage } from '../../const/form-pattern';
-import { FormDataItemCC } from '../../store/form-data-api';
-import { SimpleDictEmpty } from '../../types/types';
+import { OptionType, SimpleDictEmpty } from '../../types/types';
 import { validateDate } from '../date-utils';
 import { getFieldErrorMessage } from '../error-utils';
 import { checkListInputValue } from './form-validators';
@@ -8,7 +7,10 @@ import { checkListInputValue } from './form-validators';
 
 export type GetErrorMessagesArgs = {
   formData: FormData,
-  countries: FormDataItemCC[],
+  // countries: FormDataItemCC[],
+  countries: OptionType[],
+
+
 };
 
 export const getPlaceErrorMessages = ({formData, countries}: GetErrorMessagesArgs) => {

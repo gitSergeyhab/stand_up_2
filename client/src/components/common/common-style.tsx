@@ -188,3 +188,23 @@ export const ActionButton = styled.button.attrs({type: 'button'})<{width?:number
   transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
 `
 
+export const HiddenInput = styled.input.attrs({type: 'radio'})`
+  ${hiddenStyle};
+
+  transition: 0.3s color ease-in-out;
+
+  &:checked ~ label {
+    color: goldenrod;
+  }
+`
+
+export const UserLink = styled(Link)`
+  text-decoration: none;
+  color: goldenrod;
+  font-weight: 700;
+
+  transition: color .2s ease-in-out;
+  &:hover{
+    color: #b6860d;
+  }
+`;

@@ -96,7 +96,10 @@ module.exports = {
       "place_date_closed",
       "place_description",
       "place_active",
-      "no_name"
+      "no_name",
+      'news_title',
+      'news_text',
+
     ]}]
   },
 };

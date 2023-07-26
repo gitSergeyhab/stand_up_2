@@ -3,7 +3,6 @@ import { AxiosInstance } from 'axios';
 
 import { comediansApi } from './comedians-api';
 import { eventsApi } from './events-api';
-// import { mainReducer } from './main-reducer/main-reducer';
 import { subApi } from './sub-api';
 import { testSlice } from './test-store';
 import { userApi } from './user-api';
@@ -17,6 +16,7 @@ import { preloadReducer } from './preload-reducer/preload-reducer';
 import { api } from './api';
 import { chatReducer } from './chat-reducer/chat-reducer';
 import { mainApi } from './main-api';
+import { newsApi } from './news-api';
 
 
 export const enum ReducerName {
@@ -34,6 +34,7 @@ export const reducer = combineReducers({
   [testSlice.name]: testSlice.reducer,
   [showsApi.reducerPath]: showsApi.reducer,
   [placesApi.reducerPath]: placesApi.reducer,
+  [newsApi.reducerPath]: newsApi.reducer,
   [imagesApi.reducerPath]: imagesApi.reducer,
   [formDataApi.reducerPath]: formDataApi.reducer,
   [postFormApi.reducerPath]: postFormApi.reducer,
@@ -52,6 +53,7 @@ export const store = configureStore({
     .concat(eventsApi.middleware)
     .concat(showsApi.middleware)
     .concat(placesApi.middleware)
+    .concat(newsApi.middleware)
     .concat(imagesApi.middleware)
     .concat(formDataApi.middleware)
     .concat(postFormApi.middleware)

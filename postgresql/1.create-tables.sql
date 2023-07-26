@@ -222,6 +222,7 @@ CREATE TABLE views (
     place_id BIGINT REFERENCES places(place_id),
     comedian_id BIGINT REFERENCES comedians(comedian_id),
     event_id BIGINT REFERENCES events(event_id),
+    news_id BIGINT REFERENCES views(view_id),
     user_watched_id BIGINT REFERENCES users(user_id),
 
     view_date TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP
@@ -282,3 +283,15 @@ CREATE TABLE chat_messages (
     message_auto BOOLEAN DEFAULT FALSE,
     message_added TIMESTAMP with time zone DEFAULT CURRENT_TIMESTAMP
 );
+
+
+CREATE TABLE news (
+	news_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	user_added_id BIGINT REFERENCES users(user_id),
+	news_title VARCHAR(256) NOT NULL,
+	news_text TEXT NOT NULL,
+    news_main_picture_id BIGINT REFERENCES main_pictures(main_picture_id),
+    -- news_img_url VARCHAR(256),
+	date_added TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP,
+	date_updated TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP
+)

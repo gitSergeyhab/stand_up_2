@@ -1,5 +1,5 @@
-const SIGNS = ',-.!;_';
-
+const SIGNS = ',-. !;_';
+const SIGNS_LINKED = ',-. !;_>@#{}';
 
 export const FormPattern = {
   Name3to64: /^[a-zа-яё\s\d,-.!;_]{3,64}$/i,
@@ -11,7 +11,8 @@ export const FormPattern = {
   Name3to512: /^[a-zа-яё\s\d,-.!;_]{3,512}$/i,
   NameEn3to512: /^[a-z\s\d,-.!;_]{3,512}$/i,
   Date: /^(\d){2}\.(\d){2}\.(\d){4}$/,
-  Status: /^[ended|planed|canceled]$/
+  Status: /^[ended|planed|canceled]$/,
+  LinkedText: /^[\s\S]{3,}$/,
 }
 
 
@@ -26,5 +27,6 @@ export const FormPatternMessage = {
   NameEn3to512:  `от 3 до 512 символов, латиница, цифры, символы:  ${SIGNS}`,
   List: 'выбрать из списка',
   NoName: 'в полях с выпадающем списком нужно выбрать значение из списка',
-  Date: 'проверьте корректрость дат, формат  -  дд.мм.гггг'
+  Date: 'проверьте корректрость дат, формат  -  дд.мм.гггг',
+  LinkedText: `техт должен содержать не менее 3 символов, латиница и кирилица, символы:  ${SIGNS_LINKED}`,
 }

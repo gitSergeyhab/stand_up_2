@@ -35,7 +35,7 @@ export function PlaceChange () {
     <TopTabs tabProps={tabProps} />
 
     <section>
-      <PlaceForm countries={data} state={state}/>
+      <PlaceForm state={state}/>
     </section>
 
   </>

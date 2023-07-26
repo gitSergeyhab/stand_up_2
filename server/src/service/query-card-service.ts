@@ -19,7 +19,7 @@ class SQLQueryCardService {
             FROM shows
             LEFT JOIN comedians ON comedians.comedian_id = shows.comedian_id
             LEFT JOIN main_pictures ON show_main_picture_id = main_picture_id
-        `
+        `;
     }
 
     getComedians(type='comedian') {
@@ -45,7 +45,7 @@ class SQLQueryCardService {
         return `
             SELECT 
                 '${type}' AS type,
-                event_id, 
+                events.event_id, 
                 event_name,
                 event_name_en, 
                 event_date, 
@@ -55,11 +55,13 @@ class SQLQueryCardService {
                 places.place_id, 
                 place_name,
                 destination || filename AS main_picture,
-                get_views_count('event_id', event_id, 7) AS weekly_views,
-                get_views_count('event_id', event_id, 1000000) AS total_views
+                get_views_count('event_id', events.event_id, 7) AS weekly_views,
+                get_views_count('event_id', events.event_id, 1000000) AS total_views
             FROM events
             LEFT JOIN main_pictures ON event_main_picture_id = main_picture_id
             LEFT JOIN places ON events.place_id = places.place_id
+            LEFT JOIN comedians_events ON comedians_events.event_id = events.event_id
+            LEFT JOIN comedians ON comedians.comedian_id = comedians_events.comedian_id
         `
     }
 
@@ -81,7 +83,27 @@ class SQLQueryCardService {
             FROM places
             LEFT JOIN countries ON countries.country_id = places.country_id
             LEFT JOIN main_pictures ON place_main_picture_id = main_pictures.main_picture_id
-        `
+        `;
+    }
+    getNews(type='news') {
+        return `
+        SELECT 
+            '${type}' AS type,
+            news.news_id, 
+            news_title, 
+            news_text,
+            destination || filename AS main_picture,
+            date_added,
+            date_updated,
+            COALESCE(date_added, TO_DATE('0100-01-01', 'YYYY-MM-DD')) AS news_date_sort, 
+            users.user_id, 
+            user_nik,
+            get_views_count('news_id', news.news_id, 7) AS weekly_views,
+            get_views_count('news_id', news.news_id, 1000000) AS total_views
+        FROM news
+        LEFT JOIN users ON users.user_id = news.user_added_id
+        LEFT JOIN main_pictures ON news_main_picture_id = main_pictures.main_picture_id
+        `;
     }
 }
 

@@ -153,7 +153,6 @@ export function YearFilter({ isAnyDate, setAnyDate,  filters, yearFrom, yearTo, 
     setAnyDate((prev) => !prev);
     setYearFrom(undefined);
     setYearTo(undefined);
-
   };
 
   return (

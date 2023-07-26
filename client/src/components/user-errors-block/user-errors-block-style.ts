@@ -7,4 +7,5 @@ export const ErrorBlockUl = styled.ul`
   border: 2px solid #000000;
   padding-right: 15px;
   width: 320px;
+  margin: auto;
 `;
