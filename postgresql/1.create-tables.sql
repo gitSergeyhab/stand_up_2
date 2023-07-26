@@ -295,3 +295,13 @@ CREATE TABLE news (
 	date_added TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP,
 	date_updated TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP
 )
+
+CREATE TABLE news_comments (
+	comment_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	user_added_id BIGINT REFERENCES users(user_id),
+	news_id BIGINT REFERENCES news(news_id),
+	
+	text VARCHAR(1024) NOT NULL,
+	date_added TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP,
+	date_updated TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP
+);
