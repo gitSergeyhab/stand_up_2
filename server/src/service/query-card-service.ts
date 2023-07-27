@@ -105,6 +105,27 @@ class SQLQueryCardService {
         LEFT JOIN main_pictures ON news_main_picture_id = main_pictures.main_picture_id
         `;
     }
+
+    getNewsComments(type='news_comments') {
+        return `
+        SELECT 
+            '${type}' AS type,
+            comment_id,
+            root_comment_id,
+            news_comments.date_added,
+            news_comments.date_updated,
+            users.user_id,
+            user_nik,
+            news.news_id,
+            news_title,
+            text,
+            get_comments_by_root(comment_id) AS child_comments,
+            get_count_children_comments(comment_id) AS child_comment_count
+        FROM news_comments
+        LEFT JOIN users ON news_comments.user_added_id = users.user_id
+        LEFT JOIN news ON news_comments.news_id = news.news_id
+        `;
+    }
 }
 
 

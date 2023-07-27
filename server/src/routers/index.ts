@@ -13,6 +13,7 @@ import { testRouter } from './test-router';
 import { chatRouter } from './chat-router';
 import { mainRouter } from './main-router';
 import { newsRouter } from './news-router';
+import { newsCommentRouter } from './news-comments-router';
 
 const router =  Router();
 
@@ -24,6 +25,7 @@ router.use('/shows', showsRouter);
 router.use('/places', placesRouter);
 router.use('/events', eventsRouter);
 router.use('/news', newsRouter);
+router.use('/news-comments', newsCommentRouter);
 router.use('/pictures', pictureRouter);
 router.use('/images', imagesRouter);
 router.use('/form-data', formDataRouter);

@@ -144,3 +144,33 @@ CREATE OR REPLACE FUNCTION get_show_count_rate (idx BIGINT) RETURNS bigint AS $$
 	FROM show_ratings
 	WHERE show_id = idx
 $$ LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION get_comments_by_root(idx BIGINT) RETURNS JSON AS $$
+	SELECT
+	JSON_AGG(JSON_BUILD_OBJECT(
+		'comment_id', comment_id, 
+		'root_comment_id', root_comment_id,
+		'user_id', user_id, 
+		'user_nik', user_nik, 
+		'text', text, 
+		'date_added', date_added
+	))
+	FROM (
+		SELECT 
+			comment_id, root_comment_id, text, date_added,
+			user_id, user_nik
+		FROM news_comments 
+		LEFT JOIN users ON users.user_id = news_comments.user_added_id
+		WHERE root_comment_id = idx
+		ORDER BY comment_id DESC
+	) as c
+	;
+$$ LANGUAGE SQL; 
+
+CREATE OR REPLACE FUNCTION get_count_children_comments (idx BIGINT) RETURNS bigint AS $$
+	SELECT COUNT (comment_id)
+	FROM news_comments
+	WHERE root_comment_id = idx
+	GROUP BY (root_comment_id)
+$$ LANGUAGE SQL;
