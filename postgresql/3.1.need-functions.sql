@@ -154,14 +154,26 @@ CREATE OR REPLACE FUNCTION get_comments_by_root(idx BIGINT) RETURNS JSON AS $$
 		'user_id', user_id, 
 		'user_nik', user_nik, 
 		'text', text, 
-		'date_added', date_added
+		'date_added', date_added,
+		'date_updated', date_updated,
+		'avatar', avatar,
+		'image', image
 	))
 	FROM (
 		SELECT 
-			comment_id, root_comment_id, text, date_added,
-			user_id, user_nik
+			comment_id, 
+			root_comment_id, 
+			text, 
+			date_added, 
+			date_updated,
+			users.user_id, 
+			user_nik,
+			avatars.destination || avatars.filename AS avatar,
+            images.destination || images.filename AS image
 		FROM news_comments 
 		LEFT JOIN users ON users.user_id = news_comments.user_added_id
+		LEFT JOIN avatars ON users.user_avatar_id = avatars.avatar_id
+        LEFT JOIN images ON images.image_id = news_comments.image_id
 		WHERE root_comment_id = idx
 		ORDER BY comment_id DESC
 	) as c
@@ -173,4 +185,24 @@ CREATE OR REPLACE FUNCTION get_count_children_comments (idx BIGINT) RETURNS bigi
 	FROM news_comments
 	WHERE root_comment_id = idx
 	GROUP BY (root_comment_id)
+$$ LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION get_parent_comment(idx BIGINT) RETURNS JSON AS $$
+	SELECT
+		JSON_BUILD_OBJECT(
+			'comment_id', comment_id,
+			'user_id', user_id, 
+			'user_nik', user_nik
+		)
+	FROM (
+		SELECT 
+			comment_id, 
+			user_id, 
+			user_nik
+		FROM news_comments 
+		LEFT JOIN users ON users.user_id = news_comments.user_added_id
+		WHERE comment_id = idx
+	) as c
+	;
 $$ LANGUAGE SQL;

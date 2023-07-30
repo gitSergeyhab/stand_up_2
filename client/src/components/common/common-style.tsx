@@ -202,6 +202,8 @@ export const UserLink = styled(Link)`
   text-decoration: none;
   color: goldenrod;
   font-weight: 700;
+  display: flex;
+  align-items: center;
 
   transition: color .2s ease-in-out;
   &:hover{

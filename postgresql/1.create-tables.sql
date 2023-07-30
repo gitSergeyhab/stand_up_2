@@ -298,8 +298,12 @@ CREATE TABLE news (
 
 CREATE TABLE news_comments (
 	comment_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    root_comment_id BIGINT REFERENCES chat_messages(message_id),
+    parent_comment_id BIGINT REFERENCES chat_messages(message_id),
 	user_added_id BIGINT REFERENCES users(user_id),
 	news_id BIGINT REFERENCES news(news_id),
+    image_id BIGINT REFERENCES images(image_id),
+
 	
 	text VARCHAR(1024) NOT NULL,
 	date_added TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP,

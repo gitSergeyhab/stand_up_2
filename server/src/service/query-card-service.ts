@@ -120,10 +120,15 @@ class SQLQueryCardService {
             news_title,
             text,
             get_comments_by_root(comment_id) AS child_comments,
-            get_count_children_comments(comment_id) AS child_comment_count
+            get_count_children_comments(comment_id) AS child_comment_count,
+            get_parent_comment(parent_comment_id) AS parent_comment,
+            avatars.destination || avatars.filename AS avatar,
+            images.destination || images.filename AS image
         FROM news_comments
         LEFT JOIN users ON news_comments.user_added_id = users.user_id
         LEFT JOIN news ON news_comments.news_id = news.news_id
+        LEFT JOIN avatars ON users.user_avatar_id = avatars.avatar_id
+        LEFT JOIN images ON images.image_id = news_comments.image_id
         `;
     }
 }

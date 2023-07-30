@@ -40,3 +40,4 @@ export type NewsState = {
   newsText: string;
   mainPicture: string;
 }
+

@@ -9,6 +9,7 @@ import { linkifyText } from '../../../utils/format-text';
 import { formatDateFromTimeStamp } from '../../../utils/date-utils';
 import { LongLink, UserLink } from '../../../components/common/common-style';
 import { DateUserDiv } from './news-info-style';
+import { NewsCommentsBlock } from '../../../components/news-comments-block/news-comments-block';
 
 
 
@@ -61,6 +62,7 @@ export function NewsPageInfo() {
           {formatDateAdded} (изменено {formatDateChanged})
         </div>
       </DateUserDiv>
+      <NewsCommentsBlock newsId={newsId}/>
     </>
   );
 }

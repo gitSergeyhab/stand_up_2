@@ -640,10 +640,21 @@ INSERT INTO news(user_added_id, news_main_picture_id, news_title, news_text) VAL
 (1, 7, '9 News', 'SQL определяет два основных символьных типа: {& Дмитрий Романов #> /comedians/2/info &} character varying(n) и character(n), где n — положительное число. Оба эти типа могут хранить текстовые строки длиной до n символов (не байт). Попытка сохранить в столбце такого типа более длинную строку приведёт к ошибке, если только все лишние символы не являются пробелами (тогда они будут усечены до максимально допустимой длины). (Это несколько странное исключение продиктовано стандартом SQL.) Если длина сохраняемой строки оказывается меньше объявленной, значения типа character будут дополнятся пробелами; а тип character varying просто сохранит короткую строку.');
 
 
-INSERT INTO news_comments (user_added_id, news_id, text) VALUES
-(1,1, 'Good news'),
-(3,7, 'Good news 2'),
-(3,8, 'Good news 3'),
-(4,7, 'Bad news'),
-(4,7, 'Bad news 2'),
-(4,6, 'Bad news 3');
+INSERT INTO news_comments (user_added_id, news_id, text, image_id, parent_comment_id, root_comment_id) VALUES 
+(2, 2, 'coment1 u2 n2 text i1 p0 r0  - | jdhfbsdhbfjsdfh dhg sdhcfsdh dgh hsd', 1, null, null ),
+(1, 2, 'coment2 u1 n2 text i0 p0 r0', null, null, null ),
+(3, 2, 'coment3 u3 n2 text i0 p1 r1  -  | jdn dej d', null, 1, 1 ),
+(1, 2, 'coment4 u1 n2 text i0 p3 r1', null, 3, 1 ),
+(4, 2, 'coment5 u4 n2 text i0 p1 r1  -  | kjdjksj jdjsdhf jfhjhdjfh jhdfjsdh jhhdf 
+ lkksdlkld
+ dkflsdjj
+ ldld', null, 1, 1 ),
+(5, 2, 'coment6 u5 n2 text i2 p4 r1', 2, 4, 1 ),
+(5, 2, 'coment7 u5 n2 text i0 p0 r0', null, null, null ),
+(1,1, 'Good news', null, null, null ),
+(3,7, 'Good news 2', null, null, null ),
+(3,8, 'Good news 3', null, null, null ),
+(4,7, 'Bad news', null, null, null ),
+(4,7, 'Bad news 2', null, null, null ),
+(4,6, 'Bad news 3', null, null, null ),
+(1, 2, 'coment8 u1 n2 text i0 p7 r7  -  | kkdj', null, 7, 7 );
