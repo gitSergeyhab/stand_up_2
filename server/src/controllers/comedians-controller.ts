@@ -1,9 +1,9 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import {  Column, ColumnId, DefaultQueryParams, ImageType, SQLFunctionName, SortDirection, SortType, StatusCode, TableName } from "../const/const";
-import { getDataFromSQL, getDataInsertQueryStr, getDataUpdateQueryStr, insertView, separateGraphTitles, separateListCount } from "../utils/sql-utils";
+import {  Column, ColumnId, DefaultQueryParams, ImageDir, ImageType, SQLFunctionName, SortDirection, SortType, StatusCode, TableName } from "../const/const";
+import { getDataFromSQL, getDataInsertQuery, getDataUpdateQuery, insertView, separateGraphTitles, separateListCount } from "../utils/sql-utils";
 import { getDataFromSQLWithTitles } from "../utils/sql-utils";
-import { ImageFile, SimpleDict } from "../types";
+import { ImageFile, SimpleDict, UserRequest } from "../types";
 import { imageService } from "../service/image-service";
 import { ApiError } from "../custom-errors/api-error";
 import { getDefaultFromToYears } from "../utils/date-utils";
@@ -525,20 +525,25 @@ console.log(req.query.year_from, req.query.year_to, 'req.query.year_from || req.
         }
     }
 
-    async addComedian (req: Request, res: Response ) {
+    async addComedian (req: UserRequest, res: Response ) {
         try {
-            const {body} = req;
+            const {body, user} = req;
+            const user_added_id = user.user_id
             const dir = req.query.dir as string;
             console.log({dir, body})
             const file = req.file as ImageFile;
-            const comedian_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
-            // HARDCODE user_added_id = 1 !!!   
+
+            const comedian_main_picture_id = await imageService.createImage({
+                file, dir: ImageDir.Comedians, table: ImageType.MainPictures, user_added_id
+            }) as string;
+
             const {
-                user_added_id = '1', country_id, 
+                country_id, 
                 comedian_nik, comedian_nik_en, comedian_first_name, comedian_second_name, comedian_last_name, comedian_first_name_en, comedian_second_name_en, comedian_last_name_en,
                 comedian_city, comedian_city_en, comedian_description,
                 comedian_date_birth, comedian_date_death
             } = body as SimpleDict;
+
             const fields = [
                 {user_added_id}, {country_id}, 
                 {comedian_nik}, {comedian_nik_en}, {comedian_first_name}, {comedian_second_name}, {comedian_last_name}, {comedian_first_name_en}, {comedian_second_name_en}, {comedian_last_name_en},
@@ -548,12 +553,11 @@ console.log(req.query.year_from, req.query.year_to, 'req.query.year_from || req.
             ] as SimpleDict[];
             const allFields = [...fields, {comedian_main_picture_id}]
 
-            const sqlQuery = getDataInsertQueryStr(allFields, dir)
+            const sqlQuery = getDataInsertQuery(allFields, 'comedians', 'comedian_id')
 
             
             const result = await sequelize.query(sqlQuery, {
-                // HARDCODE user_added_id = 1 !!! 
-                replacements: {...body, comedian_main_picture_id, user_added_id: '1'}, 
+                replacements: {...body, comedian_main_picture_id, user_added_id}, 
                 type: "INSERT"
             })
 
@@ -568,36 +572,39 @@ console.log(req.query.year_from, req.query.year_to, 'req.query.year_from || req.
         } 
     }
 
-    async changeComedian (req: Request, res: Response ) {
+    async changeComedian (req: UserRequest, res: Response ) {
         try {
-            const {body} = req;
+            const {body, user} = req;
+            const user_added_id = user.user_id
             const {id} = req.params
             const dir = req.query.dir as string;
             console.log({dir, body})
             const file = req.file as ImageFile;
-            const comedian_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
-            // HARDCODE user_added_id = 1 !!!   
+
+            const comedian_main_picture_id = await imageService.createImage({
+                file, dir: ImageDir.Comedians, table: ImageType.MainPictures, user_added_id
+            }) as string;
+
             const {
-                user_added_id = '1', country_id, 
+                country_id, 
                 comedian_nik, comedian_nik_en, comedian_first_name, comedian_second_name, comedian_last_name, comedian_first_name_en, comedian_second_name_en, comedian_last_name_en,
                 comedian_city, comedian_city_en, comedian_description,
                 comedian_date_birth, comedian_date_death, isPicChanged
             } = body as SimpleDict;
+
             const fields = [
                 {user_added_id}, {country_id}, 
                 {comedian_nik}, {comedian_nik_en}, {comedian_first_name}, {comedian_second_name}, {comedian_last_name}, {comedian_first_name_en}, {comedian_second_name_en}, {comedian_last_name_en},
                 {comedian_city}, {comedian_city_en}, {comedian_description},
                 {comedian_date_birth}, {comedian_date_death}
-
             ] as SimpleDict[];
 
-        
             const pictureIdValue = getValueOrNull(comedian_main_picture_id);
             const allFields = [...fields, isPicChanged ? {comedian_main_picture_id} : null].filter((item) => item);
-            const sqlQuery = getDataUpdateQueryStr(allFields, dir)
+            const sqlQuery = getDataUpdateQuery(allFields, 'comedians', 'comedian_id')
             const result = await sequelize.query(sqlQuery, {
                 // HARDCODE user_added_id = 1 !!! 
-                replacements: getNullObj({...body, comedian_main_picture_id: pictureIdValue, user_added_id: '1', id}),
+                replacements: getNullObj({...body, comedian_main_picture_id: pictureIdValue, user_added_id, id}),
                 type: "UPDATE"
             })
 

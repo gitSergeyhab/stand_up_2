@@ -1,7 +1,7 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { StatusCode, Column, DefaultQueryParams, ImageType } from "../const/const";
-import { getDataFromSQL,  getDataInsertQueryStr,  getDataUpdateQueryStr,  getDataUpdateQueryStrDateUpd,  insertView } from "../utils/sql-utils";
+import { StatusCode, Column, DefaultQueryParams, ImageType, ImageDir } from "../const/const";
+import { getDataFromSQL,  getDataInsertQuery,  getDataUpdateQuery,  insertView } from "../utils/sql-utils";
 
 import { sqlQueryCardService } from "../service/query-card-service";
 import { imageService } from "../service/image-service";
@@ -10,14 +10,7 @@ import { ApiError } from "../custom-errors/api-error";
 import { getNullObj, getValueOrNull } from "../utils/utils";
 
 
-const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
-
-// const SortTypeName = {
-//     [SortType.New]: 'news_date_sort', //=
-//     [SortType.WeeklyViews]: 'weekly_views', //=
-//     [SortType.TotalViews]: 'total_views'//=
-//   }
-
+const {Limit, Offset} = DefaultQueryParams;
 
 const enum DateFilter {
     All = 'all',
@@ -85,22 +78,23 @@ class NewsController {
         try {
             // const user_id = req.user?.user_id || '0';
             const {body, user} = req;
-            console.log({user}, '+++++++++   ++++++++   +++++++++')
-            const user_added_id = user?.user_id || '1';
+            console.log({user}, '+++++++++   addNews   +++++++++')
+            const user_added_id = user.user_id;
             const dir = req.query.dir as string;
             const file = req.file as ImageFile;
             console.log({dir, body})
         
-            // HARDCODE user_added_id = 1 !!!   
             const { news_title, news_text } = body as SimpleDict;
             const fields = [ {user_added_id}, {news_title}, {news_text} ] as SimpleDict[];
-            const news_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
+
+            const news_main_picture_id = await imageService.createImage({
+                file,  dir: ImageDir.News, table: ImageType.MainPictures, user_added_id
+            }) as string;
 
             const allFields = [...fields, {news_main_picture_id}]
-            const sqlQuery = getDataInsertQueryStr(allFields, dir)
+            const sqlQuery = getDataInsertQuery(allFields, 'news', 'news_id')
             const result = await sequelize.query(sqlQuery, {
-                // HARDCODE user_added_id = 1 !!! 
-                replacements: {...body, news_main_picture_id, user_added_id: '1'}, 
+                replacements: {...body, news_main_picture_id, user_added_id}, 
                 type: "INSERT"
             })
 
@@ -119,25 +113,17 @@ class NewsController {
         console.log('_________________        |     changePlace    |        ___________'      )
         try {
             const {body, user} = req;
-            const user_added_id = user?.user_id || '1';
+            const user_added_id = user.user_id;
             const {id} = req.params
-            const dir = req.query.dir as string;
             const file = req.file as ImageFile;
-            const news_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
-            // HARDCODE user_added_id = 1 !!!   
-            const {
-                // user_added_id = '1', 
-                news_text, news_title, isPicChanged
-            } = body as SimpleDict;
-            const fields = [
-                {news_text}, {news_title}, {user_added_id}, 
-
-
-            ] as SimpleDict[];
-            
+            const news_main_picture_id = await imageService.createImage({
+                file,  dir: ImageDir.News, table: ImageType.MainPictures, user_added_id
+            }) as string;
+            const { news_text, news_title, isPicChanged } = body as SimpleDict;
+            const fields = [ {news_text}, {news_title}, {user_added_id} ] as SimpleDict[];
             const newsPictureIdValue = getValueOrNull(news_main_picture_id);
             const allFields = [...fields, isPicChanged ? {news_main_picture_id} : null].filter((item) => item)
-            const sqlQuery = getDataUpdateQueryStrDateUpd(allFields, dir)
+            const sqlQuery = getDataUpdateQuery(allFields, 'news', 'news_id', true);
 
 
             const result = await sequelize.query(sqlQuery, {

@@ -1,7 +1,7 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { StatusCode, Column, DefaultQueryParams, ImageType } from "../const/const";
-import { getDataFromSQL,  getDataInsertQuery,  getDataInsertQueryStr,  getDataUpdateQueryStr,  getDataUpdateQueryStrDateUpd,  insertView } from "../utils/sql-utils";
+import { StatusCode, Column, DefaultQueryParams, ImageType, ImageDir } from "../const/const";
+import { getDataFromSQL,  getDataInsertQuery,  getDataUpdateQuery,  insertView } from "../utils/sql-utils";
 
 import { sqlQueryCardService } from "../service/query-card-service";
 import { imageService } from "../service/image-service";
@@ -72,10 +72,9 @@ class NewsCommentsController {
 
     async addNewsComment (req: UserRequest, res: Response ) {
         try {
-            // const user_id = req.user?.user_id || '0';
             const {body, user} = req;
             console.log({user}, '+++++++++   addNewsComment   +++++++++')
-            const user_added_id = user?.user_id || '1';
+            const user_added_id = user.user_id;
             const dir = req.query.dir as string;
             const file = req.file as ImageFile;
             console.log({dir, body})
@@ -83,7 +82,9 @@ class NewsCommentsController {
             // HARDCODE user_added_id = 1 !!!   
             const { text, parent_comment_id, root_comment_id, news_id } = body as SimpleDict;
             const fields = [ {user_added_id}, {text}, {parent_comment_id}, {root_comment_id}, {news_id} ] as SimpleDict[];
-            const image_id = await imageService.createImage({file, type: ImageType.comment, dir}) as string;
+            const image_id = await imageService.createImage({
+                file,  dir: ImageDir.Comments, table: ImageType.Images, user_added_id
+            }) as string;
 
             const allFields = [...fields, {image_id}]
             const sqlQuery = getDataInsertQuery(allFields, 'news_comments', 'comment_id');
@@ -106,46 +107,39 @@ class NewsCommentsController {
         } 
     }
 
-    async changeNews (req: UserRequest, res: Response ) {
-        console.log('_________________        |     changePlace    |        ___________'      )
-        try {
-            const {body, user} = req;
-            const user_added_id = user?.user_id || '1';
-            const {id} = req.params
-            const dir = req.query.dir as string;
-            const file = req.file as ImageFile;
-            const news_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
-            // HARDCODE user_added_id = 1 !!!   
-            const {
-                // user_added_id = '1', 
-                news_text, news_title, isPicChanged
-            } = body as SimpleDict;
-            const fields = [
-                {news_text}, {news_title}, {user_added_id}, 
+    // async changeNews (req: UserRequest, res: Response ) {
+    //     console.log('_________________        |     changePlace    |        ___________'      )
+    //     try {
+    //         const {body, user} = req;
+    //         const user_added_id = user.user_id;
+    //         const {id} = req.params
+    //         const file = req.file as ImageFile;
+    //         const news_main_picture_id = await imageService.createImage({
+    //             file, column: 'news_id', dir: 'news', table: 'news', user_added_id
+    //         }) as string;
+
+    //         const { news_text, news_title, isPicChanged } = body as SimpleDict;
+    //         const fields = [ {news_text}, {news_title}, {user_added_id} ] as SimpleDict[];
+    //         const newsPictureIdValue = getValueOrNull(news_main_picture_id);
+    //         const allFields = [...fields, isPicChanged ? {news_main_picture_id} : null].filter((item) => item)
+    //         const sqlQuery = getDataUpdateQuery(allFields, 'news', 'news_id', true);
 
 
-            ] as SimpleDict[];
-            
-            const newsPictureIdValue = getValueOrNull(news_main_picture_id);
-            const allFields = [...fields, isPicChanged ? {news_main_picture_id} : null].filter((item) => item)
-            const sqlQuery = getDataUpdateQueryStrDateUpd(allFields, dir)
+    //         const result = await sequelize.query(sqlQuery, {
+    //             replacements: getNullObj({...body, news_main_picture_id: newsPictureIdValue, user_added_id, id}), 
+    //             type: "UPDATE"
+    //         })
 
+    //         console.log({file, result})
 
-            const result = await sequelize.query(sqlQuery, {
-                replacements: getNullObj({...body, news_main_picture_id: newsPictureIdValue, user_added_id, id}), 
-                type: "UPDATE"
-            })
-
-            console.log({file, result})
-
-            return res.status(StatusCode.Added).json({sqlQuery, id})
+    //         return res.status(StatusCode.Added).json({sqlQuery, id})
 
         
-        } catch (err) {
-            const {message} = err;
-            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
-        } 
-    }
+    //     } catch (err) {
+    //         const {message} = err;
+    //         throw new ApiError(StatusCode.ServerError, message || 'unknown error')
+    //     } 
+    // }
 
     async getNewsCommentsByNewsId(req: Request, res: Response) {
 

@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { ColumnId, ImageType, StatusCode, TableName } from "../const/const";
 import { sequelize } from "../sequelize";
-import { getDataFromSQL, getDataFromSQLWithTitles, getTitlesQuery } from "../utils/sql-utils";
+import { getDataFromSQL, getDataFromSQLWithTitles, getIdFromTable, getTitlesQuery } from "../utils/sql-utils";
 import { ApiError } from "../custom-errors/api-error";
 import { filesRemover } from "../utils/file-remover";
 import { checkDigitList } from "../utils/cheks-utils";
 
-const getIdFromTable = (table: string) => table.slice(0, -1) + '_id'
+// const getIdFromTable = (table: string) => table.slice(0, -1) + '_id'
 
 
 
@@ -52,7 +52,7 @@ class ImagesController {
     async postImage(req: Request, res: Response) {
         try {
             const {filename, destination, mimetype, size} = req.file;
-            const {type = ImageType.images } = req.query;
+            const {type = ImageType.Images } = req.query;
             const table = ImageType[type as string] 
             const mainId = getIdFromTable(table)
 //!!! user_added_id HARDCODE

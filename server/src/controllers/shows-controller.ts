@@ -1,7 +1,7 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { Column, ColumnId, DefaultQueryParams, ImageType, OrderValues, SortDirection, SortType, StatusCode } from "../const/const";
-import { convertFormDataToDate, getDataFromSQL, getDataInsertQueryStr, getDataUpdateQueryStr, getTitles, insertView } from "../utils/sql-utils";
+import { Column, ColumnId, DefaultQueryParams, ImageDir, ImageType, OrderValues, SortDirection, SortType, StatusCode } from "../const/const";
+import { getDataFromSQL, getDataInsertQuery, getDataUpdateQuery, getTitles, insertView } from "../utils/sql-utils";
 import { imageService } from "../service/image-service";
 import { ImageFile, SimpleDict, UserPseudoType, UserRequest } from "../types";
 import { ApiError } from "../custom-errors/api-error";
@@ -264,25 +264,31 @@ class ShowsController {
             // return res.status(500).json({message: 'error getShowsByColumnId'})
         }
     }
-    async addShow(req: Request, res: Response ) {
+    async addShow(req: UserRequest, res: Response ) {
 
         try {
-            const {body} = req;
+            const {body, user} = req;
+            const user_added_id = user.user_id;
             const dir = req.query.dir as string;
             console.log({dir, body})
             const file = req.file as ImageFile;
-            const show_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
-            // HARDCODE user_added_id = 1 !!!   
-            const {user_added_id = '1', event_id, comedian_id, place_id, language_id, show_date, show_name, show_name_en, show_description} = body as SimpleDict;
-            const fields = [{show_name}, {show_name_en},{user_added_id}, {event_id}, {comedian_id}, {place_id}, {language_id}, {show_date}, {show_description}] as SimpleDict[];
+
+            const show_main_picture_id = await imageService.createImage({
+                file,  dir: ImageDir.Shows, table: ImageType.MainPictures, user_added_id
+            }) as string;
+
+            const {event_id, comedian_id, place_id, language_id, show_date, show_name, show_name_en, show_description} = body as SimpleDict;
+            const fields = [
+                {show_name}, {show_name_en}, 
+                {user_added_id}, {event_id}, {comedian_id}, {place_id}, {language_id}, {show_date}, {show_description}
+            ] as SimpleDict[];
+
             const allFields = [...fields, {show_main_picture_id}]
 
-            const sqlQuery = getDataInsertQueryStr(allFields, dir)
-
+            const sqlQuery = getDataInsertQuery(allFields, 'shows', 'show_id')
             
             const result = await sequelize.query(sqlQuery, {
-                // HARDCODE user_added_id = 1 !!! 
-                replacements: {...body, show_main_picture_id: show_main_picture_id, user_added_id: '1'}, 
+                replacements: {...body, show_main_picture_id: show_main_picture_id, user_added_id}, 
                 type: "INSERT"
             })
 
@@ -297,20 +303,25 @@ class ShowsController {
         }
     }
 
-    async changeShow (req: Request, res: Response ) {
+    async changeShow (req: UserRequest, res: Response ) {
         try {
-            const {body} = req;
+            const {body, user} = req;
+            const user_added_id = user.user_id;
             const {id} = req.params
             const dir = req.query.dir as string;
             console.log({dir, body})
             const file = req.file as ImageFile;
-            const show_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
-            // HARDCODE user_added_id = 1 !!!   
+
+            const show_main_picture_id = await imageService.createImage({
+                file,  dir: ImageDir.Shows, table: ImageType.MainPictures, user_added_id
+            }) as string;
+
             const {
-                user_added_id = '1', event_id, comedian_id, place_id, language_id, 
+                event_id, comedian_id, place_id, language_id, 
                 show_date, show_name, show_name_en, show_description,
                 isPicChanged
             } = body as SimpleDict;
+
             const fields = [
                 {user_added_id}, {event_id}, {comedian_id}, {place_id}, {language_id}, 
                 {show_date}, {show_name}, {show_name_en}, {show_description},
@@ -319,10 +330,10 @@ class ShowsController {
         
             const pictureIdValue = getValueOrNull(show_main_picture_id);
             const allFields = [...fields, isPicChanged ? {show_main_picture_id} : null].filter((item) => item);
-            const sqlQuery = getDataUpdateQueryStr(allFields, dir)
+            const sqlQuery = getDataUpdateQuery(allFields, 'shows', 'show_id');
+
             const result = await sequelize.query(sqlQuery, {
-                // HARDCODE user_added_id = 1 !!! 
-                replacements: getNullObj({...body, show_main_picture_id: pictureIdValue, user_added_id: '1', id}),
+                replacements: getNullObj({...body, show_main_picture_id: pictureIdValue, user_added_id, id}),
                 type: "UPDATE"
             })
 

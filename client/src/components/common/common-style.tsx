@@ -210,3 +210,10 @@ export const UserLink = styled(Link)`
     color: #b6860d;
   }
 `;
+
+export const AdminFormSection = styled.section`
+  padding: 0 1rem;
+  @media (max-width: 400px) {
+    padding: 0 .1rem;
+  }
+`

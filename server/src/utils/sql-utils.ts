@@ -130,48 +130,78 @@ const prepareFields = (fields: string[]) => {
 //     return sqlQuery
 // }
 
-export const getDataInsertQueryStr = (fields: SimpleDict[], dir: string) => {
+// export const getDataInsertQueryStr = (fields: SimpleDict[], dir: string) => {
+//     console.log({fields})
+//     const fieldNames = getFieldNames(fields);
+//     const columnId = getIdFromTable(dir);
+//     const fieldsStr = fieldNames.join(', ');
+//     const valuesStr = prepareFieldsToQuery(filterNotEmpty(fields)).join(', ');
+//     console.log({fieldsStr, valuesStr})
+//     const sqlQuery = `
+//     INSERT INTO ${dir} (${fieldsStr})
+//     VALUES (${valuesStr})
+//     RETURNING ${columnId}
+//     `
+//     return sqlQuery
+// }
+
+export const getDataInsertQuery = (fields: SimpleDict[], table: string, column: string) => {
     console.log({fields})
     const fieldNames = getFieldNames(fields);
-    const columnId = getIdFromTable(dir);
     const fieldsStr = fieldNames.join(', ');
     const valuesStr = prepareFieldsToQuery(filterNotEmpty(fields)).join(', ');
     console.log({fieldsStr, valuesStr})
     const sqlQuery = `
-    INSERT INTO ${dir} (${fieldsStr})
+    INSERT INTO ${table} (${fieldsStr})
     VALUES (${valuesStr})
-    RETURNING ${columnId}
+    RETURNING ${column}
     `
     return sqlQuery
 }
 
-export const getDataInsertQuery = (fields: SimpleDict[], tableName: string, columnName: string) => {
-    console.log({fields})
-    const fieldNames = getFieldNames(fields);
-    const fieldsStr = fieldNames.join(', ');
-    const valuesStr = prepareFieldsToQuery(filterNotEmpty(fields)).join(', ');
-    console.log({fieldsStr, valuesStr})
-    const sqlQuery = `
-    INSERT INTO ${tableName} (${fieldsStr})
-    VALUES (${valuesStr})
-    RETURNING ${columnName}
-    `
-    return sqlQuery
-}
+// export const getDataUpdateQuery = (fields: SimpleDict[], table: string, column: string) => {
+//     console.log({fields})
+//     const fieldNames = getFieldNames(fields, true);
+//     const fieldsStr = fieldNames.join(', ');
+//     const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ');
+//     console.log({fieldsStr, valuesStr})
+//     const sqlQuery = `
+//         UPDATE ${table} 
+//         SET (${fieldsStr}) = (${valuesStr})
+//         WHERE ${column} = :id
+//     `
+//     return sqlQuery
+// }
 
-export const getDataUpdateQueryDateUpd = (fields: SimpleDict[], tableName: string, columnName: string) => {
+export const getDataUpdateQuery = (fields: SimpleDict[], table: string, column: string, updDates=false) => {
     console.log({fields})
     const fieldNames = getFieldNames(fields, true);
-    const fieldsStr = fieldNames.join(', ') + ', date_updated';
-    const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ') + ', CURRENT_TIMESTAMP';
-    console.log({fieldsStr, valuesStr})
+    const fieldsStr = fieldNames.join(', ');
+    const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ');
+    const fieldsStrUpd = [fieldsStr, updDates ? 'date_updated' : null].filter((item) => item).join(', ');
+    const valuesStrUpd = [valuesStr, updDates ? 'CURRENT_TIMESTAMP' : null].filter((item) => item).join(', ');
+    console.log({fieldsStrUpd, valuesStrUpd})
     const sqlQuery = `
-        UPDATE ${tableName} 
-        SET (${fieldsStr}) = (${valuesStr})
-        WHERE ${columnName} = :id
+        UPDATE ${table} 
+        SET (${fieldsStrUpd}) = (${valuesStrUpd})
+        WHERE ${column} = :id
     `
     return sqlQuery
 }
+
+// export const getDataUpdateQueryDateUpd = (fields: SimpleDict[], tableName: string, columnName: string) => {
+//     console.log({fields})
+//     const fieldNames = getFieldNames(fields, true);
+//     const fieldsStr = fieldNames.join(', ') + ', date_updated';
+//     const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ') + ', CURRENT_TIMESTAMP';
+//     console.log({fieldsStr, valuesStr})
+//     const sqlQuery = `
+//         UPDATE ${tableName} 
+//         SET (${fieldsStr}) = (${valuesStr})
+//         WHERE ${columnName} = :id
+//     `
+//     return sqlQuery
+// }
 
 
 /**
@@ -192,37 +222,37 @@ export const prepareFieldsToQuery = (fields: SimpleDict[]) => {
     })
 }
 
-export const getDataUpdateQueryStr = (fields: SimpleDict[], dir: string) => {
-    console.log({fields})
-    const fieldNames = getFieldNames(fields, true);
-    const columnId = getIdFromTable(dir);
-    const fieldsStr = fieldNames.join(', ');
-    // const valuesStr = prepareFields(fieldNames).join(', ')
-    const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ');
-    console.log({fieldsStr, valuesStr})
-    const sqlQuery = `
-        UPDATE ${dir} 
-        SET (${fieldsStr}) = (${valuesStr})
-        WHERE ${columnId} = :id
-    `
-    return sqlQuery
-}
+// export const getDataUpdateQueryStr = (fields: SimpleDict[], dir: string) => {
+//     console.log({fields})
+//     const fieldNames = getFieldNames(fields, true);
+//     const columnId = getIdFromTable(dir);
+//     const fieldsStr = fieldNames.join(', ');
+//     // const valuesStr = prepareFields(fieldNames).join(', ')
+//     const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ');
+//     console.log({fieldsStr, valuesStr})
+//     const sqlQuery = `
+//         UPDATE ${dir} 
+//         SET (${fieldsStr}) = (${valuesStr})
+//         WHERE ${columnId} = :id
+//     `
+//     return sqlQuery
+// }
 
-export const getDataUpdateQueryStrDateUpd = (fields: SimpleDict[], dir: string) => {
-    console.log({fields})
-    const fieldNames = getFieldNames(fields, true);
-    const columnId = getIdFromTable(dir);
-    const fieldsStr = fieldNames.join(', ') + ', date_updated';
-    // const valuesStr = prepareFields(fieldNames).join(', ')
-    const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ') + ', CURRENT_TIMESTAMP';
-    console.log({fieldsStr, valuesStr})
-    const sqlQuery = `
-        UPDATE ${dir} 
-        SET (${fieldsStr}) = (${valuesStr})
-        WHERE ${columnId} = :id
-    `
-    return sqlQuery
-}
+// export const getDataUpdateQueryStrDateUpd = (fields: SimpleDict[], dir: string) => {
+//     console.log({fields})
+//     const fieldNames = getFieldNames(fields, true);
+//     const columnId = getIdFromTable(dir);
+//     const fieldsStr = fieldNames.join(', ') + ', date_updated';
+//     // const valuesStr = prepareFields(fieldNames).join(', ')
+//     const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ') + ', CURRENT_TIMESTAMP';
+//     console.log({fieldsStr, valuesStr})
+//     const sqlQuery = `
+//         UPDATE ${dir} 
+//         SET (${fieldsStr}) = (${valuesStr})
+//         WHERE ${columnId} = :id
+//     `
+//     return sqlQuery
+// }
 
 
 /**

@@ -2,36 +2,40 @@ import { writeFile } from "fs/promises"
 import { ImageType } from "../const/const";
 import { sequelize } from "../sequelize";
 import { ImageFile } from "../types";
-import { getIdFromTable } from "../utils/sql-utils";
+// import { getIdFromTable } from "../utils/sql-utils";
 import path from "path";
+import { getIdFromTable } from "../utils/sql-utils";
 
-
+type CreateImageType = {
+    file: ImageFile, 
+    table: string, 
+    dir: string,
+    user_added_id: string
+}
 
 class ImageService {
-    async createImage({file, type, dir} : {file: ImageFile, type: string, dir: string}) {
+    async createImage({file, table, dir, user_added_id} : CreateImageType) {
         if (!file) {
             return '';
         }
+        const column = getIdFromTable(table);
         const {filename, mimetype, size} = file;
-        const table = ImageType[type] || ImageType.images;
-        const mainId = getIdFromTable(table);
         const path = `images/${dir || 'default'}/`
-        //!!! user_added_id HARDCODE = 1
 
         const result = await sequelize.query(`
             INSERT INTO ${table} (user_added_id, filename, destination, mimetype, size) 
-            VALUES (1, :filename, :path, :mimetype, :size)
-            RETURNING ${mainId}
+            VALUES (:user_added_id, :filename, :path, :mimetype, :size)
+            RETURNING ${column}
         `, {
-            replacements: {filename, path, mimetype, size},
+            replacements: {filename, path, mimetype, size, user_added_id},
             type: 'INSERT'
         });
         console.log(result[0][0], 'result[0][0]')
 
-        return result[0][0][mainId];
+        return result[0][0][column];
     }
 
-    async saveFile( file: File, name: string, type: string, dir: string ) {
+    async saveFile( file: File, name: string, dir: string ) {
 
         try {
             const filePath = path.resolve(__dirname, `../files/images/${dir}/${name}`)

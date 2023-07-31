@@ -3,7 +3,7 @@ import { ImageFile, MessageFromClient } from "../../types";
 import { chatService } from "../../service/chat-service";
 import { SocketEvent } from "../../const/socket-const";
 import { imageService } from "../../service/image-service";
-import { ImageType } from "../../const/const";
+import { ImageDir, ImageType } from "../../const/const";
 import { getNewFileName } from "../../utils/utils";
 
 
@@ -16,9 +16,11 @@ export const messageHandler = async (io: Server, socket: Socket, data: MessageFr
     if (fileData) {
         const {file, name, size, type} = fileData;
         const filename = getNewFileName(name)
-        await imageService.saveFile(file, filename, type, ImageType.chat);
+        await imageService.saveFile(file, filename, ImageDir.Chat);
         const fileInfo: ImageFile = { destination: `/image/chat/`, filename, mimetype: type, size }
-        imageId = await imageService.createImage({file: fileInfo, dir: ImageType.chat, type: ImageType.images}) as string;
+        imageId = await imageService.createImage({
+            file: fileInfo, dir: ImageDir.Chat, table: ImageType.Images, user_added_id: userId
+        }) as string;
     }
     // добавить сообщение в БД
     const messageId = await chatService.addMessage(userId, roomId, text, false, imageId, quoteId);

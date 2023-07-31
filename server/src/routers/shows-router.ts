@@ -13,8 +13,8 @@ showsRouter.post('/rate-show', authMiddleware, asyncHandler(showsController.rate
 
 showsRouter.get('/:id', userMiddleware, asyncHandler(showsController.getShowById) );
 showsRouter.get('/:id/votes', showsController.getVotesByShowId);
-showsRouter.post('/',  imageUploader.single('image'), asyncHandler(showsController.addShow));
-showsRouter.put('/:id', imageUploader.single('image'), asyncHandler(showsController.changeShow));
+showsRouter.post('/', authMiddleware, imageUploader.single('image'), asyncHandler(showsController.addShow));
+showsRouter.put('/:id', authMiddleware, imageUploader.single('image'), asyncHandler(showsController.changeShow));
 
 
 

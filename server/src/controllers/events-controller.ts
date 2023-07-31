@@ -1,8 +1,8 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import {  DefaultQueryParams, StatusCode, EventStatus, ImageType, TableName, Column, SortType, SortDirection } from "../const/const";
-import {  getDataFromSQL,  getDataFromSQLWithTitles,  getDataInsertQueryStr, getDataUpdateQueryStr, getTitles, getTitlesQuery, insertView } from "../utils/sql-utils";
-import { ImageFile, SimpleDict, TitlesDataType } from "../types";
+import {  DefaultQueryParams, StatusCode, EventStatus, ImageType, TableName, Column, SortType, SortDirection, ImageDir } from "../const/const";
+import {  getDataFromSQL,  getDataFromSQLWithTitles,  getDataInsertQuery, getDataUpdateQuery, getTitles, getTitlesQuery, insertView } from "../utils/sql-utils";
+import { ImageFile, SimpleDict, TitlesDataType, UserRequest } from "../types";
 import { imageService } from "../service/image-service";
 import { ApiError } from "../custom-errors/api-error";
 import { getDefaultFromToYears } from "../utils/date-utils";
@@ -89,27 +89,28 @@ class EventsController {
     }
 
 
-    async addEvent (req: Request, res: Response ) {
+    async addEvent (req: UserRequest, res: Response ) {
 
         // const getStringStatus = (status: string|string[]) => typeof status === 'string' ? status : status[0];
 
         try {
-            const {body} = req;
+            const {body, user} = req;
+            const user_added_id = user.user_id;
             const dir = req.query.dir as string;
             console.log({dir, body})
 
             const file = req.file as ImageFile;
-            const event_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
-            // HARDCODE user_added_id = 1 !!!   + user_added_id
+            const event_main_picture_id = await imageService.createImage({
+                file, dir: ImageDir.Events, table: ImageType.MainPictures, user_added_id
+            }) as string;
             
-            const {user_added_id = '1', event_status, place_id, event_date, event_name, event_name_en, event_description} = body as SimpleDict;
+            const {event_status, place_id, event_date, event_name, event_name_en, event_description} = body as SimpleDict;
             console.log(typeof event_status)
             const fields = [{event_status}, {user_added_id}, {event_name}, {event_name_en}, {place_id}, {event_date}, {event_description}] as SimpleDict[];
             const allFields = [...fields, {event_main_picture_id}];
 
-            const sqlQuery = getDataInsertQueryStr(allFields, dir)
+            const sqlQuery = getDataInsertQuery(allFields, 'events', 'event_id')
 
-            
             const result = await sequelize.query(sqlQuery, {
                 // HARDCODE user_added_id = 1 !!! +  user_added_id
                 replacements: {...body, event_main_picture_id, user_added_id: '1'}, 
@@ -127,20 +128,22 @@ class EventsController {
         } 
     }
 
-    async changeEvent (req: Request, res: Response ) {
+    async changeEvent (req: UserRequest, res: Response ) {
         try {
-            const {body} = req;
+            const {body, user} = req;
+            const user_added_id = user.user_id
             const {id} = req.params
             const dir = req.query.dir as string;
             console.log({dir, body})
             const file = req.file as ImageFile;
-            const event_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
-            // HARDCODE user_added_id = 1 !!!   
-            const {
-                user_added_id = '1',  place_id, 
-                event_date, event_name, event_name_en, event_description, event_status,
-                isPicChanged
+            const event_main_picture_id = await imageService.createImage({
+                file, dir: ImageDir.Events, table: ImageType.MainPictures, user_added_id
+            }) as string;
+
+            const {  
+                place_id, event_date, event_name, event_name_en, event_description, event_status, isPicChanged
             } = body as SimpleDict;
+
             const fields = [
                 {user_added_id}, {place_id}, 
                 {event_date}, {event_name}, {event_name_en}, {event_description}, {event_status},
@@ -149,10 +152,9 @@ class EventsController {
         
             const pictureIdValue = getValueOrNull(event_main_picture_id);
             const allFields = [...fields, isPicChanged ? {event_main_picture_id} : null].filter((item) => item);
-            const sqlQuery = getDataUpdateQueryStr(allFields, dir);
+            const sqlQuery = getDataUpdateQuery(allFields, 'events', 'event_id');
             const result = await sequelize.query(sqlQuery, {
-                // HARDCODE user_added_id = 1 !!! 
-                replacements: getNullObj({...body, event_main_picture_id: pictureIdValue, user_added_id: '1', id}),
+                replacements: getNullObj({...body, event_main_picture_id: pictureIdValue, user_added_id, id}),
                 type: "UPDATE"
             })
 

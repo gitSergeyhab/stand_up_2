@@ -105,11 +105,20 @@ export const enum Role {
 }
 
 export const  ImageType = {
-  images: 'images',
-  avatars: 'avatars',
-  main_pictures: 'main_pictures',
-  chat: 'chat',
-  comment: 'news_comments'
+  Images: 'images',
+  Avatars: 'avatars',
+  MainPictures: 'main_pictures',
+} as const;
+
+export const  ImageDir = {
+  Chat: 'chat',
+  News: 'news',
+  Comments: 'comments',
+  Shows: 'shows',
+  Comedians: 'comedians',
+  Events: 'events',
+  Places: 'places',
+  Default: 'default'
 } as const;
 
 

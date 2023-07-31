@@ -1,8 +1,8 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
-import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId, ImageType, DefaultQueryParams, SortType, SortDirection } from "../const/const";
-import { getDataFromSQL, getDataInsertQueryStr, getDataUpdateQueryStr, getTitles, insertView } from "../utils/sql-utils";
-import { ImageFile, SimpleDict } from "../types";
+import { OrderValues, StatusCode, SQLFunctionName, Column, ColumnId, ImageType, DefaultQueryParams, SortType, SortDirection, ImageDir } from "../const/const";
+import { getDataFromSQL, getDataInsertQuery, getDataUpdateQuery, getTitles, insertView } from "../utils/sql-utils";
+import { ImageFile, SimpleDict, UserRequest } from "../types";
 import { imageService } from "../service/image-service";
 import { ApiError } from "../custom-errors/api-error";
 import { getDefaultFromToYears } from "../utils/date-utils";
@@ -113,16 +113,19 @@ class PlacesController {
         }
     }
 
-    async addPlace (req: Request, res: Response ) {
+    async addPlace (req: UserRequest, res: Response ) {
         try {
-            const {body} = req;
+            const {body, user} = req;
+            const user_added_id = user.user_id;
             const dir = req.query.dir as string;
             console.log({dir, body})
             const file = req.file as ImageFile;
-            const place_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
+            const place_main_picture_id = await imageService.createImage({
+                file, dir: ImageDir.Places, table: ImageType.MainPictures, user_added_id
+            }) as string;
             // HARDCODE user_added_id = 1 !!!   
             const {
-                user_added_id = '1', country_id, 
+                country_id, 
                 place_name, place_name_en, 
                 place_city, place_city_en,
                 place_date_founded, place_date_closed,
@@ -139,12 +142,10 @@ class PlacesController {
             ] as SimpleDict[];
             const allFields = [...fields, {place_main_picture_id}]
 
-            const sqlQuery = getDataInsertQueryStr(allFields, dir)
-
+            const sqlQuery = getDataInsertQuery(allFields, 'places', 'place_id')
 
             const result = await sequelize.query(sqlQuery, {
-                // HARDCODE user_added_id = 1 !!! 
-                replacements: {...body, place_main_picture_id, user_added_id: '1'}, 
+                replacements: {...body, place_main_picture_id, user_added_id}, 
                 type: "INSERT"
             })
 
@@ -159,21 +160,26 @@ class PlacesController {
         } 
     }
 
-    async changePlace (req: Request, res: Response ) {
+    async changePlace (req: UserRequest, res: Response ) {
         try {
-            const {body} = req;
+            const {body, user} = req;
+            const user_added_id = user.user_id;
             const {id} = req.params
             const dir = req.query.dir as string;
             const file = req.file as ImageFile;
-            const place_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
-            // HARDCODE user_added_id = 1 !!!   
+
+            const place_main_picture_id = await imageService.createImage({
+                file, dir: ImageDir.Places, table: ImageType.MainPictures, user_added_id
+            }) as string;
+
             const {
-                user_added_id = '1', country_id, 
+                country_id, 
                 place_name, place_name_en, 
                 place_city, place_city_en,
                 place_date_founded, place_date_closed,
                 place_description, isPicChanged
             } = body as SimpleDict;
+
             const fields = [
                 {user_added_id}, {country_id}, 
                 {place_name}, {place_name_en}, 
@@ -185,11 +191,11 @@ class PlacesController {
             
             const placePictureIdValue = getValueOrNull(place_main_picture_id);
             const allFields = [...fields, isPicChanged ? {place_main_picture_id} : null].filter((item) => item)
-            const sqlQuery = getDataUpdateQueryStr(allFields, dir)
+            const sqlQuery = getDataUpdateQuery(allFields,  'places', 'place_id')
 
 
             const result = await sequelize.query(sqlQuery, {
-                replacements: getNullObj({...body, place_main_picture_id: placePictureIdValue, user_added_id: '1', id}), 
+                replacements: getNullObj({...body, place_main_picture_id: placePictureIdValue, user_added_id, id}), 
                 type: "UPDATE"
             })
 

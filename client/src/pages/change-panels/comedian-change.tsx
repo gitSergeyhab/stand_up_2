@@ -6,6 +6,7 @@ import { ContentName } from "../../const/const";
 import { TabData } from "../../const/data";
 import { ComedianState } from "../../types/comedian-types";
 import { ComedianForm } from "../../components/forms/comedian-form";
+import { AdminFormSection } from "../../components/common/common-style";
 
 
 
@@ -35,9 +36,9 @@ export function ComedianChange () {
 
     <TopTabs tabProps={tabProps} />
 
-    <section>
-      <ComedianForm countries={data} state={state}/>
-    </section>
+    <AdminFormSection>
+      <ComedianForm state={state}/>
+    </AdminFormSection>
 
   </>
   )
