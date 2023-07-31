@@ -145,6 +145,34 @@ export const getDataInsertQueryStr = (fields: SimpleDict[], dir: string) => {
     return sqlQuery
 }
 
+export const getDataInsertQuery = (fields: SimpleDict[], tableName: string, columnName: string) => {
+    console.log({fields})
+    const fieldNames = getFieldNames(fields);
+    const fieldsStr = fieldNames.join(', ');
+    const valuesStr = prepareFieldsToQuery(filterNotEmpty(fields)).join(', ');
+    console.log({fieldsStr, valuesStr})
+    const sqlQuery = `
+    INSERT INTO ${tableName} (${fieldsStr})
+    VALUES (${valuesStr})
+    RETURNING ${columnName}
+    `
+    return sqlQuery
+}
+
+export const getDataUpdateQueryDateUpd = (fields: SimpleDict[], tableName: string, columnName: string) => {
+    console.log({fields})
+    const fieldNames = getFieldNames(fields, true);
+    const fieldsStr = fieldNames.join(', ') + ', date_updated';
+    const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ') + ', CURRENT_TIMESTAMP';
+    console.log({fieldsStr, valuesStr})
+    const sqlQuery = `
+        UPDATE ${tableName} 
+        SET (${fieldsStr}) = (${valuesStr})
+        WHERE ${columnName} = :id
+    `
+    return sqlQuery
+}
+
 
 /**
  * проверят поля на "" / _date / остальные и возвращает подготовленный массив значений

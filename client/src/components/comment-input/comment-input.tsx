@@ -8,6 +8,7 @@ import { getUser } from '../../store/user-reducer/user-selectors';
 import { InvisibleImageInput } from '../common/hidden-file-input';
 import { TextareaAutoHeight } from '../textarea-auto-height/textarea-auto-height';
 import { UserLink } from '../common/common-style';
+import { useAddNewsCommentMutation } from '../../store/news-api';
 
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
@@ -21,12 +22,13 @@ type FileData = {
 
 
 type CommentInputProps = {
+  newsId: string;
   rootCommentId?: string;
   parentCommentId?: string;
   parentUserNik?: string;
 }
 
-export function CommentInput({parentCommentId, parentUserNik, rootCommentId}: CommentInputProps) {
+export function CommentInput({parentCommentId, parentUserNik, rootCommentId, newsId}: CommentInputProps) {
   const fileRef = useRef<HTMLInputElement|null>(null);
   const textRef = useRef<HTMLTextAreaElement|null>(null);
   const formRef = useRef<HTMLFormElement|null>(null);
@@ -38,6 +40,8 @@ export function CommentInput({parentCommentId, parentUserNik, rootCommentId}: Co
   const [imgFileSrc, setImgFileSrc] = useState('');
   const [fileData, setFileData] = useState<null|FileData>(null);
 
+  const [addComment] = useAddNewsCommentMutation()
+
 
   if (!user) {
     return <NoUserDiv>Оставлять комментарии могут только авторизованные пользователи</NoUserDiv>
@@ -48,8 +52,18 @@ export function CommentInput({parentCommentId, parentUserNik, rootCommentId}: Co
   const handleSubmit: FormEventHandler = (evt) => {
     evt.preventDefault();
     const text = value.trim();
-    const userId = user.id;
-    const data = {text, fileData, userId, parentCommentId, rootCommentId};
+    const currentForm = formRef.current;
+    if (!currentForm) {
+      return;
+    }
+
+    const formData = new FormData(currentForm);
+    formData.append('news_id', newsId);
+    formData.append('parent_comment_id', parentCommentId || '');
+    formData.append('root_comment_id', rootCommentId || '');
+
+    const x = Object.fromEntries(formData);
+
 
     if (fileData && (fileData.size > MAX_FILE_SIZE)) {
       toast.warning('прикрепляемая картинка должна быть меньше 1 МБ');
@@ -61,7 +75,13 @@ export function CommentInput({parentCommentId, parentUserNik, rootCommentId}: Co
       return;
     }
 
-    console.log({data});
+    console.log({x})
+
+    addComment(formData)
+      .then((cid) => console.log({cid}))
+      .catch((err) => console.log({err}))
+
+    // console.log({data});
 
   }
 

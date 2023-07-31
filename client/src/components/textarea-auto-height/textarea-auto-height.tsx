@@ -43,5 +43,5 @@ export function TextareaAutoHeight  ({ setValue, value, textareaRef }: TextareaA
         textareaRef.current.style.height = `${scrollHeight  }px`;
       }
     }, [value, textareaRef]);
-  return <TextArea ref={textareaRef} onChange={textAreaChange} value={value}/>
+  return <TextArea ref={textareaRef} name="text" onChange={textAreaChange} value={value}/>
 }

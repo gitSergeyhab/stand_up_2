@@ -30,7 +30,7 @@ export function NewsCommentsBlock({newsId} : {newsId: string}) {
   return(
     <CommentSection>
       <CommentHeader>Комментарии</CommentHeader>
-      <CommentInput/>
+      <CommentInput newsId={newsId}/>
       <CommentUL>
         {commentsElements}
       </CommentUL>

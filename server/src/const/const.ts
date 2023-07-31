@@ -109,6 +109,7 @@ export const  ImageType = {
   avatars: 'avatars',
   main_pictures: 'main_pictures',
   chat: 'chat',
+  comment: 'news_comments'
 } as const;
 
 

@@ -1,7 +1,7 @@
 import { sequelize } from "../sequelize";
 import { Request, Response } from "express";
 import { StatusCode, Column, DefaultQueryParams, ImageType } from "../const/const";
-import { getDataFromSQL,  getDataInsertQueryStr,  getDataUpdateQueryStr,  getDataUpdateQueryStrDateUpd,  insertView } from "../utils/sql-utils";
+import { getDataFromSQL,  getDataInsertQuery,  getDataInsertQueryStr,  getDataUpdateQueryStr,  getDataUpdateQueryStrDateUpd,  insertView } from "../utils/sql-utils";
 
 import { sqlQueryCardService } from "../service/query-card-service";
 import { imageService } from "../service/image-service";
@@ -70,26 +70,28 @@ class NewsCommentsController {
     // }
 
 
-    async addNews (req: UserRequest, res: Response ) {
+    async addNewsComment (req: UserRequest, res: Response ) {
         try {
             // const user_id = req.user?.user_id || '0';
             const {body, user} = req;
-            console.log({user}, '+++++++++   ++++++++   +++++++++')
+            console.log({user}, '+++++++++   addNewsComment   +++++++++')
             const user_added_id = user?.user_id || '1';
             const dir = req.query.dir as string;
             const file = req.file as ImageFile;
             console.log({dir, body})
         
             // HARDCODE user_added_id = 1 !!!   
-            const { news_title, news_text } = body as SimpleDict;
-            const fields = [ {user_added_id}, {news_title}, {news_text} ] as SimpleDict[];
-            const news_main_picture_id = await imageService.createImage({file, type: ImageType.main_pictures, dir}) as string;
+            const { text, parent_comment_id, root_comment_id, news_id } = body as SimpleDict;
+            const fields = [ {user_added_id}, {text}, {parent_comment_id}, {root_comment_id}, {news_id} ] as SimpleDict[];
+            const image_id = await imageService.createImage({file, type: ImageType.comment, dir}) as string;
 
-            const allFields = [...fields, {news_main_picture_id}]
-            const sqlQuery = getDataInsertQueryStr(allFields, dir)
+            const allFields = [...fields, {image_id}]
+            const sqlQuery = getDataInsertQuery(allFields, 'news_comments', 'comment_id');
+
+            console.log({sqlQuery})
             const result = await sequelize.query(sqlQuery, {
                 // HARDCODE user_added_id = 1 !!! 
-                replacements: {...body, news_main_picture_id, user_added_id: '1'}, 
+                replacements: {...body, image_id, user_added_id}, 
                 type: "INSERT"
             })
 

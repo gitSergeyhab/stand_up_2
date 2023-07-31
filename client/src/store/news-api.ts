@@ -6,6 +6,14 @@ import { NewsCommentsDataCC } from '../types/news-comments-types';
 import { adaptServerNewsCommentsDataToClient } from '../utils/adapters/news-comments-adapter';
 
 
+// type CommentData = {
+//   text: string;
+//   fileData: FileData | null;
+//   userId: string;
+//   parentCommentId: string | undefined;
+//   rootCommentId: string | undefined;
+// }
+
 export const newsApi = createApi({
   reducerPath: 'newsApi',
   baseQuery: baseQueryWithReauth,
@@ -47,10 +55,18 @@ export const newsApi = createApi({
       providesTags: ['comments'],
     }),
 
+    addNewsComment: build.mutation<string, FormData>({
+      query: (body) => ({
+        url: '/news-comments',
+        method: 'POST',
+        body,
+        params: {dir: 'comments'}
+      })
+    })
   }),
 });
 
 export const {
   useGetNewsByIdQuery, useGetNewsListQuery, useAddNewsMutation, useChangeNewsMutation,
-  useGetCommentsByNewsIdQuery
+  useGetCommentsByNewsIdQuery, useAddNewsCommentMutation
  } = newsApi;
