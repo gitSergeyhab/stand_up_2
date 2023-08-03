@@ -120,7 +120,7 @@ class SQLQueryCardService {
             news_title,
             text,
             get_comments_by_root(comment_id) AS child_comments,
-            get_count_children_comments(comment_id) AS child_comment_count,
+            COALESCE(get_count_children_comments(comment_id), 0) AS child_comment_count,
             get_parent_comment(parent_comment_id) AS parent_comment,
             avatars.destination || avatars.filename AS avatar,
             images.destination || images.filename AS image

@@ -18,7 +18,6 @@ export function NewsPageInfo() {
 
   const { data, isError, isLoading, error } = useGetNewsByIdQuery(id);
 
-  console.log({data})
   if (isError) {
     return <ErrorPage error={error} />;
   }
@@ -26,8 +25,6 @@ export function NewsPageInfo() {
   if (isLoading || !data ) {
     return <BigSpinner />;
   }
-
-  console.log({data})
 
   const {
     dateAdded, dateUpdated,

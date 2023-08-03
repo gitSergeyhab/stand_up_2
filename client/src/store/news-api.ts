@@ -61,12 +61,23 @@ export const newsApi = createApi({
         method: 'POST',
         body,
         params: {dir: 'comments'}
-      })
+      }),
+      invalidatesTags: ['comments'],
+    }),
+
+    changeNewsComment: build.mutation<string, {body: FormData, id: string}>({
+      query: ({body, id}) => ({
+        url: `/news-comments/${id}`,
+        method: 'PUT',
+        body,
+        params: {dir: 'comments'}
+      }),
+      invalidatesTags: ['comments'],
     })
   }),
 });
 
 export const {
   useGetNewsByIdQuery, useGetNewsListQuery, useAddNewsMutation, useChangeNewsMutation,
-  useGetCommentsByNewsIdQuery, useAddNewsCommentMutation
+  useGetCommentsByNewsIdQuery, useAddNewsCommentMutation, useChangeNewsCommentMutation
  } = newsApi;

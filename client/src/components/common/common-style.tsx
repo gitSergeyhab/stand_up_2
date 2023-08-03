@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import styled, {css} from 'styled-components';
+import { HashLink } from 'react-router-hash-link';
 
 export const LogRegP = styled.p`
   color: #ffffff;
@@ -216,4 +217,8 @@ export const AdminFormSection = styled.section`
   @media (max-width: 400px) {
     padding: 0 .1rem;
   }
+`
+
+export const HiddenLink = styled(HashLink)`
+  ${hiddenStyle}
 `

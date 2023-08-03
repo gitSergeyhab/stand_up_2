@@ -1,6 +1,5 @@
-export const getValueOrNull = (value: string) => {
-    console.log({value}, value ? value : null)
-    return value ? value : null};
+export const getValueOrNull = (value: string) =>  value ? value : null;
+
 
 
 /**

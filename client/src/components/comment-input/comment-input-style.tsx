@@ -24,9 +24,8 @@ export const ChatTextarea = styled.textarea`
   overflow: visible;
 `;
 
-export const SendButton = styled.button.attrs({type: 'submit'})`
+export const SendButton = styled.button.attrs({type: 'submit'})<{disabled?: boolean}>`
   width: 2.5rem;
-  height: 100%;
   border: none;
   /* background-color: goldenrod; */
   border-radius: 6px;
@@ -43,7 +42,7 @@ export const SendButton = styled.button.attrs({type: 'submit'})`
     background-color: #4d0d0d;
     box-shadow: inset 2px 2px 2px #00000066;
   }
-
+  opacity: ${({disabled}) => disabled ? '0.5' : '1'};
   transition: color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
 `;
 
@@ -74,7 +73,7 @@ export const EmojiWrapper = styled.div`
   z-index: 2;
 `;
 
-export const EmojiButton = styled.button.attrs({type: 'button'})`
+export const EmojiButton = styled.button.attrs({type: 'button'})<{disabled?: boolean}>`
   height: min-content;
   width: min-content;
   padding: 0;
@@ -97,6 +96,8 @@ export const EmojiButton = styled.button.attrs({type: 'button'})`
     0.3s border-color ease-in-out,
     0.3s background-color ease-in-out
   ;
+
+  opacity: ${({disabled}) => disabled ? '0.5' : '1'};
 `;
 
 export const SmileFileWrapperDiv = styled.div`
@@ -109,7 +110,7 @@ export const SmileFileWrapperDiv = styled.div`
 `;
 
 
-export const FileButton = styled.button.attrs({type: 'button'})<{delBtn?: boolean}>`
+export const FileButton = styled.button.attrs({type: 'button'})<{delBtn?: boolean, disabled?: boolean}>`
   border: none;
   padding: 2px 4px 0;
   border-radius: 4px;
@@ -120,6 +121,7 @@ export const FileButton = styled.button.attrs({type: 'button'})<{delBtn?: boolea
     0.3s border-color ease-in-out,
     0.3s background-color ease-in-out
   ;
+  opacity: ${({disabled}) => disabled ? '0.5' : '1'};
 `
 ///
 
@@ -141,7 +143,8 @@ export const ControlsDiv = styled.div`
 export const ButtonsBlock = styled.div`
   display: flex;
   width: 100%;
-  padding: 0.5rem 0;
+  height: 40px;
+  padding: 0.1rem 0;
   justify-content: end;
   align-items: center;
   column-gap: 2rem;
@@ -152,3 +155,4 @@ export const CommentUserLink = styled(UserLink)`
   padding-left: 0.5rem;
   margin-bottom: .25rem;
 `
+

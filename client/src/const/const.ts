@@ -65,7 +65,8 @@ export const FilterName = {
   Offset: 'offset',
   Order: 'order',
   Direction: 'direction',
-  Radio: 'radio'
+  Radio: 'radio',
+  Comment: 'comment'
 } as const;
 
 export const enum Language {

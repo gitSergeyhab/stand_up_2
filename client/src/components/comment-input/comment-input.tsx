@@ -1,69 +1,76 @@
-import { useState, FormEventHandler, ChangeEventHandler, useRef } from 'react';
+import { useState, FormEventHandler, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
-import EmojiPicker, {Emoji, EmojiClickData} from 'emoji-picker-react';
-import { AiOutlineFileAdd, AiOutlineFileExcel } from 'react-icons/ai';
-import { ButtonsBlock, CommentInputForm, ContainerTextarea, ControlsDiv, EmojiButton, EmojiWrapper, FileButton, NoUserDiv, SendButton } from './comment-input-style';
+import { useDispatch, useSelector } from 'react-redux';
+import { CommentInputForm, ContainerTextarea, NoUserDiv } from './comment-input-style';
 import { getUser } from '../../store/user-reducer/user-selectors';
-import { InvisibleImageInput } from '../common/hidden-file-input';
 import { TextareaAutoHeight } from '../textarea-auto-height/textarea-auto-height';
 import { UserLink } from '../common/common-style';
-import { useAddNewsCommentMutation } from '../../store/news-api';
+import { useAddNewsCommentMutation, useChangeNewsCommentMutation } from '../../store/news-api';
+import { CommentInputButtons } from '../comment-input-buttons/comment-input-buttons';
+import { FileData } from '../../types/types';
+import { resetCommentInput } from '../../store/actions';
 
 
 const MAX_FILE_SIZE = 1 * 1024 * 1024;
 
-type FileData = {
-  file: File,
-  type: string,
-  size: number,
-  name: string
-}
-
-
 type CommentInputProps = {
   newsId: string;
   rootCommentId?: string;
-  parentCommentId?: string;
-  parentUserNik?: string;
+  commentId?: string;
+  userNik?: string;
+  defaultText?: string
+  image?: string;
 }
 
-export function CommentInput({parentCommentId, parentUserNik, rootCommentId, newsId}: CommentInputProps) {
-  const fileRef = useRef<HTMLInputElement|null>(null);
+export function CommentInput({commentId, userNik, rootCommentId, newsId, defaultText='', image}: CommentInputProps) {
   const textRef = useRef<HTMLTextAreaElement|null>(null);
   const formRef = useRef<HTMLFormElement|null>(null);
 
   const user = useSelector(getUser);
+  const dispatch = useDispatch()
 
-  const [isEmojiPicker, setEmojiPicker] = useState(false);
-  const [value, setValue] = useState('');
-  const [imgFileSrc, setImgFileSrc] = useState('');
+  const [value, setValue] = useState(defaultText);
   const [fileData, setFileData] = useState<null|FileData>(null);
+  const [disabled, setDisabled] = useState(false);
+  const [imgFileSrc, setImgFileSrc] = useState('');
+  const [isPicChanged, setPicChanged] = useState(false);
 
-  const [addComment] = useAddNewsCommentMutation()
-
+  const [addComment] = useAddNewsCommentMutation();
+  const [changeComment] = useChangeNewsCommentMutation();
 
   if (!user) {
     return <NoUserDiv>Оставлять комментарии могут только авторизованные пользователи</NoUserDiv>
   }
 
-  const handleEmojiBtnClick = () => setEmojiPicker((prev) => !prev);
-
   const handleSubmit: FormEventHandler = (evt) => {
     evt.preventDefault();
+
+    const scrollToComment = (id: string) => {
+      document.getElementById(id)?.scrollIntoView({block: 'center'});
+    }
+
+    const onSuccess = (data: string) => {
+      setTimeout(() => scrollToComment(`comment-${data}`), 250)
+      setValue('');
+      setImgFileSrc('');
+      dispatch(resetCommentInput());
+    }
+    const onAnyCase = () => setDisabled(false);
+    const onError = () =>  toast.error('добавление комментариев временно недоступно, попробуйте позже');
+
     const text = value.trim();
     const currentForm = formRef.current;
-    if (!currentForm) {
-      return;
-    }
+    if (!currentForm) return;
 
     const formData = new FormData(currentForm);
     formData.append('news_id', newsId);
-    formData.append('parent_comment_id', parentCommentId || '');
+    formData.append('parent_comment_id', commentId || '');
+
     formData.append('root_comment_id', rootCommentId || '');
-
-    const x = Object.fromEntries(formData);
-
+    if (isPicChanged) {
+      formData.append('isPicChanged', 'true');
+      setPicChanged(false);
+    }
 
     if (fileData && (fileData.size > MAX_FILE_SIZE)) {
       toast.warning('прикрепляемая картинка должна быть меньше 1 МБ');
@@ -75,69 +82,37 @@ export function CommentInput({parentCommentId, parentUserNik, rootCommentId, new
       return;
     }
 
-    console.log({x})
-
-    addComment(formData)
-      .then((cid) => console.log({cid}))
-      .catch((err) => console.log({err}))
-
-    // console.log({data});
-
-  }
-
-  const onEmojiClick = (emoji: EmojiClickData) => {
-    setValue((prev) => prev + emoji.emoji);
-    setEmojiPicker(false);
-    textRef.current?.focus();
-  }
-
-  const handleFileInputChange: ChangeEventHandler<HTMLInputElement> = (evt) => {
-    const {files} = evt.target
-    if (files && files[0]) {
-      setImgFileSrc(URL.createObjectURL(files[0]));
-      const {size, name, type} = files[0]
-      setFileData({file: files[0], size, name, type });
+    setDisabled(true)
+    if ((image || defaultText) && commentId) {
+      changeComment({body: formData, id: commentId}).unwrap().then(onSuccess).catch(onError).finally(onAnyCase);
+    } else {
+      addComment(formData).unwrap().then(onSuccess).catch(onError).finally(onAnyCase);
     }
   }
 
-  const handleFileBtnClick = () => {
-    const fileCurrent = fileRef.current;
-    if (imgFileSrc) {
-      setImgFileSrc('');
-      setFileData(null);
-      formRef.current?.reset(); // сброс картинки
-    } else if (fileCurrent) {
-      fileCurrent.value = '';
-      fileCurrent.click();
-    }
-  };
-
-  const emojiPicker = isEmojiPicker ? <EmojiWrapper><EmojiPicker onEmojiClick={onEmojiClick} /></EmojiWrapper> : null;
-  const chosenImage = imgFileSrc ? <img src={imgFileSrc} alt="картинка для сообщения" width={40} height={40} /> : null;
-  const imgForFileBtn = imgFileSrc ? <AiOutlineFileExcel size={20}/> : <AiOutlineFileAdd size={20}/>;
-  const fileButtonTitle  = !imgFileSrc ? 'добавить изображение не более 1Mb' : 'отменить изображение';
-  const parentUserLink = parentUserNik && parentCommentId ?
-    <UserLink to={`#comment-${parentCommentId}`}>@{parentUserNik}</UserLink> : null;
+  const parentUserLink = userNik && commentId ?
+    <UserLink to={`#comment-${commentId}`}>@{userNik}, </UserLink> : null;
 
   return (
     <CommentInputForm ref={formRef} onSubmit={handleSubmit} >
       <ContainerTextarea>
         {parentUserLink}
-        <TextareaAutoHeight textareaRef={textRef} value={value} setValue={setValue}/>
-        <ControlsDiv>
-          {chosenImage}
-          <ButtonsBlock>
-            <InvisibleImageInput ref={fileRef} id="image" name="image" onChange={handleFileInputChange}/>
-            <FileButton title={fileButtonTitle} onClick={handleFileBtnClick} delBtn={!!imgFileSrc}>
-              {imgForFileBtn}
-            </FileButton>
-            <EmojiButton onClick={handleEmojiBtnClick}><Emoji unified='1f603' size={20}/></EmojiButton>
-            {emojiPicker}
-            <SendButton>➤</SendButton>
-          </ButtonsBlock>
-        </ControlsDiv>
+        <TextareaAutoHeight
+          textareaRef={textRef}
+          value={value}
+          setValue={setValue}
+          disabled={disabled}
+          isAnswer={!!commentId}
+        />
+        <CommentInputButtons
+          disabled={disabled}
+          setFileData={setFileData}
+          setValue={setValue}
+          imgFileSrc={imgFileSrc}
+          setImgFileSrc={setImgFileSrc}
+          setPicChanged={setPicChanged}
+        />
       </ContainerTextarea>
     </CommentInputForm>
   )
 }
-

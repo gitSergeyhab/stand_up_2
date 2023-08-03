@@ -28,7 +28,6 @@ export function NewsPage() {
   const  {count, list} = data;
 
 
-  console.log({data}, '____________NewsPage')
   const cards = list.map((item) => <NewsCard key={item.newsId} news={item}/>)
 
   const pagination = count > DefaultPageParam.Limit ? <Pagination count={count}/> : null;

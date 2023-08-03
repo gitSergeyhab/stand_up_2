@@ -8,6 +8,7 @@ export const adaptServerParentCommentToClient = (data: ParentCommentSC): ParentC
 })
 
 export const adaptServerChildCommentToClient = (data: ChildCommentSC): ChildCommentCC => ({
+  newsId: data.news_id,
   commentId: data.comment_id,
   dateAdded: data.date_added,
   dateUpdated: data.date_updated,
@@ -34,7 +35,8 @@ export const adaptServerNewsCommentToClient = (data: NewsCommentSC): NewsComment
   rootCommentId: data.root_comment_id,
   avatar: data.avatar,
   image: data.image,
-  childComments: data.child_comments?.map(adaptServerChildCommentToClient)
+  childComments: data.child_comments?.map(adaptServerChildCommentToClient),
+
 });
 
 export const adaptServerNewsCommentsDataToClient = (result: NewsCommentsDataSC): NewsCommentsDataCC => ({

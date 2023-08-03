@@ -14,8 +14,8 @@ const Div = styled.div`
   word-wrap: break-word;
 `;
 
-const getDivWithLinks = (text: string) =>  (
-  <Div>
+const getDivWithLinks = (text: string, i: number) =>  (
+  <Div key={i}>
     <ReactLinkify
       componentDecorator={(decoratedHref, decoratedText, key) => (
           <a target="_blank" href={decoratedHref} key={key} rel="noreferrer">{decoratedText}</a>
@@ -29,7 +29,9 @@ const getDivWithLinks = (text: string) =>  (
  * @param text
  * @returns
  */
+
 export const getRowLinkedText = (text: string) => text.split('\n').map(getDivWithLinks);
+
 
 
 

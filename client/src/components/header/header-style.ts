@@ -4,7 +4,7 @@ import styled from 'styled-components';
 type NavProps = { shown: boolean };
 
 export const Nav = styled.nav`
-  position: fixed;
+  position: sticky;
   width: 100%;
   top: 0;
   z-index: 2;

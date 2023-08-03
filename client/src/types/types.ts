@@ -128,3 +128,12 @@ export type MainContentCC = {
   eventsByViews: GridCardType[];
   places: GridCardType[];
 }
+
+export type FileData = {
+  file: File,
+  type: string,
+  size: number,
+  name: string
+}
+
+export type CommentType = 're-comment' | 'correct' | undefined;

@@ -1,62 +1,33 @@
-import styled from "styled-components"
 import {RiQuestionAnswerLine} from 'react-icons/ri'
 import {TbWriting, TbTrashX} from 'react-icons/tb'
-
 import {BiLike, BiDislike} from 'react-icons/bi'
-import { useSelector } from "react-redux";
-import { ChildCommentCC } from "../../types/news-comments-types";
+import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "../../store/user-reducer/user-selectors";
+import { setCommentType, setCurrentComment } from "../../store/actions";
+import { ButtonsWrapper, CommentButton } from './comment-buttons-style';
 
-
-export const ButtonsWrapper = styled.div`
-  position: absolute;
-  top: 0.3rem;
-  right: 1rem;
-  display: flex;
-  align-items: center;
-  column-gap: 0.2rem;
-  scale: 1;
-  transition: scale 0.2s ease-in-out;
-  &:hover {
-    scale: 1.1;
-  }
-
-`;
-
-export const CommentButton = styled.button.attrs({type: 'button'})<{disabled?:boolean, chosen?:boolean}>`
-  border: none;
-  padding: 0;
-  margin: 0;
-  background-color: transparent;
-  transition: opacity 0.2s ease-in-out;
-  color: #FFF;
-  ${({disabled}) => disabled ? 'opacity: 0.4': ''};
-
-
-  & svg {
-    color: inherit;
-    ${({chosen}) => chosen  ? 'color: #ff6200;': ''};
-
-  }
-  &:hover {
-    ${({disabled}) => !disabled ? 'color: goldenrod': ''};
-  }
-
-`;
 
 type CommentButtonsProps = {
   commentId: string;
   userId: string;
 }
 
-
 export function CommentButtons({ commentId, userId } : CommentButtonsProps) {
-  console.log(userId)
 
+  const dispatch = useDispatch();
 
   const user = useSelector(getUser);
+  const isUserComment = user?.id === String(userId);
 
-  const isUserComment = user?.id === userId;
+  const handleToCommentClick = () => {
+    dispatch(setCurrentComment(commentId))
+    dispatch(setCommentType('re-comment'))
+  }
+
+  const handleToCorrectClick = () => {
+    dispatch(setCurrentComment(commentId))
+    dispatch(setCommentType('correct'))
+  }
 
   const handleLikeClick = () => {
     console.log('like', {commentId})
@@ -75,10 +46,10 @@ export function CommentButtons({ commentId, userId } : CommentButtonsProps) {
         <BiDislike  />
       </CommentButton>
       &nbsp;&nbsp;
-      <CommentButton title="комментировать" disabled={!isUserComment}>
+      <CommentButton title="комментировать" disabled={!user} onClick={handleToCommentClick}>
         <RiQuestionAnswerLine />
       </CommentButton>
-      <CommentButton title="править" disabled={!isUserComment}>
+      <CommentButton title="править" disabled={!isUserComment} onClick={handleToCorrectClick}>
         <TbWriting />
       </CommentButton>
 

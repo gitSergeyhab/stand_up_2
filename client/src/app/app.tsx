@@ -36,6 +36,8 @@ import { NewsPage } from '../pages/news/news-page/news-page';
 import { NewsPageInfo } from '../pages/news/news-info/news-info';
 import { NewsChange } from '../pages/change-panels/news-change';
 
+// import { TestPage } from '../pages/test-page/test-page';
+
 const AppRoute = {
   Main: '/',
 
@@ -92,7 +94,7 @@ export function App() {
           <MainWrapper>
             <MainContainer>
               <Routes>
-                {/* <Route path={AppRoute.Main} element={<MainPage/>}/> */}
+                {/* <Route path='/main' element={<TestPage/>}/> */}
 
                 {/* Comedians */}
                 <Route path={AppRoute.Comedians} element={<ComediansPage />} />

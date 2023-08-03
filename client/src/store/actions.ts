@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ContentName } from '../const/const';
-import { OptionType, Titles } from '../types/types';
+import { CommentType, OptionType, Titles } from '../types/types';
 import { AuthUserTypeCC } from '../types/user-types';
 import { InitialPreloadState } from './preload-reducer/preload-reducer';
 import { MessageCC, Room } from '../types/chat-types';
@@ -68,7 +68,11 @@ export const enum Action {
   SetChatState = 'chat/SetChatState',
   SetSocketJoin = 'chat/SetSocketJoin',
   SetQuoteMessage = 'chat/SetQuoteMessage',
-  SetChatPosition = 'chat/SetChatPosition'
+  SetChatPosition = 'chat/SetChatPosition',
+
+  SetCurrentComment = 'comment/SetCurrentComment',
+  SetCommentType = 'comment/SetCommentType',
+  ResetCommentInput = 'comment/ResetCommentInput',
 }
 
 export const setType = createAction(Action.SetType,(type: null | ContentName) => ({ payload: type }),);
@@ -91,3 +95,7 @@ export const setChatState = createAction(Action.SetChatState, (payload: boolean)
 export const setSocketJoin = createAction(Action.SetSocketJoin);
 export const setQuoteMessage = createAction(Action.SetQuoteMessage, (payload: MessageCC|null) => ({ payload }));
 export const setChatPosition = createAction(Action.SetChatPosition, (payload: ChatPosition) => ({ payload }));
+
+export const setCurrentComment = createAction(Action.SetCurrentComment, (payload: string|undefined) => ({ payload }));
+export const setCommentType = createAction(Action.SetCommentType, (payload: CommentType|undefined) => ({ payload }));
+export const resetCommentInput = createAction(Action.ResetCommentInput);

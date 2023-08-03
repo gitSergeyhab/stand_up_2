@@ -111,39 +111,7 @@ const prepareFields = (fields: string[]) => {
     })
 }
 
-/**
- * sql строка для вставки нового show/place/...
- * @param fields данные в формате [{show_name, date, ...}] кроме ..._main_picture_id
- * @param dir папка для картинки, она же таблица
- * @returns id
- */
-// export const getDataInsertQueryStr = (fields: SimpleDict[], dir: string) => {
-//     const fieldNames = getFieldNames(fields);
-//     const fieldsStr = fieldNames.join(', ');
-//     const valuesStr = prepareFields(fieldNames).join(', ')
-//     const idName = getIdFromTable(dir)
-//     const sqlQuery = `
-//     INSERT INTO ${dir} (${fieldsStr})
-//     VALUES (${valuesStr})
-//     RETURNING ${idName}
-//     `
-//     return sqlQuery
-// }
 
-// export const getDataInsertQueryStr = (fields: SimpleDict[], dir: string) => {
-//     console.log({fields})
-//     const fieldNames = getFieldNames(fields);
-//     const columnId = getIdFromTable(dir);
-//     const fieldsStr = fieldNames.join(', ');
-//     const valuesStr = prepareFieldsToQuery(filterNotEmpty(fields)).join(', ');
-//     console.log({fieldsStr, valuesStr})
-//     const sqlQuery = `
-//     INSERT INTO ${dir} (${fieldsStr})
-//     VALUES (${valuesStr})
-//     RETURNING ${columnId}
-//     `
-//     return sqlQuery
-// }
 
 export const getDataInsertQuery = (fields: SimpleDict[], table: string, column: string) => {
     console.log({fields})
@@ -159,19 +127,7 @@ export const getDataInsertQuery = (fields: SimpleDict[], table: string, column: 
     return sqlQuery
 }
 
-// export const getDataUpdateQuery = (fields: SimpleDict[], table: string, column: string) => {
-//     console.log({fields})
-//     const fieldNames = getFieldNames(fields, true);
-//     const fieldsStr = fieldNames.join(', ');
-//     const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ');
-//     console.log({fieldsStr, valuesStr})
-//     const sqlQuery = `
-//         UPDATE ${table} 
-//         SET (${fieldsStr}) = (${valuesStr})
-//         WHERE ${column} = :id
-//     `
-//     return sqlQuery
-// }
+
 
 export const getDataUpdateQuery = (fields: SimpleDict[], table: string, column: string, updDates=false) => {
     console.log({fields})
@@ -189,19 +145,7 @@ export const getDataUpdateQuery = (fields: SimpleDict[], table: string, column: 
     return sqlQuery
 }
 
-// export const getDataUpdateQueryDateUpd = (fields: SimpleDict[], tableName: string, columnName: string) => {
-//     console.log({fields})
-//     const fieldNames = getFieldNames(fields, true);
-//     const fieldsStr = fieldNames.join(', ') + ', date_updated';
-//     const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ') + ', CURRENT_TIMESTAMP';
-//     console.log({fieldsStr, valuesStr})
-//     const sqlQuery = `
-//         UPDATE ${tableName} 
-//         SET (${fieldsStr}) = (${valuesStr})
-//         WHERE ${columnName} = :id
-//     `
-//     return sqlQuery
-// }
+
 
 
 /**
@@ -222,37 +166,6 @@ export const prepareFieldsToQuery = (fields: SimpleDict[]) => {
     })
 }
 
-// export const getDataUpdateQueryStr = (fields: SimpleDict[], dir: string) => {
-//     console.log({fields})
-//     const fieldNames = getFieldNames(fields, true);
-//     const columnId = getIdFromTable(dir);
-//     const fieldsStr = fieldNames.join(', ');
-//     // const valuesStr = prepareFields(fieldNames).join(', ')
-//     const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ');
-//     console.log({fieldsStr, valuesStr})
-//     const sqlQuery = `
-//         UPDATE ${dir} 
-//         SET (${fieldsStr}) = (${valuesStr})
-//         WHERE ${columnId} = :id
-//     `
-//     return sqlQuery
-// }
-
-// export const getDataUpdateQueryStrDateUpd = (fields: SimpleDict[], dir: string) => {
-//     console.log({fields})
-//     const fieldNames = getFieldNames(fields, true);
-//     const columnId = getIdFromTable(dir);
-//     const fieldsStr = fieldNames.join(', ') + ', date_updated';
-//     // const valuesStr = prepareFields(fieldNames).join(', ')
-//     const valuesStr = prepareFieldsToQuery(filterNotNull(fields)).join(', ') + ', CURRENT_TIMESTAMP';
-//     console.log({fieldsStr, valuesStr})
-//     const sqlQuery = `
-//         UPDATE ${dir} 
-//         SET (${fieldsStr}) = (${valuesStr})
-//         WHERE ${columnId} = :id
-//     `
-//     return sqlQuery
-// }
 
 
 /**

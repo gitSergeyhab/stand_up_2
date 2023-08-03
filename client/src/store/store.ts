@@ -14,15 +14,17 @@ import { postFormApi } from './post-form-api';
 import { placesApi } from './places-api';
 import { preloadReducer } from './preload-reducer/preload-reducer';
 import { api } from './api';
-import { chatReducer } from './chat-reducer/chat-reducer';
 import { mainApi } from './main-api';
 import { newsApi } from './news-api';
+import { commentReducer } from './comment-reducer/comment-reducer';
+import { chatReducer } from './chat-reducer/chat-reducer';
 
 
 export const enum ReducerName {
   User = 'User',
   Preload = 'Preload',
-  Chat = 'Chat'
+  Chat = 'Chat',
+  Comment = 'Comment'
 }
 
 export const reducer = combineReducers({
@@ -41,6 +43,7 @@ export const reducer = combineReducers({
   [ReducerName.Preload]: preloadReducer,
   [ReducerName.User]: userReducer,
   [ReducerName.Chat]: chatReducer,
+  [ReducerName.Comment]: commentReducer,
 });
 
 export const store = configureStore({

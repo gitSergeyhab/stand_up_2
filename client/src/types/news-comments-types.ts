@@ -13,6 +13,7 @@ export type ParentCommentCC = {
 }
 
 export type ChildCommentSC = {
+  news_id: string,
   comment_id: string,
   root_comment_id?: string,
   date_added: Date,
@@ -26,6 +27,7 @@ export type ChildCommentSC = {
 }
 
 export type ChildCommentCC = {
+  newsId: string,
   commentId: string,
   rootCommentId?: string,
   dateAdded: Date,
