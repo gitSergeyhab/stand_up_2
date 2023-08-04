@@ -10,7 +10,10 @@ import { ApiError } from "../custom-errors/api-error";
 import { getNullObj, getValueOrNull } from "../utils/utils";
 
 
-const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
+// const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
+const LIMIT = 20;
+const OFFSET = 0
+
 
 // const SortTypeName = {
 //     [SortType.New]: 'child_comment_count', //=
@@ -162,7 +165,7 @@ class NewsCommentsController {
 
         try {
             const { news_id } = req.params;
-            const { limit=200, offset=Offset, /* filter=FilterSorter.ChildComments, */sort=ReqSortQuery.pop } = req.query;
+            const { limit=LIMIT, offset=OFFSET, sort=ReqSortQuery.pop } = req.query;
             console.log({sort}, '+++++++++ sort +++++++++')
 
             const order = getOrder(ReqSortQuery[sort as string])

@@ -203,3 +203,5 @@ export const DefaultSorterParam = {
   Direction: SortDirection.DESC,
   Type: SortType.ViewsWeekly
 };
+
+export const COMMENT_LIMIT = 20;

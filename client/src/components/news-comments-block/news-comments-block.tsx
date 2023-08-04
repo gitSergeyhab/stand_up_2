@@ -1,60 +1,69 @@
-import { useLocation } from "react-router-dom"
-
-import { useGetCommentsByNewsIdQuery } from "../../store/news-api"
-import { ErrorPage } from "../../pages/error-page/error-page";
-import { BigSpinner } from "../spinner/big-spinner";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useLazyGetCommentsByNewsIdQuery } from "../../store/news-api"
 import { NewsComment } from "../news-comment/news-comment";
-import { CommentHeader, CommentSection, CommentUL, MoreCommentButton } from "./news-comments-block-style";
+import { CommentHeader, CommentSection, CommentUL } from "./news-comments-block-style";
 import { CommentInput } from "../comment-input/comment-input";
 import { CommentSortBlock } from "../comment-sort-block/comment-sort-block";
-
-
-
-
-
-
+import { NewsCommentsDataCC } from "../../types/news-comments-types";
+import { NewsCommentsMoreBtn } from "../news-comments-more-btn/news-comments-more-btn";
+import { OptionType } from "../../types/types";
 
 
 export function NewsCommentsBlock({newsId} : {newsId: string}) {
 
+  const [commentData, setCommentData] = useState<NewsCommentsDataCC>({count: 0, list: []});
+  const [isLoading, setLoading] = useState(false);
+  const [sortType, setSortType] = useState<OptionType>({id: 'pop', name: 'популярные'});
+  const [offset, setOffset] = useState(0);
 
-  const { search } = useLocation();
+  const [ getComments ] = useLazyGetCommentsByNewsIdQuery();
+
+  useEffect(() => {
+    setLoading(true);
+    getComments({id: newsId, offset, sort: sortType.id})
+      .then(({data}) => {
+        if (!data) {
+          return;
+        }
+        setCommentData((prev) => {
+          if(!offset) {
+            return data
+          }
+          const {count, list} = data;
+          return {
+            count,
+            list: [...prev.list, ...list]
+          }
+        })
+      })
+      .catch(() => toast('Ошиба загрузки данных'))
+      .finally(() => setLoading(false))
+  }, [offset, sortType, newsId, getComments])
 
 
+  const {list} = commentData;
+  const commentsElements = list.map((item) =>  <NewsComment key={item.commentId} comment={item}/>);
 
-  const { isError, isLoading, data, error } = useGetCommentsByNewsIdQuery({id: newsId, search});
-
-  if (isError) {
-    return <ErrorPage error={error} />;
-  }
-
-  if (isLoading || !data ) {
-    return <BigSpinner />;
-  }
-
-  const {list} = data;
-
-  const commentsElements = list.map((item) =>  <NewsComment key={item.commentId} comment={item}/>)
-
-
-
-
+  const handleOffsetReset = () => setOffset(0)
 
   return(
     <CommentSection>
       <CommentHeader>Комментарии</CommentHeader>
-
       <CommentInput  newsId={newsId}/>
-
-
-      <CommentSortBlock/>
-
-
-      <CommentUL>
-        {commentsElements}
-      </CommentUL>
-
-      <MoreCommentButton> Показать еще комментарии </MoreCommentButton>
+      <CommentSortBlock
+        isLoading={isLoading}
+        setSortType={setSortType}
+        sortType={sortType}
+        handleOffsetReset={handleOffsetReset}
+      />
+      <CommentUL>{commentsElements}</CommentUL>
+      <NewsCommentsMoreBtn
+        isLoading={isLoading}
+        count={commentData.count}
+        length={commentData.list.length}
+        setOffset={setOffset}
+      />
     </CommentSection>
   )
 }

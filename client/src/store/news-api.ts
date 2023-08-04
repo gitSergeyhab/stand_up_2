@@ -6,14 +6,6 @@ import { NewsCommentsDataCC } from '../types/news-comments-types';
 import { adaptServerNewsCommentsDataToClient } from '../utils/adapters/news-comments-adapter';
 
 
-// type CommentData = {
-//   text: string;
-//   fileData: FileData | null;
-//   userId: string;
-//   parentCommentId: string | undefined;
-//   rootCommentId: string | undefined;
-// }
-
 export const newsApi = createApi({
   reducerPath: 'newsApi',
   baseQuery: baseQueryWithReauth,
@@ -49,8 +41,8 @@ export const newsApi = createApi({
       invalidatesTags: ['news'],
     }),
 
-    getCommentsByNewsId: build.query<NewsCommentsDataCC, {id: string, search: string}>({
-      query: ({id, search}) => `/news-comments/${id}${search}`,
+    getCommentsByNewsId: build.query<NewsCommentsDataCC, {id: string, sort: string|number, offset: number}>({
+      query: ({id, offset, sort}) => `/news-comments/${id}?sort=${sort}&offset=${offset}`,
       transformResponse: adaptServerNewsCommentsDataToClient,
       providesTags: ['comments'],
     }),
@@ -79,5 +71,5 @@ export const newsApi = createApi({
 
 export const {
   useGetNewsByIdQuery, useGetNewsListQuery, useAddNewsMutation, useChangeNewsMutation,
-  useGetCommentsByNewsIdQuery, useAddNewsCommentMutation, useChangeNewsCommentMutation
+  useAddNewsCommentMutation, useChangeNewsCommentMutation, useLazyGetCommentsByNewsIdQuery
  } = newsApi;

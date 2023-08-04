@@ -1,9 +1,8 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
-import { createNewSearch, getFieldFromSearch } from "../../utils/navigation-utils";
 import { ClickButton, SortDiv, SortLi, SortList, SortWrapper } from "./comment-sort-block-style";
 import { OptionType } from "../../types/types";
+import { SmallSpinner2 } from "../spinner/small-spinner";
 
 
 const Option = {
@@ -12,26 +11,19 @@ const Option = {
   pop: 'Популярные'
 } as {[key: string]: string}
 
-const getSortParam = (param?: string) => {
-  if (!param) return {id: 'pop', name: Option.pop};
-  return {id: param || 'pop', name:  Option[param] || Option.pop }
-}
-
-const getSortParamFromSearch = (search: string) => {
-  const defaultSortParam = getFieldFromSearch({field: 'sort', search}) as string;
-  return getSortParam(defaultSortParam);
-}
-
 const options = Object.entries(Option).map(([id, name]) => ({id, name})) as OptionType[];
 
+type SortItemProps = {
+  option: OptionType;
+  hideList: () => void;
+  sortType: OptionType;
+  setSortType: Dispatch<SetStateAction<OptionType>>;
+  handleOffsetReset: () => void;
+}
 
-function SortItem({option, hideList}: {option: OptionType, hideList: () => void}) {
+function SortItem({option, hideList, sortType, setSortType, handleOffsetReset}: SortItemProps) {
 
-  const {search} = useLocation();
-  const navigate = useNavigate();
-  const {id, name} = option;
-  const sortId = getSortParamFromSearch(search).id;
-  const isActive = sortId === id;
+  const isActive = sortType.id === option.id;
 
   useEffect(() => {
     const closeMenuOnPageClick = (evt: MouseEvent) => {
@@ -43,37 +35,47 @@ function SortItem({option, hideList}: {option: OptionType, hideList: () => void}
     return () => document.removeEventListener('click', closeMenuOnPageClick);
   });
 
-
   const handleClick = () => {
-    const newSearch = createNewSearch({search, fields: [{name: 'sort', value: id}], replace: true})
-    navigate(`?${newSearch}`);
+    handleOffsetReset();
+    setSortType(option);
     hideList();
   }
-
-  return <SortLi isActive={isActive} onClick={handleClick}>{name}</SortLi>;
+  return <SortLi isActive={isActive} onClick={handleClick}>{option.name}</SortLi>;
 }
 
 
+type CommentSortBlockProps = {
+  sortType: OptionType;
+  setSortType: Dispatch<SetStateAction<OptionType>>;
+  isLoading: boolean;
+  handleOffsetReset: () => void;
+}
 
-export function CommentSortBlock() {
-  const { search } = useLocation();
-  const sortParam = getSortParamFromSearch(search);
+export function CommentSortBlock({isLoading, setSortType, sortType, handleOffsetReset}:CommentSortBlockProps) {
   const [isListShown, setListShown] = useState(false);
 
   const hideList = () => setListShown(false);
-  const handleClickDiv = () => setListShown((prev) => !prev)
+  const handleClickDiv = () => setListShown((prev) => !prev);
 
-  const sortElements = options.map((item) => <SortItem key={item.id} hideList={hideList} option={item}/>)
+  const sortElements = options.map((item) => (
+    <SortItem
+      key={item.id}
+      hideList={hideList}
+      option={item}
+      setSortType={setSortType}
+      sortType={sortType}
+      handleOffsetReset={handleOffsetReset}
+    />
+  ));
+
   const sortList = isListShown ? <SortList>{sortElements}</SortList> : null;
   const arrow = isListShown ? <IoIosArrowUp/> : <IoIosArrowDown/>;
+  const btnContent = isLoading ? <SmallSpinner2/> : <>{sortType.name}{arrow}</>;
 
   return (
     <SortWrapper >
       <SortDiv id="comment-sort-element">
-        <ClickButton onClick={handleClickDiv}>
-          {sortParam.name}
-          {arrow}
-        </ClickButton>
+        <ClickButton onClick={handleClickDiv}>{btnContent}</ClickButton>
         {sortList}
       </SortDiv>
     </SortWrapper>
