@@ -1,6 +1,6 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
-import { ClickButton, SortDiv, SortLi, SortList, SortWrapper } from "./comment-sort-block-style";
+import { ClickButton, SortDiv, SortLi, SortList, SortWrapper } from "./news-comment-sort-block-style";
 import { OptionType } from "../../types/types";
 import { SmallSpinner2 } from "../spinner/small-spinner";
 
@@ -51,7 +51,7 @@ type CommentSortBlockProps = {
   handleOffsetReset: () => void;
 }
 
-export function CommentSortBlock({isLoading, setSortType, sortType, handleOffsetReset}:CommentSortBlockProps) {
+export function NewsCommentSortBlock({isLoading, setSortType, sortType, handleOffsetReset}:CommentSortBlockProps) {
   const [isListShown, setListShown] = useState(false);
 
   const hideList = () => setListShown(false);

@@ -137,3 +137,13 @@ export type FileData = {
 }
 
 export type CommentType = 're-comment' | 'correct' | undefined;
+
+export type NewsCommentFakeData = {
+  commentId: string;
+  rootCommentId?:string;
+  newsId: string;
+  text?: string;
+  image?: string;
+  timeStamp: number;
+
+}

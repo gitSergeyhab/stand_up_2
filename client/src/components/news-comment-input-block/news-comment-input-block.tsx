@@ -1,5 +1,5 @@
-import { CloseBtnWrapper, CommentInputWrapper} from "./comment-input-block-style";
-import { CommentInput } from "../comment-input/comment-input";
+import { CloseBtnWrapper, CommentInputWrapper} from "./news-comment-input-block-style";
+import { NewsCommentInput } from "../news-comment-input/news-comment-input";
 import { CloseBtn } from "../common/common";
 
 
@@ -13,13 +13,13 @@ type CommentInputBlockProps = {
   image?: string;
 }
 
-export function CommentInputBlock ({
+export function NewsCommentInputBlock ({
   onCloseInput, newsId, commentId, defaultText, image, rootCommentId, userNik
 }: CommentInputBlockProps) {
   return (
     <CommentInputWrapper>
       <CloseBtnWrapper><CloseBtn onClick={onCloseInput} /></CloseBtnWrapper>
-      <CommentInput
+      <NewsCommentInput
         newsId={newsId}
         commentId={commentId}
         rootCommentId={rootCommentId}

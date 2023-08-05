@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ContentName } from '../const/const';
-import { CommentType, OptionType, Titles } from '../types/types';
+import { CommentType, NewsCommentFakeData, OptionType, Titles } from '../types/types';
 import { AuthUserTypeCC } from '../types/user-types';
 import { InitialPreloadState } from './preload-reducer/preload-reducer';
 import { MessageCC, Room } from '../types/chat-types';
@@ -73,6 +73,8 @@ export const enum Action {
   SetCurrentComment = 'comment/SetCurrentComment',
   SetCommentType = 'comment/SetCommentType',
   ResetCommentInput = 'comment/ResetCommentInput',
+  SetFakeCommentData = 'comment/SetFakeCommentData'
+  // SetFakeCommentImage = 'comment/SetFakeCommentData'
 }
 
 export const setType = createAction(Action.SetType,(type: null | ContentName) => ({ payload: type }),);
@@ -99,3 +101,4 @@ export const setChatPosition = createAction(Action.SetChatPosition, (payload: Ch
 export const setCurrentComment = createAction(Action.SetCurrentComment, (payload: string|undefined) => ({ payload }));
 export const setCommentType = createAction(Action.SetCommentType, (payload: CommentType|undefined) => ({ payload }));
 export const resetCommentInput = createAction(Action.ResetCommentInput);
+export const setFakeCommentData = createAction(Action.SetFakeCommentData, (payload: NewsCommentFakeData|undefined) => ({ payload }))

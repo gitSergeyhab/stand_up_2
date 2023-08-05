@@ -12,7 +12,6 @@ type DateFieldProps = {
   label: string
   date: Date | null | undefined,
   setDate: Dispatch<SetStateAction<Date | null | undefined>>
-
 }
 export function DateField ({id, label, date, setDate} : DateFieldProps) {
 

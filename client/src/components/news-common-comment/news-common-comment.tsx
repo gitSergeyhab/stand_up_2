@@ -1,43 +1,36 @@
-import { Link } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux";
 import { ChildCommentCC } from "../../types/news-comments-types";
-import { formatDateFromTimeStamp } from "../../utils/date-utils";
-import { UserLink } from "../common/common-style";
-import { DefaultPath, SERVER_URL } from "../../const/const";
-import { CommentImage, CommentLi, CommonCommentDiv, ContentWrapperDiv, DateP, DateSpan, Header, LikeRating,  SmallImg, TextDiv } from "./news-common-comment-style";
-import { CommentButtons } from "../comment-buttons/comment-buttons";
+import { CommentImage, CommentLi, CommonCommentDiv, TextDiv } from "./news-common-comment-style";
 import { getInputCommentId, getInputCommentType } from "../../store/comment-reducer/comment-selectors";
 import { resetCommentInput } from "../../store/actions";
 import { getRowLinkedText } from "../../utils/format-text";
-import { CommentInputBlock } from "../comment-input-block/comment-input-block";
+import { NewsCommentInputBlock } from "../news-comment-input-block/news-comment-input-block";
+import { NewsCommentUserBlock } from "../news-comment-user-block/news-comment-user-block";
+import { SERVER_URL } from "../../const/const";
+import { NewsCommentDateRateBtn } from "../news-comment-date-rate-btn/news-comment-date-rate-btn";
 
 
-type ChildCommentProps = {
-  comment: ChildCommentCC;
-}
+type ChildCommentProps = { comment: ChildCommentCC, isFake?: boolean }
 
-export function CommonComment ({comment}:  ChildCommentProps) {
+export function NewsCommonComment ({comment, isFake}:  ChildCommentProps) {
 
   const { commentId, dateAdded,
     // dateUpdated,
     text, userId, userNik, rootCommentId, avatar, image, parentComment, newsId } = comment;
   const dispatch = useDispatch()
 
-
   const inputCommentId = useSelector(getInputCommentId);
   const typeCommentInput = useSelector(getInputCommentType);
-  const formatDate =  formatDateFromTimeStamp(dateAdded);
-  const userAvatar = avatar ? SERVER_URL + avatar : DefaultPath.Any;
 
-  const commentImage = image ? <CommentImage src={`${SERVER_URL}${image}`} /> : null;
-
+  const src = isFake ? image : `${SERVER_URL}${image}`
+  const commentImage = image ? <CommentImage src={src} /> : null;
   const commentText = parentComment?.userNik ? `${parentComment?.userNik}, ${text}` : text;
-  const textP = <TextDiv>{getRowLinkedText(commentText)}</TextDiv>;
+  const textP = <TextDiv>{getRowLinkedText(commentText || '')}</TextDiv>;
 
   const handleCloseInput = () =>  dispatch(resetCommentInput());
 
   const inputReCommentBlock = (inputCommentId === comment.commentId) && typeCommentInput === "re-comment" ? (
-    <CommentInputBlock
+    <NewsCommentInputBlock
       newsId={newsId}
       commentId={commentId}
       rootCommentId={rootCommentId || commentId}
@@ -46,7 +39,7 @@ export function CommonComment ({comment}:  ChildCommentProps) {
   ) : null;
 
   const inputChangeCommentBlock = (
-    <CommentInputBlock
+    <NewsCommentInputBlock
       newsId={newsId}
       commentId={commentId}
       rootCommentId={rootCommentId}
@@ -61,31 +54,20 @@ export function CommonComment ({comment}:  ChildCommentProps) {
 
   return (
     <CommonCommentDiv>
-      <ContentWrapperDiv>
-        <Link to={`/users/${userId}`} id={`comment-${commentId}`}><SmallImg src={userAvatar}/></Link>
-        <Header><UserLink to={`/users/${userId}`}>  {userNik}</UserLink></Header>
-      </ContentWrapperDiv>
-        {commentImage}
-        {commentContent}
-        <DateP>
-          <DateSpan>{formatDate}</DateSpan>
-          <LikeRating>+12</LikeRating>
-          <CommentButtons
-            commentId={commentId}
-            userId={userId}
-          />
-        </DateP>
-        {inputReCommentBlock}
+      <NewsCommentUserBlock commentId={commentId} avatar={avatar} userId={userId} userNik={userNik}/>
+      {commentImage}
+      {commentContent}
+      <NewsCommentDateRateBtn commentId={commentId} dateAdded={dateAdded} userId={userId}/>
+      {inputReCommentBlock}
     </CommonCommentDiv>
   )
 }
 
 
-export function ChildComment({comment}:  ChildCommentProps) {
+export function NewsChildComment({comment, isFake}:  ChildCommentProps) {
  return (
   <CommentLi>
-
-    <CommonComment comment={comment} />
+    <NewsCommonComment comment={comment} isFake={isFake} />
   </CommentLi>
  )
 }

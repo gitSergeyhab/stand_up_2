@@ -1,7 +1,7 @@
-import { useState, ChangeEventHandler, useRef, Dispatch, SetStateAction } from 'react';
+import { useState, ChangeEventHandler, Dispatch, SetStateAction, MutableRefObject } from 'react';
 import EmojiPicker, {Emoji, EmojiClickData} from 'emoji-picker-react';
 import { AiOutlineFileAdd, AiOutlineFileExcel } from 'react-icons/ai';
-import { ButtonsBlock,  ControlsDiv, EmojiButton, EmojiWrapper, FileButton, SendButton } from './comment-input-buttons-style';
+import { ButtonsBlock,  ControlsDiv, EmojiButton, EmojiWrapper, FileButton, SendButton } from './news-comment-input-buttons-style';
 import { InvisibleImageInput } from '../common/hidden-file-input';
 import { FileData } from '../../types/types';
 
@@ -12,14 +12,18 @@ type CommentInputButtonsProps = {
   disabled: boolean;
   setImgFileSrc: Dispatch<SetStateAction<string>>;
   imgFileSrc: string;
-  setPicChanged: Dispatch<SetStateAction<boolean>>
+  setPicChanged: Dispatch<SetStateAction<boolean>>;
+  fileRef: MutableRefObject<HTMLInputElement|null>;
+  textRef: MutableRefObject<HTMLTextAreaElement|null>;
+  formRef: MutableRefObject<HTMLFormElement|null>;
 
 }
 
-export function CommentInputButtons({disabled, setFileData, setValue, imgFileSrc, setImgFileSrc, setPicChanged}: CommentInputButtonsProps) {
-  const fileRef = useRef<HTMLInputElement|null>(null);
-  const textRef = useRef<HTMLTextAreaElement|null>(null);
-  const formRef = useRef<HTMLFormElement|null>(null);
+export function NewsCommentInputButtons({
+  disabled, setFileData, setValue, imgFileSrc, setImgFileSrc, setPicChanged, fileRef, formRef, textRef
+}: CommentInputButtonsProps
+  ) {
+
   const [isEmojiPicker, setEmojiPicker] = useState(false);
 
   const handleEmojiBtnClick = () => setEmojiPicker((prev) => !prev);

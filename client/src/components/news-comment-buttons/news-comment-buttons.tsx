@@ -4,7 +4,7 @@ import {BiLike, BiDislike} from 'react-icons/bi'
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "../../store/user-reducer/user-selectors";
 import { setCommentType, setCurrentComment } from "../../store/actions";
-import { ButtonsWrapper, CommentButton } from './comment-buttons-style';
+import { ButtonsWrapper, CommentButton } from './news-comment-buttons-style';
 
 
 type CommentButtonsProps = {
@@ -12,7 +12,7 @@ type CommentButtonsProps = {
   userId: string;
 }
 
-export function CommentButtons({ commentId, userId } : CommentButtonsProps) {
+export function NewsCommentButtons({ commentId, userId } : CommentButtonsProps) {
 
   const dispatch = useDispatch();
 

@@ -1,4 +1,4 @@
-import {jlData} from '../../test/jl';
+import {d} from '../../test/jl';
 
 const Item  = ({company}) => {
   <li> {company} </li>
@@ -15,7 +15,7 @@ const getMaxMinRate = (arr) => {
 
 }
 
-const firstData = jlData.data.filter((item) => item.progress < 0.8).map((item) => ({
+const firstData = d.data.filter((item) => item.progress < 0.8).map((item) => ({
   name: item.company, lname: item.loan_name, rate:  item.interest_rate, ytm: item.ytm, rating: item.rating, progress: item.progress
 }));
 
