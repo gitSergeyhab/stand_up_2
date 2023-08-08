@@ -109,7 +109,7 @@ class SQLQueryCardService {
         `;
     }
 
-    getNewsComments(type='news_comments') {
+    getNewsComments(type='news_comment') {
         return `
         SELECT 
             '${type}' AS type,
@@ -127,7 +127,8 @@ class SQLQueryCardService {
             COALESCE(get_count_children_comments(comment_id), 0) AS child_comment_count,
             get_parent_comment(parent_comment_id) AS parent_comment,
             avatars.destination || avatars.filename AS avatar,
-            images.destination || images.filename AS image
+            images.destination || images.filename AS image,
+            get_comment_likes(comment_id, :user_id) AS likes
         FROM news_comments
         LEFT JOIN users ON news_comments.user_added_id = users.user_id
         LEFT JOIN news ON news_comments.news_id = news.news_id

@@ -213,3 +213,21 @@ CREATE OR REPLACE FUNCTION get_comments_by_root(idx BIGINT) RETURNS JSON AS $$
 	) as c
 	;
 $$ LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION get_comment_likes(comment_idx BIGINT, user_idx BIGINT) RETURNS JSON AS $$
+	SELECT
+		JSON_BUILD_OBJECT(
+			'like_count', like_count,
+			'dislike_count', dislike_count, 
+			'user_value', user_value
+		)
+	FROM (
+		SELECT 
+		COUNT (like_id) FILTER(WHERE VALUE > 0) AS like_count,
+		COUNT (like_id) FILTER(WHERE VALUE < 0) AS dislike_count,
+		SUM (value) FILTER(WHERE user_added_id = user_idx) AS user_value
+		FROM news_comment_likes 
+		WHERE comment_id = comment_idx
+	) AS c
+	;
+$$ LANGUAGE SQL;

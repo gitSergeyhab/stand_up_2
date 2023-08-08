@@ -311,6 +311,7 @@ CREATE TABLE news_comments (
     deleted BOOLEAN DEFAULT FALSE;
 );
 
+
 CREATE TABLE news_comment_likes (
 	like_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	comment_id BIGINT REFERENCES news_comments(comment_id),

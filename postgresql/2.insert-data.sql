@@ -659,3 +659,5 @@ INSERT INTO news_comments (user_added_id, news_id, text, image_id, parent_commen
 (4,6, 'Bad news 3', null, null, null ),
 (1, 2, 'coment8 u1 n2 text i0 p7 r7  -  | kkdj', null, 7, 7 );
 
+INSERT INTO news_comment_likes(comment_id, user_added_id, value) VALUES 
+(1,1,1), (2,1,-1), (3,1,-1), (4,1,0), (1,2,-1), (1,3,1), (1,4,1);

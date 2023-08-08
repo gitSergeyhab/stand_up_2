@@ -137,7 +137,7 @@ class NewsCommentsController {
             throw new ApiError(StatusCode.ServerError, message || 'unknown error')
         } 
     }
-    async getNewsCommentsByNewsId(req: Request, res: Response) {
+    async getNewsCommentsByNewsId(req: UserRequest, res: Response) {
 
         const where = `
             WHERE news.news_id = :news_id
@@ -147,7 +147,9 @@ class NewsCommentsController {
 
         try {
             const { news_id } = req.params;
-            const { limit=LIMIT, offset=OFFSET, sort=ReqSortQuery.pop } = req.query;
+            const { query, user } = req;
+            const user_id = user?.user_id || 0;
+            const { limit=LIMIT, offset=OFFSET, sort=ReqSortQuery.pop } = query;
             console.log({sort}, '+++++++++ sort +++++++++')
 
             const order = getOrder(ReqSortQuery[sort as string])
@@ -170,7 +172,7 @@ class NewsCommentsController {
 
                 ;`,
                 {
-                    replacements: { news_id, limit, offset },
+                    replacements: { news_id, limit, offset, user_id },
                     type: 'SELECT'
                 }
 

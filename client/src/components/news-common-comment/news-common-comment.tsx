@@ -18,13 +18,15 @@ export function NewsCommonComment ({comment, isFake}:  ChildCommentProps) {
 
   const { commentId, dateAdded,
     // dateUpdated,
-    text, userId, userNik, rootCommentId, avatar, image, parentComment, newsId, deleted } = comment;
+    text, userId, userNik, rootCommentId, avatar, image, parentComment, newsId, deleted, likes } = comment;
   const dispatch = useDispatch()
+
+
 
   const inputCommentId = useSelector(getInputCommentId);
   const typeCommentInput = useSelector(getInputCommentType);
-  const user = useSelector(getUser)
-
+  const user = useSelector(getUser);
+  console.log({likes, commentId}, user?.id)
   const src = isFake ? image : `${SERVER_URL}${image}`
   const commentImage = image ? <CommentImage src={src} loading="lazy" className="del-marker" /> : null;
   const commentText = parentComment?.userNik ? `${parentComment?.userNik}, ${text}` : text;
