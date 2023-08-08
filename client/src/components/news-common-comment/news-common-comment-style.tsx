@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 export const CommentLi = styled.li`
   width: 100%;
@@ -27,11 +27,21 @@ export const CommentImage = styled.img`
   box-shadow: 4px 4px 2px #0000007b;
 `;
 
-export const CommonCommentDiv = styled.div`
+const deletedStyle = css`
+  opacity: 0.2;
+  pointer-events: none;
+
+`
+
+export const CommonCommentDiv = styled.div<{deleted?: boolean}>`
   width: 100%;
   box-shadow: -1px 1px 10px #00000080;
   padding: 1rem 0 0 1rem;
   position: relative;
+
+  & .del-marker:not(.del-btn) {
+    ${({deleted}) => deleted ? deletedStyle: ''};
+  }
 `;
 
 

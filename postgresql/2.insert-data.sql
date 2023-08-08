@@ -658,3 +658,4 @@ INSERT INTO news_comments (user_added_id, news_id, text, image_id, parent_commen
 (4,7, 'Bad news 2', null, null, null ),
 (4,6, 'Bad news 3', null, null, null ),
 (1, 2, 'coment8 u1 n2 text i0 p7 r7  -  | kkdj', null, 7, 7 );
+

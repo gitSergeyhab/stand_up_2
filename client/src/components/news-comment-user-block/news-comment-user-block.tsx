@@ -28,7 +28,7 @@ type NewsCommentUserBlockProps = {
 export function NewsCommentUserBlock({userId, commentId, avatar, userNik}: NewsCommentUserBlockProps) {
   const userAvatar = avatar ? SERVER_URL + avatar : DefaultPath.Any;
   return (
-    <ContentWrapperDiv>
+    <ContentWrapperDiv className="del-marker">
       <Link to={`/users/${userId}`} id={`comment-${commentId}`}><SmallImg src={userAvatar}/></Link>
       <Header><UserLink to={`/users/${userId}`}>  {userNik}</UserLink></Header>
     </ContentWrapperDiv>

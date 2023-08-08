@@ -14,7 +14,7 @@ import { connectionHandler } from './web-socket/handlers/connection-handler';
 
 
 const ALLOWED_URLS = ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:5500'];
-const ALLOWED_METHODS = ['GET', 'POST', 'PUT', 'DELETE'];
+const ALLOWED_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
 const port = process.env.PORT || 4000;
 
 const app = express();

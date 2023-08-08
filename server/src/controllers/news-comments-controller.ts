@@ -10,16 +10,10 @@ import { ApiError } from "../custom-errors/api-error";
 import { getNullObj, getValueOrNull } from "../utils/utils";
 
 
-// const {Limit, Offset, EventStatusAll} = DefaultQueryParams;
 const LIMIT = 20;
 const OFFSET = 0
 
 
-// const SortTypeName = {
-//     [SortType.New]: 'child_comment_count', //=
-//     [SortType.WeeklyViews]: 'weekly_views', //=
-//     [SortType.TotalViews]: 'total_views'//=
-//   }
 
 const  ReqSortQuery = {
     new: 'new',
@@ -27,20 +21,6 @@ const  ReqSortQuery = {
     pop: 'pop',
 }
 
-// const enum FilterSorter {
-//     Newest = 'comment_id',
-//     ChildComments = 'child_comment_count',
-//     // Likes = 'likes',
-//     // Dislikes = 'dislikes',
-// }
-
-
-// const getOrder = (filter: FilterSorter) => {
-//     switch (filter) {
-//         case FilterSorter.ChildComments: return `ORDER BY ${FilterSorter.ChildComments} DESC`;
-//         default: return `ORDER BY ${FilterSorter.Newest} DESC`;
-//     }
-// }
 
 const getOrder = (filter?: string) => {
     switch (filter) {
@@ -50,40 +30,6 @@ const getOrder = (filter?: string) => {
     }
 }
 class NewsCommentsController {
-
-    // async getNewsById(req: Request, res: Response) {
-        
-    //     try {
-    //         const {id, user_id='1'} = req.params
-    //         console.log('getNewsById', {id})
-    //         const newsQuery = sqlQueryCardService.getNews();
-    //         const where = 'WHERE news_id = :id'
-    //             const news = await sequelize.query(
-    //                 `
-    //                 ${newsQuery}
-    //                 ${where}
-    //                 ;
-    //                 `,
-    //                 { 
-    //                     replacements: {id},
-    //                     type: 'SELECT'
-    //                 }
-    //             );
-    //             if (!news.length) {
-    //                 return res.status(StatusCode.NotFoundError)
-    //                     .json({message: `not found place with ID: ${id}`});
-    //             }
-
-    //             await insertView(id, user_id, Column.News);
-
-        
-    //             return res.status(StatusCode.Ok).json(news[0])
-    //     } catch (err) {
-    //         console.log({err});
-    //         return res.status(StatusCode.ServerError).json({message: 'getNewsById'})
-    //     }
-    // }
-
 
     async addNewsComment (req: UserRequest, res: Response ) {
         try {
@@ -109,9 +55,13 @@ class NewsCommentsController {
                 type: "INSERT"
             })
 
-            console.log({file, result}, '_________________lll____________ . . . ', result[0], result[0]['comment_id'])
+            const id = result[0][0]['comment_id'];
 
-            return res.status(StatusCode.Added).json(result[0][0]['comment_id'])
+            const newComment = await sqlQueryCardService.getNewsCommentById({id});
+
+            console.log({id, newComment}, '_________________lll____________ . . . ')
+
+            return res.status(StatusCode.Added).json(newComment);
 
         
         } catch (err) {
@@ -144,9 +94,10 @@ class NewsCommentsController {
                 type: "UPDATE"
             })
 
+            const newComment = await sqlQueryCardService.getNewsCommentById({id});
             console.log({file, result})
 
-            return res.status(StatusCode.Added).json({sqlQuery, id})
+            return res.status(StatusCode.Added).json(newComment)
 
         
         } catch (err) {
@@ -155,6 +106,37 @@ class NewsCommentsController {
         } 
     }
 
+    async toggleNewsCommentDeleteStatus (req: UserRequest, res: Response ) {
+        console.log('_________________        |     changeNewsComment    |        ___________'      )
+        try {
+            const {body, user} = req;
+            // const user_added_id = user.user_id;
+            const {id} = req.params
+
+            console.log(req.body, req.params, req.query, 'req.body, req.params, req.query')
+
+            const { deleted } = body as SimpleDict;
+            console.log({deleted})
+            const fields = [ {deleted} ] as SimpleDict[];
+            const sqlQuery = getDataUpdateQuery(fields, 'news_comments', 'comment_id', true);
+
+
+            const result = await sequelize.query(sqlQuery, {
+                replacements: {deleted, id}, 
+                type: "UPDATE"
+            })
+
+            const newComment = await sqlQueryCardService.getNewsCommentById({id});
+            console.log({result})
+
+            return res.status(StatusCode.Added).json(newComment)
+
+        
+        } catch (err) {
+            const {message} = err;
+            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
+        } 
+    }
     async getNewsCommentsByNewsId(req: Request, res: Response) {
 
         const where = `

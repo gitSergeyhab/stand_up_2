@@ -1,8 +1,11 @@
-import { useState, useEffect, Dispatch, SetStateAction } from "react";
+import { useState, useEffect } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
+import { useDispatch, useSelector } from "react-redux";
 import { ClickButton, SortDiv, SortLi, SortList, SortWrapper } from "./news-comment-sort-block-style";
 import { OptionType } from "../../types/types";
 import { SmallSpinner2 } from "../spinner/small-spinner";
+import { getNewsCommentsData } from "../../store/news-comments-slice/news-comment-selectors";
+import { setOffset, setSortType } from "../../store/news-comments-slice/news-comments-slice";
 
 
 const Option = {
@@ -16,12 +19,14 @@ const options = Object.entries(Option).map(([id, name]) => ({id, name})) as Opti
 type SortItemProps = {
   option: OptionType;
   hideList: () => void;
-  sortType: OptionType;
-  setSortType: Dispatch<SetStateAction<OptionType>>;
-  handleOffsetReset: () => void;
+
 }
 
-function SortItem({option, hideList, sortType, setSortType, handleOffsetReset}: SortItemProps) {
+function SortItem({option, hideList}: SortItemProps) {
+  const dispatch = useDispatch()
+  const {sortType} = useSelector(getNewsCommentsData);
+
+  const handleOffsetReset = () => dispatch(setOffset(0))
 
   const isActive = sortType.id === option.id;
 
@@ -37,22 +42,18 @@ function SortItem({option, hideList, sortType, setSortType, handleOffsetReset}: 
 
   const handleClick = () => {
     handleOffsetReset();
-    setSortType(option);
+    dispatch(setSortType(option));
     hideList();
   }
   return <SortLi isActive={isActive} onClick={handleClick}>{option.name}</SortLi>;
 }
 
 
-type CommentSortBlockProps = {
-  sortType: OptionType;
-  setSortType: Dispatch<SetStateAction<OptionType>>;
-  isLoading: boolean;
-  handleOffsetReset: () => void;
-}
 
-export function NewsCommentSortBlock({isLoading, setSortType, sortType, handleOffsetReset}:CommentSortBlockProps) {
+
+export function NewsCommentSortBlock() {
   const [isListShown, setListShown] = useState(false);
+  const {sortType, isLoading} = useSelector(getNewsCommentsData)
 
   const hideList = () => setListShown(false);
   const handleClickDiv = () => setListShown((prev) => !prev);
@@ -62,9 +63,6 @@ export function NewsCommentSortBlock({isLoading, setSortType, sortType, handleOf
       key={item.id}
       hideList={hideList}
       option={item}
-      setSortType={setSortType}
-      sortType={sortType}
-      handleOffsetReset={handleOffsetReset}
     />
   ));
 

@@ -16,8 +16,9 @@ import { preloadReducer } from './preload-reducer/preload-reducer';
 import { api } from './api';
 import { mainApi } from './main-api';
 import { newsApi } from './news-api';
-import { commentReducer } from './comment-reducer/comment-reducer';
+// import { commentReducer } from './comment-reducer/comment-reducer';
 import { chatReducer } from './chat-reducer/chat-reducer';
+import { newsCommentsSlice } from './news-comments-slice/news-comments-slice';
 
 
 export const enum ReducerName {
@@ -43,7 +44,8 @@ export const reducer = combineReducers({
   [ReducerName.Preload]: preloadReducer,
   [ReducerName.User]: userReducer,
   [ReducerName.Chat]: chatReducer,
-  [ReducerName.Comment]: commentReducer,
+  // [ReducerName.Comment]: commentReducer,
+  [newsCommentsSlice.name]: newsCommentsSlice.reducer
 });
 
 export const store = configureStore({

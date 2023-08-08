@@ -307,5 +307,17 @@ CREATE TABLE news_comments (
 	
 	text VARCHAR(1024) NOT NULL,
 	date_added TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP,
-	date_updated TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP
+	date_updated TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted BOOLEAN DEFAULT FALSE;
+);
+
+CREATE TABLE news_comment_likes (
+	like_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	comment_id BIGINT REFERENCES news_comments(comment_id),
+	user_added_id BIGINT REFERENCES users(user_id),
+    value SMALLINT DEFAULT 0,
+	date_added TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP,
+	date_updated TIMESTAMP without time zone DEFAULT CURRENT_TIMESTAMP,
+	CHECK (value > -2 AND value < 2),
+	UNIQUE (comment_id, user_added_id)
 );

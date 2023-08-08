@@ -31,15 +31,15 @@ export const LikeRating = styled.div<{color?: string}>`
   ${({color}) => color ? `color: ${color}` : ''};
 `;
 
-type NewsCommentDateRateBtnProps = {dateAdded: Date, commentId: string, userId: string}
+type NewsCommentDateRateBtnProps = {dateAdded: Date, commentId: string, userId: string, deleted: boolean}
 
-export function NewsCommentDateRateBtn({dateAdded, commentId, userId}: NewsCommentDateRateBtnProps) {
+export function NewsCommentDateRateBtn({dateAdded, commentId, userId, deleted}: NewsCommentDateRateBtnProps) {
   const formatDate =  formatDateFromTimeStamp(dateAdded);
   return (
-    <DateP>
-    <DateSpan>{formatDate}</DateSpan>
-    <LikeRating>+12</LikeRating>
-    <NewsCommentButtons commentId={commentId} userId={userId} />
+  <DateP >
+    <DateSpan className="del-marker">{formatDate}</DateSpan>
+    <LikeRating className="del-marker">+12</LikeRating>
+    <NewsCommentButtons deleted={deleted} commentId={commentId} userId={userId} />
   </DateP>
   )
 }

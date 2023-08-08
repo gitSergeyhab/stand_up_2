@@ -1,3 +1,6 @@
+import { type } from "os";
+import { sequelize } from "../sequelize";
+
 class SQLQueryCardService {
     getShows(type='show') {
         return `
@@ -119,6 +122,7 @@ class SQLQueryCardService {
             news.news_id,
             news_title,
             text,
+            deleted,
             get_comments_by_root(comment_id) AS child_comments,
             COALESCE(get_count_children_comments(comment_id), 0) AS child_comment_count,
             get_parent_comment(parent_comment_id) AS parent_comment,
@@ -130,6 +134,23 @@ class SQLQueryCardService {
         LEFT JOIN avatars ON users.user_avatar_id = avatars.avatar_id
         LEFT JOIN images ON images.image_id = news_comments.image_id
         `;
+    }
+
+    async getNewsCommentById({id}) {
+        try {
+            const commentQuery = this.getNewsComments();
+            const result = await sequelize.query(`
+                ${commentQuery}
+                WHERE comment_id = :id;
+            `, {
+                    replacements: {id},
+                    type: 'SELECT'
+                }
+            );
+            return result[0];
+        } catch (err) {
+            return null;
+        }
     }
 }
 

@@ -187,7 +187,8 @@ CREATE OR REPLACE FUNCTION get_comments_by_root(idx BIGINT) RETURNS JSON AS $$
 		'date_updated', date_updated,
 		'avatar', avatar,
 		'image', image, 
-		'parent_comment', parent_comment
+		'parent_comment', parent_comment,
+		'deleted', deleted
 	))
 	FROM (
 		SELECT 
@@ -199,6 +200,7 @@ CREATE OR REPLACE FUNCTION get_comments_by_root(idx BIGINT) RETURNS JSON AS $$
 			date_updated,
 			users.user_id, 
 			user_nik,
+			deleted,
 			avatars.destination || avatars.filename AS avatar,
          	images.destination || images.filename AS image,
 			get_parent_comment(parent_comment_id) AS parent_comment

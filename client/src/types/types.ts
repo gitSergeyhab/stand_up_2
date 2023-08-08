@@ -145,5 +145,16 @@ export type NewsCommentFakeData = {
   text?: string;
   image?: string;
   timeStamp: number;
+}
 
+export type NewsCommentFakeData2 = {
+  commentId: string;
+  rootCommentId?:string;
+  newsId: string;
+  text?: string;
+  image?: string;
+  timeStamp: number;
+  avatar?: string;
+  userNik: string;
+  userId: string;
 }

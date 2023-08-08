@@ -33,7 +33,7 @@ export const fetchPreloadData = (): ThunkActionResult =>
       const {data} = await api.get<FormDataSC>('form-data/preload');
       const adaptedData = adaptFormDataToClient(data);
       dispatch(setPreloadData(adaptedData));
-      console.log({adaptedData})
+      // console.log({adaptedData})
     } catch (err) {
       console.log({err})
       toast.error('Данные не загрузились. Попробуте позже')
@@ -47,7 +47,7 @@ export const fetchPreloadData = (): ThunkActionResult =>
       const {data} = await api.get<RoomSC[]>('chat/rooms');
       const rooms = adaptRooms(data);
       dispatch(setRooms(rooms));
-      console.log({rooms})
+      // console.log({rooms})
     } catch (err) {
       console.log({err})
       toast.error('Данные не загрузились. Попробуте позже')

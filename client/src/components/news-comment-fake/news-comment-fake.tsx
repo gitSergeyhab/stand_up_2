@@ -4,7 +4,8 @@ import { getUser } from "../../store/user-reducer/user-selectors";
 import { NewsCommentFakeData } from "../../types/types";
 import { AuthUserTypeCC } from '../../types/user-types';
 import { NewsCommentCC } from "../../types/news-comments-types";
-import { getFakeCommentData } from "../../store/comment-reducer/comment-selectors";
+import { getFakeCommentData } from "../../store/news-comments-slice/news-comment-selectors";
+// import { getFakeCommentData } from "../../store/comment-reducer/comment-selectors";
 
 
 const getComment = (

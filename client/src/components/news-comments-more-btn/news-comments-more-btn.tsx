@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { Dispatch, SetStateAction } from "react";
+import { useDispatch } from "react-redux";
 import { SmallSpinner2 } from "../spinner/small-spinner";
 import { COMMENT_LIMIT } from "../../const/const";
+import { increaseOffset } from "../../store/news-comments-slice/news-comments-slice";
 
 
 export const MoreCommentButton = styled.button.attrs({type: 'button'})`
@@ -26,12 +27,14 @@ type NewsCommentsMoreBtnProps = {
   count: number,
   length: number,
   isLoading: boolean
-  setOffset: Dispatch<SetStateAction<number>>
 }
 
-export function NewsCommentsMoreBtn({isLoading, count, length, setOffset}: NewsCommentsMoreBtnProps) {
+export function NewsCommentsMoreBtn({isLoading, count, length}: NewsCommentsMoreBtnProps) {
 
-  const handleBtnClick = () => setOffset((prev) => prev + COMMENT_LIMIT);
+  const dispatch = useDispatch()
+
+  const handleBtnClick = () => dispatch(increaseOffset())
+
 
   const remainingCommentCount = count - length;
   const nextCommentCount = count - length > COMMENT_LIMIT ? COMMENT_LIMIT :  remainingCommentCount;

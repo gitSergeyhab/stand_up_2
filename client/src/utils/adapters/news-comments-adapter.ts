@@ -18,6 +18,7 @@ export const adaptServerChildCommentToClient = (data: ChildCommentSC): ChildComm
   rootCommentId: data.root_comment_id,
   avatar: data.avatar,
   image: data.image,
+  deleted: data.deleted,
   parentComment: data.parent_comment ? adaptServerParentCommentToClient(data.parent_comment) : undefined
 })
 
@@ -35,7 +36,9 @@ export const adaptServerNewsCommentToClient = (data: NewsCommentSC): NewsComment
   rootCommentId: data.root_comment_id,
   avatar: data.avatar,
   image: data.image,
+  deleted: data.deleted,
   childComments: data.child_comments?.map(adaptServerChildCommentToClient),
+  parentComment: data.parent_comment ? adaptServerParentCommentToClient(data.parent_comment) : undefined
 
 });
 
@@ -43,3 +46,6 @@ export const adaptServerNewsCommentsDataToClient = (result: NewsCommentsDataSC):
   list: result.list.map(adaptServerNewsCommentToClient),
   count: +result.count,
 });
+
+
+
