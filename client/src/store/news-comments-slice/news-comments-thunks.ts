@@ -3,9 +3,9 @@ import { toast } from "react-toastify";
 import { NewsCommentCC, NewsCommentSC, NewsCommentsDataSC } from "../../types/news-comments-types";
 import { adaptServerNewsCommentToClient, adaptServerNewsCommentsDataToClient } from "../../utils/adapters/news-comments-adapter";
 import { api } from "../api";
-import {  newsCommentsSlice, resetInputCommentData, setComments, setOpenRootComment } from "./news-comments-slice";
+import { newsCommentsSlice, resetInputCommentData, setComments, setOpenRootComment } from "./news-comments-slice";
 import { ReducerType } from "../store";
-import { updateComments } from "../../utils/updatede-comment-by-change-comment";
+import { updateComments } from "../../utils/update-comment";
 
 type FetchNewsComments = {
   id: string,
@@ -17,12 +17,10 @@ export const fetchNewsComments = createAsyncThunk(
   'news-comments/fetchNewsComments',
   async ({ id, offset, sort }:FetchNewsComments) => {
     try {
-      const {data} = await api.get<NewsCommentsDataSC>(`/news-comments/${id}`, {
-        params: {offset, sort},
-      })
-      console.log({data})
+      const {data} = await api.get<NewsCommentsDataSC>(`/news-comments/${id}`, {params: {offset, sort}})
       return adaptServerNewsCommentsDataToClient(data);
     } catch (err) {
+      console.log({err})
       toast.error('невозможно загрузить данные. попробуйте позже')
       return null;
     }
@@ -62,7 +60,6 @@ export const addNewsComment = createAsyncThunk(
       dispatch(resetInputCommentData())
       onSuccess(commentCC.commentId);
       dispatch(setOpenRootComment(commentCC.rootCommentId))
-
     } catch (err) {
       toast.error('добавление комментариев временно недоступно, попробуйте позже');
     }
@@ -81,44 +78,20 @@ export const changeNewsComment = createAsyncThunk(
   'news-comments/changeNewsComment',
   async ({commentId, body, onSuccess, onAnyCase}: ChangeNewsComments, { getState, dispatch }) => {
     try {
-      let newComments: NewsCommentCC[] = [];
       const {data} = await api.put<NewsCommentSC>(`/news-comments/${commentId}`, body, {params: {dir: 'comments'}});
       const commentCC = adaptServerNewsCommentToClient(data);
-      const rootId = commentCC.rootCommentId;
       const state = getState() as ReducerType
       const oldComments = state[newsCommentsSlice.name].comments;
-      const rootCommentIndex = oldComments.findIndex((item) => item.commentId === rootId);
-      if (rootCommentIndex === -1) {// если добавлен корневой коммент,
-        const commentIndex = oldComments.findIndex((item) => item.commentId === commentId);
-        const leftComments = oldComments.slice(0, commentIndex);
-        const rightComments = oldComments.slice(commentIndex + 1);
-        newComments = [...leftComments, commentCC, ...rightComments];
-      } else {// если добавлен дочерний коммент
-        const rootComment = oldComments[rootCommentIndex];
-        const childComments = rootComment?.childComments;
-        if (!childComments) {
-          return;
-        }
-        const commentIndex = childComments.findIndex((item) => item.commentId === commentId);
-        const leftChildComments = childComments.slice(0, commentIndex);
-        const rightChildComments = childComments.slice(commentIndex + 1);
-        const newChildComments = [...leftChildComments, commentCC, ...rightChildComments];
-        const newRootComment = {...rootComment, childComments: newChildComments};
-        const leftRootComments = oldComments.slice(0, rootCommentIndex);
-        const rightRootComments = oldComments.slice(rootCommentIndex + 1);
-        newComments = [...leftRootComments, newRootComment, ...rightRootComments];
-      }
+      const newComments = updateComments(oldComments, commentCC);
 
       dispatch(setComments(newComments));
       dispatch(resetInputCommentData());
       onSuccess(commentCC.commentId);
       dispatch(setOpenRootComment(commentCC.rootCommentId));
-
     } catch (err) {
       console.log({err})
       toast.error('изменение комментариев временно недоступно, попробуйте позже');
     }
-    // dispatch(setChangComment(undefined))
     onAnyCase();
   }
 )
@@ -132,44 +105,19 @@ export const toggleNewsCommentDeleteStatus = createAsyncThunk(
   'news-comments/changeNewsComment',
   async ({commentId, status}: ToggleNewsCommentDeleteStatus, { getState, dispatch }) => {
     try {
-      let newComments: NewsCommentCC[] = [];
       const {data} = await api.patch<NewsCommentSC>(`/news-comments/${commentId}`, {deleted: status}, {params: {dir: 'comments'}});
       const commentCC = adaptServerNewsCommentToClient(data);
-      const rootId = commentCC.rootCommentId;
       const state = getState() as ReducerType;
       const oldComments = state[newsCommentsSlice.name].comments;
-      const rootCommentIndex = oldComments.findIndex((item) => item.commentId === rootId);
-      if (rootCommentIndex === -1) {// если добавлен корневой коммент,
-        const commentIndex = oldComments.findIndex((item) => item.commentId === commentId);
-        const leftComments = oldComments.slice(0, commentIndex);
-        const rightComments = oldComments.slice(commentIndex + 1);
-        newComments = [...leftComments, commentCC, ...rightComments];
-      } else {// если добавлен дочерний коммент
-        const rootComment = oldComments[rootCommentIndex];
-        const childComments = rootComment?.childComments;
-        if (!childComments) {
-          return;
-        }
-        const commentIndex = childComments.findIndex((item) => item.commentId === commentId);
-        const leftChildComments = childComments.slice(0, commentIndex);
-        const rightChildComments = childComments.slice(commentIndex + 1);
-        const newChildComments = [...leftChildComments, commentCC, ...rightChildComments];
-        const newRootComment = {...rootComment, childComments: newChildComments}
-        const leftRootComments = oldComments.slice(0, rootCommentIndex);
-        const rightRootComments = oldComments.slice(rootCommentIndex + 1);
-        newComments = [...leftRootComments, newRootComment, ...rightRootComments];
-      }
+      const newComments = updateComments(oldComments, commentCC);
 
       dispatch(setComments(newComments));
       dispatch(resetInputCommentData());
       dispatch(setOpenRootComment(commentCC.rootCommentId));
-
     } catch (err) {
       console.log({err});
       toast.error('изменение комментариев временно недоступно, попробуйте позже');
     }
-
-    // onAnyCase();
   }
 )
 
@@ -186,9 +134,7 @@ export const addNewsCommentLike = createAsyncThunk(
       const state = getState() as ReducerType;
       const oldComments = state[newsCommentsSlice.name].comments;
       const newComments = updateComments(oldComments, commentCC);
-      if (!newComments) {
-        return;
-      }
+
       dispatch(setComments(newComments));
       dispatch(setOpenRootComment(commentCC.rootCommentId));
     } catch (err) {
@@ -212,9 +158,7 @@ export const changeNewsCommentLike = createAsyncThunk(
       const state = getState() as ReducerType;
       const oldComments = state[newsCommentsSlice.name].comments;
       const newComments = updateComments(oldComments, commentCC);
-      if (!newComments) {
-        return;
-      }
+
       dispatch(setComments(newComments));
       dispatch(setOpenRootComment(commentCC.rootCommentId));
     } catch (err) {

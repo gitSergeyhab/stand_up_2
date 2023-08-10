@@ -6,7 +6,7 @@ import cors from 'cors';
 import http from 'http';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import {Server} from 'socket.io';
+import { Server } from 'socket.io';
 import { router } from './routers';
 import { sequelize } from './sequelize';
 import { errorMiddleware } from './middlewares/error-middleware';
