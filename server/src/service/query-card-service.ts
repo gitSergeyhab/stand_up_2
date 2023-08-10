@@ -122,13 +122,14 @@ class SQLQueryCardService {
             news.news_id,
             news_title,
             text,
-            deleted,
-            get_comments_by_root(comment_id) AS child_comments,
+            deleted,            
+            get_comments_by_root(comment_id, :user_id) AS child_comments,
             COALESCE(get_count_children_comments(comment_id), 0) AS child_comment_count,
             get_parent_comment(parent_comment_id) AS parent_comment,
             avatars.destination || avatars.filename AS avatar,
             images.destination || images.filename AS image,
-            get_comment_likes(comment_id, :user_id) AS likes
+            get_comment_likes(comment_id, :user_id) AS likes,
+            get_comment_pop_rate(comment_id) AS pop_rate
         FROM news_comments
         LEFT JOIN users ON news_comments.user_added_id = users.user_id
         LEFT JOIN news ON news_comments.news_id = news.news_id
@@ -137,21 +138,17 @@ class SQLQueryCardService {
         `;
     }
 
-    async getNewsCommentById({id}) {
-        try {
-            const commentQuery = this.getNewsComments();
-            const result = await sequelize.query(`
-                ${commentQuery}
-                WHERE comment_id = :id;
-            `, {
-                    replacements: {id},
-                    type: 'SELECT'
-                }
-            );
-            return result[0];
-        } catch (err) {
-            return null;
-        }
+    async getNewsCommentById({id, user_id}: {id: string, user_id: string}) {
+        const commentQuery = this.getNewsComments();
+        const result = await sequelize.query(`
+            ${commentQuery}
+            WHERE comment_id = :id;
+        `, {
+                replacements: {id, user_id},
+                type: 'SELECT'
+            }
+        );
+        return result[0];
     }
 }
 

@@ -2,44 +2,50 @@ import styled from "styled-components";
 import { formatDateFromTimeStamp } from "../../utils/date-utils";
 import { hiddenStyle } from "../common/common-style";
 import { NewsCommentButtons } from "../news-comment-buttons/news-comment-buttons";
+import { ChildCommentCC } from "../../types/news-comments-types";
 
-export const DateP = styled.div`
+export const Wrapper = styled.div`
   width: 100%;
-  padding: 0.25rem;
+  padding: 0.25rem 0;
   display: flex;
   margin: 0;
   font-style: italic;
-  font-size: 0.9em;
   background: rgb(255,255,255);
   background: linear-gradient(90deg, #ffffff76 0%, rgba(48,6,6,1) 100%);
   text-align: start;
-  padding-right: 1rem;
   color: #000;
   position: relative;
+  min-height: 1.5rem;
+  @media(max-width: 500px) {
+    background: rgba(48,6,6,1);
+  }
 `;
 
 export const DateSpan = styled.span`
+  font-size: 0.9rem;
+  @media(max-width: 900px) {
+    font-size: 0.8rem;
+  }
   @media(max-width: 500px) {
     ${hiddenStyle}
   }
 `;
 
-export const LikeRating = styled.div<{color?: string}>`
-  padding: 0 2rem;
-  font-weight: 700;
-  text-shadow: 1px 0 ;
-  ${({color}) => color ? `color: ${color}` : ''};
-`;
 
-type NewsCommentDateRateBtnProps = {dateAdded: Date, commentId: string, userId: string, deleted: boolean}
 
-export function NewsCommentDateRateBtn({dateAdded, commentId, userId, deleted}: NewsCommentDateRateBtnProps) {
+type NewsCommentDateRateBtnProps = {
+  comment: ChildCommentCC
+}
+
+export function NewsCommentDateRateBtn({comment}: NewsCommentDateRateBtnProps) {
+  const { dateAdded } = comment;
   const formatDate =  formatDateFromTimeStamp(dateAdded);
+
   return (
-  <DateP >
+  <Wrapper >
     <DateSpan className="del-marker">{formatDate}</DateSpan>
-    <LikeRating className="del-marker">+12</LikeRating>
-    <NewsCommentButtons deleted={deleted} commentId={commentId} userId={userId} />
-  </DateP>
+
+    <NewsCommentButtons comment={comment} />
+  </Wrapper>
   )
 }

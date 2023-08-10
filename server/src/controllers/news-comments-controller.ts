@@ -8,6 +8,7 @@ import { imageService } from "../service/image-service";
 import { ImageFile, SimpleDict, UserRequest } from "../types";
 import { ApiError } from "../custom-errors/api-error";
 import { getNullObj, getValueOrNull } from "../utils/utils";
+import { likeService } from "../service/like-service";
 
 
 const LIMIT = 20;
@@ -26,7 +27,7 @@ const getOrder = (filter?: string) => {
     switch (filter) {
         case ReqSortQuery.new: return `ORDER BY comment_id DESC`;
         case ReqSortQuery.old: return `ORDER BY comment_id ASC`;
-        default: return `ORDER BY child_comment_count DESC`;
+        default: return `ORDER BY pop_rate DESC`;
     }
 }
 class NewsCommentsController {
@@ -57,7 +58,7 @@ class NewsCommentsController {
 
             const id = result[0][0]['comment_id'];
 
-            const newComment = await sqlQueryCardService.getNewsCommentById({id});
+            const newComment = await sqlQueryCardService.getNewsCommentById({id, user_id: user_added_id});
 
             console.log({id, newComment}, '_________________lll____________ . . . ')
 
@@ -94,7 +95,7 @@ class NewsCommentsController {
                 type: "UPDATE"
             })
 
-            const newComment = await sqlQueryCardService.getNewsCommentById({id});
+            const newComment = await sqlQueryCardService.getNewsCommentById({id, user_id: user_added_id});
             console.log({file, result})
 
             return res.status(StatusCode.Added).json(newComment)
@@ -110,7 +111,7 @@ class NewsCommentsController {
         console.log('_________________        |     changeNewsComment    |        ___________'      )
         try {
             const {body, user} = req;
-            // const user_added_id = user.user_id;
+            const user_id = user.user_id;
             const {id} = req.params
 
             console.log(req.body, req.params, req.query, 'req.body, req.params, req.query')
@@ -126,7 +127,7 @@ class NewsCommentsController {
                 type: "UPDATE"
             })
 
-            const newComment = await sqlQueryCardService.getNewsCommentById({id});
+            const newComment = await sqlQueryCardService.getNewsCommentById({id, user_id});
             console.log({result})
 
             return res.status(StatusCode.Added).json(newComment)
@@ -180,11 +181,49 @@ class NewsCommentsController {
             console.log(result[0], 'result___________________________', 'console.log +++')
 
             const data = getDataFromSQL(result);
-            return res.status(200).json(data);
+            return res.status(StatusCode.Added).json(data);
     
         } catch(err) {
-            console.log({err});
-            return res.status(StatusCode.ServerError).json({message: 'error getNewsList'});
+            const {message} = err;
+            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
+        }
+    }
+
+    async changeLikeToComment (req: UserRequest, res: Response) {
+
+        try {
+            const {id} = req.params;
+            const {value} = req.body;
+            const {user_id} = req.user;
+            const like_user_id = await likeService.getUserOfLike(id);
+            if (user_id !== like_user_id) {
+                throw new ApiError(StatusCode.ServerError, 'нельзя обновить чужой лайк)')
+            }
+            const updatedLike = await likeService.updateCommentLike(id, user_id, value);
+            const newComment = await sqlQueryCardService.getNewsCommentById({id: updatedLike['comment_id'], user_id});
+
+            return res.status(StatusCode.Added).json(newComment);
+
+        } catch (err) {
+            console.log({err})
+            const {message} = err;
+            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
+        }
+    }
+
+    async addLikeToComment (req: UserRequest, res: Response) {
+
+        try {
+            const {commentId, value} = req.body;
+            const {user_id} = req.user;
+            await likeService.insertCommentLike(commentId, user_id, value);
+            const newComment = await sqlQueryCardService.getNewsCommentById({id: commentId, user_id});
+            return res.status(StatusCode.Added).json(newComment);
+
+        } catch (err) {
+            console.log({err})
+            const {message} = err;
+            throw new ApiError(StatusCode.ServerError, message || 'unknown error')
         }
     }
 

@@ -5,6 +5,7 @@ import { adaptServerNewsCommentToClient, adaptServerNewsCommentsDataToClient } f
 import { api } from "../api";
 import {  newsCommentsSlice, resetInputCommentData, setComments, setOpenRootComment } from "./news-comments-slice";
 import { ReducerType } from "../store";
+import { updateComments } from "../../utils/updatede-comment-by-change-comment";
 
 type FetchNewsComments = {
   id: string,
@@ -19,6 +20,7 @@ export const fetchNewsComments = createAsyncThunk(
       const {data} = await api.get<NewsCommentsDataSC>(`/news-comments/${id}`, {
         params: {offset, sort},
       })
+      console.log({data})
       return adaptServerNewsCommentsDataToClient(data);
     } catch (err) {
       toast.error('невозможно загрузить данные. попробуйте позже')
@@ -116,6 +118,7 @@ export const changeNewsComment = createAsyncThunk(
       console.log({err})
       toast.error('изменение комментариев временно недоступно, попробуйте позже');
     }
+    // dispatch(setChangComment(undefined))
     onAnyCase();
   }
 )
@@ -123,12 +126,11 @@ export const changeNewsComment = createAsyncThunk(
 type ToggleNewsCommentDeleteStatus = {
   commentId: string;
   status: boolean;
-  onSuccess: () => void;
 }
 
 export const toggleNewsCommentDeleteStatus = createAsyncThunk(
   'news-comments/changeNewsComment',
-  async ({commentId, status, onSuccess}: ToggleNewsCommentDeleteStatus, { getState, dispatch }) => {
+  async ({commentId, status}: ToggleNewsCommentDeleteStatus, { getState, dispatch }) => {
     try {
       let newComments: NewsCommentCC[] = [];
       const {data} = await api.patch<NewsCommentSC>(`/news-comments/${commentId}`, {deleted: status}, {params: {dir: 'comments'}});
@@ -161,12 +163,63 @@ export const toggleNewsCommentDeleteStatus = createAsyncThunk(
       dispatch(setComments(newComments));
       dispatch(resetInputCommentData());
       dispatch(setOpenRootComment(commentCC.rootCommentId));
-      onSuccess();
 
     } catch (err) {
       console.log({err});
       toast.error('изменение комментариев временно недоступно, попробуйте позже');
     }
+
     // onAnyCase();
+  }
+)
+
+type AddNewsCommentLike = {
+  body: {value: number; commentId: string};
+}
+
+export const addNewsCommentLike = createAsyncThunk(
+  'news-comments/addNewsCommentLike',
+  async ({body}: AddNewsCommentLike, { getState, dispatch }) => {
+    try {
+      const {data} = await api.post<NewsCommentSC>(`/news-comments/likes`, body);
+      const commentCC = adaptServerNewsCommentToClient(data);
+      const state = getState() as ReducerType;
+      const oldComments = state[newsCommentsSlice.name].comments;
+      const newComments = updateComments(oldComments, commentCC);
+      if (!newComments) {
+        return;
+      }
+      dispatch(setComments(newComments));
+      dispatch(setOpenRootComment(commentCC.rootCommentId));
+    } catch (err) {
+      console.log({err});
+      toast.error('изменение комментариев временно недоступно, попробуйте позже');
+    }
+  }
+)
+
+type ChangeNewsCommentLike = {
+  likeId: string|number;
+  value: number;
+}
+
+export const changeNewsCommentLike = createAsyncThunk(
+  'news-comments/changeNewsCommentLike',
+  async ({likeId, value}: ChangeNewsCommentLike, { getState, dispatch }) => {
+    try {
+      const {data} = await api.put<NewsCommentSC>(`/news-comments/likes/${likeId}`, {value});
+      const commentCC = adaptServerNewsCommentToClient(data);
+      const state = getState() as ReducerType;
+      const oldComments = state[newsCommentsSlice.name].comments;
+      const newComments = updateComments(oldComments, commentCC);
+      if (!newComments) {
+        return;
+      }
+      dispatch(setComments(newComments));
+      dispatch(setOpenRootComment(commentCC.rootCommentId));
+    } catch (err) {
+      console.log({err});
+      toast.error('изменение комментариев временно недоступно, попробуйте позже');
+    }
   }
 )

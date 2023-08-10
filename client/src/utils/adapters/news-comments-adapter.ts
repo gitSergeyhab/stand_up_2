@@ -1,18 +1,13 @@
 import { ChildCommentCC, ChildCommentSC, LikesCC, LikesSC, NewsCommentCC, NewsCommentSC, NewsCommentsDataCC, NewsCommentsDataSC, ParentCommentCC, ParentCommentSC } from "../../types/news-comments-types";
 
-export const adaptLikesToClient = (data: LikesSC|undefined): LikesCC|undefined =>
+export const adaptLikesToClient = (data: LikesSC): LikesCC => ({
+  dislikeCount: data.dislike_count,
+  likeCount: data.like_count,
+  userValue: data.user_value,
+  likeId: data.like_id
+})
 
-{
-  if (!data) {
-    return undefined;
-  }
 
-  return {
-    dislikeCount: data.dislike_count,
-    likeCount: data.like_count,
-    userValue: data.user_value
-  }
-}
 
 
 

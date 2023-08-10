@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { NewsCommentCC } from "../../types/news-comments-types";
 import { CommentType,  OptionType } from "../../types/types";
 import { COMMENT_LIMIT } from "../../const/const";
-import { addNewsComment, fetchNewsComments } from "./news-comments-thunks";
+import { addNewsComment, addNewsCommentLike, changeNewsCommentLike, fetchNewsComments, toggleNewsCommentDeleteStatus } from "./news-comments-thunks";
 
 // type FakeCommentData = NewsCommentCC & {timeStamp: number}
 
@@ -12,6 +12,8 @@ export type InitialNewsCommentsState = {
   comments: NewsCommentCC[];
   count: number;
   isLoading: boolean;
+  isSubLoading: boolean;
+  changCommentId?: string|number;
   isError: boolean;
   sortType: OptionType;
   offset: number;
@@ -26,6 +28,7 @@ const initialState: InitialNewsCommentsState = {
   comments: [],
   count: 0,
   isLoading: true,
+  isSubLoading: false,
   isError: false,
   sortType: defaultSortType,
   offset: 0,
@@ -35,6 +38,9 @@ export const newsCommentsSlice = createSlice({
   name: 'news-comments',
   initialState,
   reducers: {
+    setChangComment(state, {payload}) {
+      state.changCommentId = payload;
+    },
     setOpenRootComment(state, {payload}) {
       state.openedRootCommentId = payload;
     },
@@ -47,14 +53,6 @@ export const newsCommentsSlice = createSlice({
     setInputCommentId(state, action: PayloadAction<string>) {
       state.inputCommentId = action.payload;
     },
-    // setFakeCommentData(state, action: PayloadAction<NewsCommentFakeData2>) {
-    //   state.fakeCommentData = {...emptyFakeComment, ...action.payload};
-    // },
-
-
-    // setNewComment(state, action: PayloadAction<NewsCommentCC>) {
-    //   state.newComment = action.payload
-    // },
     resetInputCommentData(state) {
       state.inputCommentId = undefined;
       state.inputCommentType = undefined;
@@ -108,10 +106,32 @@ export const newsCommentsSlice = createSlice({
         state.isError = true;
         state.isLoading = false;
       })
+
+      .addCase(addNewsCommentLike.fulfilled, (state) => {
+        state.changCommentId = undefined;
+      })
+      .addCase(addNewsCommentLike.rejected, (state) => {
+        state.changCommentId = undefined;
+      })
+
+      .addCase(changeNewsCommentLike.fulfilled, (state) => {
+        state.changCommentId = undefined;
+      })
+      .addCase(changeNewsCommentLike.rejected, (state) => {
+        state.changCommentId = undefined;
+      })
+
+      .addCase(toggleNewsCommentDeleteStatus.fulfilled, (state) => {
+        state.changCommentId = undefined;
+      })
+      .addCase(toggleNewsCommentDeleteStatus.rejected, (state) => {
+        state.changCommentId = undefined;
+      })
   },
 })
 
 export const {
+  setChangComment,
   resetInputCommentData,
   // setFakeCommentData,
   setInputCommentId,

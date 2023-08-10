@@ -174,7 +174,29 @@ CREATE OR REPLACE FUNCTION get_parent_comment(idx BIGINT) RETURNS JSON AS $$
 	;
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION get_comments_by_root(idx BIGINT) RETURNS JSON AS $$
+
+CREATE OR REPLACE FUNCTION get_comment_likes(comment_idx BIGINT, user_idx BIGINT) RETURNS JSON AS $$
+	SELECT
+		JSON_BUILD_OBJECT(
+			'like_count', like_count,
+			'dislike_count', dislike_count,
+			'like_id', like_id,
+			'user_value', user_value
+		)
+	FROM (
+		SELECT 
+		COUNT (like_id) FILTER(WHERE VALUE > 0) AS like_count,
+		COUNT (like_id) FILTER(WHERE VALUE < 0) AS dislike_count,
+		SUM (value) FILTER(WHERE user_added_id = user_idx) AS user_value,
+		SUM (like_id) FILTER(WHERE user_added_id = user_idx) as like_id
+		FROM news_comment_likes 
+		WHERE comment_id = comment_idx
+	) AS c
+	;
+$$ LANGUAGE SQL;
+
+
+CREATE OR REPLACE FUNCTION get_comments_by_root(comment_idx BIGINT, user_idx BIGINT) RETURNS JSON AS $$
 	SELECT
 	JSON_AGG(JSON_BUILD_OBJECT(
 		'news_id', news_id,
@@ -188,7 +210,8 @@ CREATE OR REPLACE FUNCTION get_comments_by_root(idx BIGINT) RETURNS JSON AS $$
 		'avatar', avatar,
 		'image', image, 
 		'parent_comment', parent_comment,
-		'deleted', deleted
+		'deleted', deleted, 
+		'likes', likes
 	))
 	FROM (
 		SELECT 
@@ -203,31 +226,16 @@ CREATE OR REPLACE FUNCTION get_comments_by_root(idx BIGINT) RETURNS JSON AS $$
 			deleted,
 			avatars.destination || avatars.filename AS avatar,
          	images.destination || images.filename AS image,
-			get_parent_comment(parent_comment_id) AS parent_comment
+			get_parent_comment(parent_comment_id) AS parent_comment,
+			get_comment_likes(comment_id, user_idx) AS likes
 		FROM news_comments 
 		LEFT JOIN users ON users.user_id = news_comments.user_added_id
 		LEFT JOIN avatars ON users.user_avatar_id = avatars.avatar_id
         LEFT JOIN images ON images.image_id = news_comments.image_id
-		WHERE root_comment_id = idx
+		WHERE root_comment_id = comment_idx
 		ORDER BY comment_id
-	) as c
-	;
-$$ LANGUAGE SQL;
-
-CREATE OR REPLACE FUNCTION get_comment_likes(comment_idx BIGINT, user_idx BIGINT) RETURNS JSON AS $$
-	SELECT
-		JSON_BUILD_OBJECT(
-			'like_count', like_count,
-			'dislike_count', dislike_count, 
-			'user_value', user_value
-		)
-	FROM (
-		SELECT 
-		COUNT (like_id) FILTER(WHERE VALUE > 0) AS like_count,
-		COUNT (like_id) FILTER(WHERE VALUE < 0) AS dislike_count,
-		SUM (value) FILTER(WHERE user_added_id = user_idx) AS user_value
-		FROM news_comment_likes 
-		WHERE comment_id = comment_idx
 	) AS c
 	;
 $$ LANGUAGE SQL;
+
+

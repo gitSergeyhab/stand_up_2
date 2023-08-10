@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 const DropUpDiv = styled.div`
   position: absolute;
-  right: -.5rem;
-  bottom: 1.3rem;
+  right: -0.5rem;
+  bottom: 1.6rem;
 `
 
 export function DropUp({children}: {children: ReactNode}) {

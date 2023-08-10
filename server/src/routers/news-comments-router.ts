@@ -11,5 +11,7 @@ newsCommentRouter.get('/:news_id', userMiddleware, asyncHandler(newsCommentsCont
 newsCommentRouter.post('/', authMiddleware, imageUploader.single('image'), asyncHandler(newsCommentsController.addNewsComment));
 newsCommentRouter.put('/:id', authMiddleware, imageUploader.single('image'), asyncHandler(newsCommentsController.changeNewsComment));
 newsCommentRouter.patch('/:id', authMiddleware,  asyncHandler(newsCommentsController.toggleNewsCommentDeleteStatus));
+newsCommentRouter.post('/likes/', authMiddleware,  asyncHandler(newsCommentsController.addLikeToComment));
+newsCommentRouter.put('/likes/:id', authMiddleware,  asyncHandler(newsCommentsController.changeLikeToComment));
 
 export {newsCommentRouter}

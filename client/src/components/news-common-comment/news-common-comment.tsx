@@ -12,22 +12,17 @@ import { getInputCommentId, getInputCommentType } from "../../store/news-comment
 import { getUser } from "../../store/user-reducer/user-selectors";
 
 
-type ChildCommentProps = { comment: ChildCommentCC, isFake?: boolean }
+type ChildCommentProps = { comment: ChildCommentCC }
 
-export function NewsCommonComment ({comment, isFake}:  ChildCommentProps) {
+export function NewsCommonComment ({comment}:  ChildCommentProps) {
 
-  const { commentId, dateAdded,
-    // dateUpdated,
-    text, userId, userNik, rootCommentId, avatar, image, parentComment, newsId, deleted, likes } = comment;
+  const {commentId, text, userId, userNik, rootCommentId, avatar, image, parentComment, newsId, deleted} = comment;
   const dispatch = useDispatch()
-
-
-
   const inputCommentId = useSelector(getInputCommentId);
   const typeCommentInput = useSelector(getInputCommentType);
   const user = useSelector(getUser);
-  console.log({likes, commentId}, user?.id)
-  const src = isFake ? image : `${SERVER_URL}${image}`
+
+  const src =  `${SERVER_URL}${image}`
   const commentImage = image ? <CommentImage src={src} loading="lazy" className="del-marker" /> : null;
   const commentText = parentComment?.userNik ? `${parentComment?.userNik}, ${text}` : text;
   const textP = <TextDiv className="del-marker" >{getRowLinkedText(commentText || '')}</TextDiv>;
@@ -59,7 +54,6 @@ export function NewsCommonComment ({comment, isFake}:  ChildCommentProps) {
 
 
   const isShowContent = !deleted || String(userId) === user?.id;
-  console.log({deleted})
 
   if (!isShowContent) {
     return <div>Коментарий удален</div>;
@@ -67,22 +61,20 @@ export function NewsCommonComment ({comment, isFake}:  ChildCommentProps) {
 
   return (
     <CommonCommentDiv deleted={deleted}>
-
       <NewsCommentUserBlock commentId={commentId} avatar={avatar} userId={userId} userNik={userNik} />
       {deleted ? 'комментарий удален' : ''}
       {commentImage}
       {commentContent}
-      <NewsCommentDateRateBtn deleted={deleted} commentId={commentId} dateAdded={dateAdded} userId={userId}/>
+      <NewsCommentDateRateBtn comment={comment} />
       {inputReCommentBlock}
     </CommonCommentDiv>
   )
 }
 
-
-export function NewsChildComment({comment, isFake}:  ChildCommentProps) {
+export function NewsChildComment({comment}:  ChildCommentProps) {
  return (
   <CommentLi>
-    <NewsCommonComment comment={comment} isFake={isFake} />
+    <NewsCommonComment comment={comment} />
   </CommentLi>
  )
 }

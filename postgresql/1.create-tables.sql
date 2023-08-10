@@ -322,3 +322,11 @@ CREATE TABLE news_comment_likes (
 	CHECK (value > -2 AND value < 2),
 	UNIQUE (comment_id, user_added_id)
 );
+
+CREATE OR REPLACE FUNCTION get_comment_pop_rate (idx BIGINT) RETURNS BIGINT AS $$
+	SELECT 
+	COALESCE(get_count_children_comments(idx), 0) + COUNT (like_id)
+	FROM news_comments
+	LEFT JOIN news_comment_likes ON news_comment_likes.comment_id = news_comments.comment_id
+	WHERE news_comments.comment_id = idx
+$$ LANGUAGE SQL;

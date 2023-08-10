@@ -16,12 +16,14 @@ export type ParentCommentCC = {
 export type LikesSC = {
   like_count: number,
   dislike_count: number,
+  like_id?: number,
   user_value?: number
 }
 
 export type LikesCC = {
   likeCount: number,
   dislikeCount: number,
+  likeId?: number,
   userValue?: number
 }
 
@@ -39,7 +41,7 @@ export type ChildCommentSC = {
   image?: string,
   parent_comment?: ParentCommentSC,
   deleted: boolean,
-  likes?: LikesSC
+  likes: LikesSC
 }
 
 export type ChildCommentCC = {
@@ -55,7 +57,7 @@ export type ChildCommentCC = {
   image?: string,
   parentComment?: ParentCommentCC,
   deleted: boolean,
-  likes?: LikesCC
+  likes: LikesCC
 }
 
 
@@ -75,7 +77,7 @@ export type NewsCommentSC = {
   image?: string,
   parent_comment?: ParentCommentSC,
   deleted: boolean,
-  likes?: LikesSC
+  likes: LikesSC
 }
 
 export type NewsCommentCC = {
@@ -94,7 +96,7 @@ export type NewsCommentCC = {
   image?: string,
   parentComment?: ParentCommentCC,
   deleted: boolean,
-  likes?: LikesCC
+  likes: LikesCC
 }
 
 export type NewsCommentsDataSC = CommonListDataType<NewsCommentSC>
